@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isFormDirty = false;
     let isInitializing = true;
+    let prevTxnTypeValue = '';
 
     window.currentFormInstance = {
         loadExistingData: function(id) {
@@ -54,9 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.btn-row-add, .btn-row-delete, .btn-footer-save').forEach(btn => {
                 btn.style.display = 'none';
             });
-            // Also hide the Transaction Type Add New button in view mode
-            const btnAddTxnType = document.getElementById('btnAddTransactionType');
-            if (btnAddTxnType) btnAddTxnType.style.display = 'none';
+            // (Transaction Type Add New button is now an option inside the dropdown, no separate button to hide)
             form.querySelectorAll('.erp-toggle-btn').forEach(btn => {
                 btn.classList.add('disabled');
             });
@@ -186,9 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-row-add, .btn-row-delete, .btn-footer-save').forEach(btn => {
             btn.style.display = 'none';
         });
-        // Also hide Transaction Type Add New button in view mode
-        const btnAddTxnType = document.getElementById('btnAddTransactionType');
-        if (btnAddTxnType) btnAddTxnType.style.display = 'none';
+        // (Transaction Type Add New button is now an option inside the dropdown, no separate button to hide)
 
         // Disable all segmented toggle button labels
         form.querySelectorAll('.erp-toggle-btn').forEach(btn => {
@@ -197,18 +194,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Transaction Type: Add New modal handler ──────────────────────────────
-    const btnAddTransactionType = document.getElementById('btnAddTransactionType');
     const txnTypeModal = new bootstrap.Modal(document.getElementById('createTransactionTypeModal'));
     const btnSaveTxnType = document.getElementById('btnSaveTxnType');
     const txnTypeModalError = document.getElementById('txnTypeModalError');
 
-    if (btnAddTransactionType) {
-        btnAddTransactionType.addEventListener('click', () => {
-            // Clear modal fields
-            document.getElementById('newTxnTypeName').value = '';
-            document.getElementById('newTxnTypeCode').value = '';
-            if (txnTypeModalError) { txnTypeModalError.style.display = 'none'; txnTypeModalError.textContent = ''; }
-            txnTypeModal.show();
+    const txnSelect = document.getElementById('TransactionTypeID');
+    if (txnSelect) {
+        prevTxnTypeValue = txnSelect.value;
+        txnSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'add_new') {
+                // Restore previous selection immediately
+                e.target.value = prevTxnTypeValue;
+                
+                // Clear modal fields
+                document.getElementById('newTxnTypeName').value = '';
+                document.getElementById('newTxnTypeCode').value = '';
+                if (txnTypeModalError) { txnTypeModalError.style.display = 'none'; txnTypeModalError.textContent = ''; }
+                txnTypeModal.show();
+            } else {
+                prevTxnTypeValue = e.target.value;
+            }
         });
     }
 
@@ -254,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return res.json();
             })
             .then(newType => {
-                // Add new option to the dropdown and select it
                 const txnSelect = document.getElementById('TransactionTypeID');
                 if (txnSelect) {
                     const opt = new Option(
@@ -265,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     opt.dataset.code = newType.TransactionType;
                     txnSelect.add(opt);
                     txnSelect.value = String(newType.TransactionTypeID);
+                    prevTxnTypeValue = String(newType.TransactionTypeID);
                 }
                 txnTypeModal.hide();
                 // Mark form dirty
@@ -338,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 txnTypeSelect.value = '';
             }
+            prevTxnTypeValue = txnTypeSelect.value;
         }
 
         // Add transaction rows

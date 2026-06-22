@@ -431,20 +431,15 @@
                                 style="height:28px !important; font-size:12px !important; border-radius:4px !important;
                                        border:1px solid #cbd5e1 !important; color:#1e293b !important;
                                        background-color:#ffffff !important; padding:2px 6px !important;
-                                       min-width:170px; max-width:200px;">
+                                       min-width:200px;">
                                 <option value="">-- Select --</option>
+                                {% if not is_view_mode %}
+                                    <option value="add_new" class="text-primary fw-bold" style="color: #2563eb; font-weight: 600;">+ Add New</option>
+                                {% endif %}
                                 {% for tt in transaction_types %}
                                     <option value="{{ tt.TransactionTypeID }}" data-code="{{ tt.TransactionType }}">{{ tt.TransactionTypeName }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="button" id="btnAddTransactionType"
-                                title="Add new Transaction Type"
-                                style="height:28px; padding:0 8px; font-size:11px; font-weight:600;
-                                       background:#eff6ff; border:1px solid #bfdbfe; color:#2563eb;
-                                       border-radius:4px; cursor:pointer; white-space:nowrap;
-                                       display:inline-flex; align-items:center; gap:3px;">
-                                <i class="bi bi-plus"></i> Add New
-                            </button>
                         </div>
                     </div>
                 </div>
