@@ -1,0 +1,521 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Gate Entry - AccountMaster ERP{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/gate-entry.css' %}?v={% now 'U' %}">
+<style>
+    /* Spacing overrides for seamless sidebar/navbar matching */
+    .gate-entry-wrapper {
+        margin-top: -10px !important;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 gate-entry-wrapper" style="max-width: 1000px; margin: 0 auto;">
+    
+    <!-- 1. Centered Deep Blue Title Bar -->
+    <div class="gate-entry-header-bar">
+        <h2>Gate Entry</h2>
+    </div>
+
+    <!-- 2. Main Content Card -->
+    <div class="card gate-entry-card shadow-sm mb-3">
+        <form method="post" id="gateEntryForm" novalidate class="card-body p-4">
+            {% csrf_token %}
+
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-7">
+                    <!-- Top Row: Gate Pass ID & Capture DateTime -->
+                    <div class="row gx-3" style="margin-bottom: 15px !important;">
+                        <div class="col-md-6 col-6" style="margin-bottom: 0 !important;">
+                            <div class="erp-field erp-floating-group" style="margin-bottom: 0 !important;">
+                                <input type="text" class="form-control erp-input fw-bold text-primary bg-light" value="{{ next_pass_id }}" readonly tabindex="-1" placeholder=" ">
+                                <label class="erp-floating-label">Gate Pass ID <span class="text-muted">(Auto-Generated)</span></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-6" style="margin-bottom: 0 !important;">
+                            <div class="erp-field erp-floating-group" style="margin-bottom: 0 !important;">
+                                {{ form.entry_datetime }}
+                                <label class="erp-floating-label">Entry Time <span class="text-danger">*</span></label>
+                                {% if form.entry_datetime.errors %}
+                                <div class="text-danger small mt-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>{{ form.entry_datetime.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supplier Name Dropdown -->
+                    <div class="erp-field erp-floating-group">
+                        {{ form.supplier }}
+                        <label class="erp-floating-label">Supplier Name <span class="text-danger">*</span></label>
+                        {% if form.supplier.errors %}
+                        <div class="text-danger small mt-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>{{ form.supplier.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Vehicle Number Input -->
+                    <div class="erp-field erp-floating-group">
+                        {{ form.vehicle_number }}
+                        <label class="erp-floating-label">Vehicle Number <span class="text-danger">*</span></label>
+                        {% if form.vehicle_number.errors %}
+                        <div class="text-danger small mt-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>{{ form.vehicle_number.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Material Type Dropdown -->
+                    <div class="erp-field erp-floating-group">
+                        {{ form.material_type }}
+                        <label class="erp-floating-label">Material Type <span class="text-danger">*</span></label>
+                        {% if form.material_type.errors %}
+                        <div class="text-danger small mt-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>{{ form.material_type.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Driver Name Input -->
+                    <div class="erp-field erp-floating-group" style="margin-bottom: 5px !important;">
+                        {{ form.driver_name }}
+                        <label class="erp-floating-label">Driver Name <span class="text-danger">*</span></label>
+                        {% if form.driver_name.errors %}
+                        <div class="text-danger small mt-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>{{ form.driver_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Driver Photo Capture Panel -->
+                    <div class="photo-capture-panel py-2 px-3 mb-2">
+                        <label class="fw-bold text-dark mb-1" style="font-size: 13px;"><i class="bi bi-camera-fill me-1"></i> Driver Photo Capture</label>
+                        
+                        <!-- Webcam preview wrapper with fallback placeholder -->
+                        <div class="camera-preview-wrapper mb-2" id="cameraPreviewWrapper">
+                            <div class="photo-placeholder" id="photoPlaceholder">
+                                <i class="bi bi-person-bounding-box" style="font-size: 24px; margin-bottom: 2px;"></i>
+                                <span style="font-size: 10px;">Camera inactive</span>
+                            </div>
+                            <video id="webcamVideo" autoplay playsinline style="display:none;"></video>
+                            <canvas id="photoCanvas" style="display:none;"></canvas>
+                            <img id="capturedImage" class="captured-image-preview" style="display:none;" alt="Captured Driver">
+                        </div>
+
+                        <!-- Form Field connection -->
+                        {{ form.photo }}
+
+                        <!-- Compact Camera Actions & File Fallback Row -->
+                        <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 w-100">
+                            <div class="camera-actions-row m-0 d-flex gap-1">
+                                <button type="button" class="btn btn-erp btn-erp-primary" id="startCamBtn" style="font-size: 10px; padding: 2px 8px; height: 24px; min-height: 24px;"><i class="bi bi-power me-1"></i>Start Cam</button>
+                                <button type="button" class="btn btn-erp btn-erp-success" id="snapBtn" disabled style="font-size: 10px; padding: 2px 8px; height: 24px; min-height: 24px;"><i class="bi bi-camera me-1"></i>Snap</button>
+                                <button type="button" class="btn btn-erp btn-erp-danger" id="retakeBtn" style="display:none; font-size: 10px; padding: 2px 8px; height: 24px; min-height: 24px;"><i class="bi bi-arrow-clockwise me-1"></i>Retake</button>
+                            </div>
+                            <span class="text-muted" style="font-size: 10px;">— or —</span>
+                            <div>
+                                <button type="button" class="btn btn-erp btn-erp-light d-flex align-items-center justify-content-center gap-1" id="customUploadBtn" style="font-size: 10px; padding: 2px 8px; height: 24px; min-height: 24px; border: 1px dashed #2563eb !important; background-color: #eff6ff !important; color: #1e40af !important; font-weight: 600;">
+                                    <i class="bi bi-upload"></i>
+                                    <span id="uploadBtnText">Upload Photo</span>
+                                </button>
+                                <input type="file" id="manualPhotoUpload" accept="image/*" class="d-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Action Triggers Row 1 -->
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <button type="button" class="btn btn-erp btn-erp-primary" id="actionPrintPassBtn" style="padding: 6px 32px !important; font-weight: 600; font-size: 13px; border-radius: 6px;"><i class="bi bi-printer-fill me-1"></i> Print Gate Pass</button>
+                    </div>
+
+                    <!-- Large Block Save Entry Button -->
+                    <div class="mb-4">
+                        <button type="submit" class="btn btn-erp btn-erp-primary btn-save-large shadow-sm" id="saveEntryBtn">
+                            <i class="bi bi-floppy-fill me-1"></i> Save Entry
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Recent Entries Log Section -->
+            <div class="gate-recent-header">
+                <h3>Recent Entries Log</h3>
+            </div>
+            
+            <div class="erp-table-wrapper table-responsive mb-3">
+                <table class="table mb-0 erp-mini-table align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Gate Pass ID</th>
+                            <th style="width: 35%;">Supplier</th>
+                            <th style="width: 20%;">Vehicle Number</th>
+                            <th style="width: 20%;">Entry Time</th>
+                            <th style="width: 5%;" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="erp-table-body">
+                        {% for entry in recent_entries %}
+                        <tr style="cursor: pointer;" data-row-id="{{ entry.pk }}">
+                            <td class="fw-bold text-primary">{{ entry.gate_pass_id }}</td>
+                            <td>{{ entry.supplier.Account_Name }}</td>
+                            <td class="fw-semibold text-dark">{{ entry.vehicle_number }}</td>
+                            <td>{{ entry.entry_datetime|date:"m/d/Y h:i A" }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'dashboard:gate_entry_print' entry.pk %}" class="actions-cell-btn" title="Print Slip" target="_blank">
+                                    <i class="bi bi-printer" style="font-size: 12px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="erp-empty-row">
+                            <td colspan="5" class="text-center text-muted py-3 bg-light">No recent entries recorded. Check-in a vehicle above!</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bottom Button toolbar -->
+            <div class="d-flex justify-content-end align-items-center gap-2 border-top pt-3">
+                <button type="button" class="btn btn-erp btn-erp-light px-3" id="clearFormBtn">Clear Form</button>
+                <button type="button" class="btn btn-erp btn-erp-secondary px-3" id="printStipBtn">
+                    <i class="bi bi-printer-fill me-1"></i> Print Stip
+                </button>
+                <a href="{% url 'dashboard:alpha_list' %}" class="btn btn-erp btn-erp-danger px-3 text-decoration-none">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/jquery-3.6.0.min.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- 1. DATETIME FLAT PICKR & TIME CAPTURING ---
+        let fpInstance = null;
+        if (typeof flatpickr !== 'undefined') {
+            fpInstance = flatpickr("#id_entry_datetime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i:S",
+                allowInput: true,
+                disableMobile: true,
+                defaultDate: null
+            });
+        }
+
+        // Pad helpers
+        const pad = n => String(n).padStart(2, '0');
+
+        function captureCurrentTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = pad(now.getMonth() + 1);
+            const day = pad(now.getDate());
+            const hours = pad(now.getHours());
+            const minutes = pad(now.getMinutes());
+            const seconds = pad(now.getSeconds());
+            
+            const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            
+            const inputEl = document.getElementById('id_entry_datetime');
+            if (inputEl) {
+                inputEl.value = formattedDate;
+                if (fpInstance) {
+                    fpInstance.setDate(formattedDate);
+                }
+                // Visual feedback success toast
+                if (typeof showToast === 'function') {
+                    showToast('Captured local gate check-in time successfully!', 'success');
+                }
+            }
+        }
+
+        // Connect button triggers
+        const captureTimeBtn = document.getElementById('actionCaptureTimeBtn');
+        if (captureTimeBtn) {
+            captureTimeBtn.addEventListener('click', captureCurrentTime);
+        }
+
+        // Auto capture time on fresh page load to help user
+        if (!document.getElementById('id_entry_datetime').value) {
+            captureCurrentTime();
+        }
+
+
+        // --- 2. WEBCAM Photo Capture API (Canvas Resize System) ---
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('photoCanvas');
+        const image = document.getElementById('capturedImage');
+        const placeholder = document.getElementById('photoPlaceholder');
+        const hiddenPhotoInput = document.getElementById('id_photo');
+        
+        const startCamBtn = document.getElementById('startCamBtn');
+        const snapBtn = document.getElementById('snapBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const actionCapturePhotoBtn = document.getElementById('actionCapturePhotoBtn');
+
+        let streamInstance = null;
+
+        function startWebcam() {
+            // Re-enable Snap button, start stream
+            navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false })
+                .then(stream => {
+                    streamInstance = stream;
+                    video.srcObject = stream;
+                    
+                    placeholder.style.display = 'none';
+                    image.style.display = 'none';
+                    video.style.display = 'block';
+                    
+                    snapBtn.disabled = false;
+                    startCamBtn.style.display = 'none';
+                    retakeBtn.style.display = 'none';
+                    
+                    if (typeof showToast === 'function') {
+                        showToast('Camera stream initialized. Ready to snap photo!', 'success');
+                    }
+                })
+                .catch(err => {
+                    console.error('Camera stream access error: ', err);
+                    alert('Could not access webcam. Please verify permissions or use the manual file uploader fallback.');
+                });
+        }
+
+        function stopWebcam() {
+            if (streamInstance) {
+                streamInstance.getTracks().forEach(track => track.stop());
+                streamInstance = null;
+            }
+        }
+
+        function snapPhoto() {
+            if (!streamInstance) return;
+            
+            // Set canvas size strictly to low-res 320x240 for ultralight database footprint
+            const width = 320;
+            const height = 240;
+            canvas.width = width;
+            canvas.height = height;
+            
+            const context = canvas.getContext('2d');
+            // Draw current video frame onto canvas resized
+            context.drawImage(video, 0, 0, width, height);
+            
+            // Output Base64 string at low JPEG quality
+            const base64Data = canvas.toDataURL('image/jpeg', 0.65);
+            hiddenPhotoInput.value = base64Data;
+            
+            // Stop webcam stream immediately to preserve CPU
+            stopWebcam();
+            
+            // Render preview image
+            image.src = base64Data;
+            video.style.display = 'none';
+            image.style.display = 'block';
+            
+            snapBtn.style.display = 'none';
+            startCamBtn.style.display = 'none';
+            retakeBtn.style.display = 'inline-block';
+            
+            if (typeof showToast === 'function') {
+                showToast('Driver photo snapped and compressed successfully!', 'success');
+            }
+        }
+
+        function retakePhoto() {
+            hiddenPhotoInput.value = '';
+            image.style.display = 'none';
+            snapBtn.style.display = 'inline-block';
+            startWebcam();
+        }
+
+        // Binds camera buttons
+        startCamBtn.addEventListener('click', startWebcam);
+        if (actionCapturePhotoBtn) {
+            actionCapturePhotoBtn.addEventListener('click', () => {
+                // Auto click start camera or snap if webcam is running
+                if (!streamInstance && image.style.display === 'none') {
+                    startWebcam();
+                } else if (streamInstance) {
+                    snapPhoto();
+                }
+            });
+        }
+        snapBtn.addEventListener('click', snapPhoto);
+        retakeBtn.addEventListener('click', retakePhoto);
+
+
+        // --- 3. MANUAL Photo Upload Fallback (Canvas Compressor) ---
+        const manualUploadInput = document.getElementById('manualPhotoUpload');
+        const customUploadBtn = document.getElementById('customUploadBtn');
+        const uploadBtnText = document.getElementById('uploadBtnText');
+
+        if (customUploadBtn) {
+            customUploadBtn.addEventListener('click', function() {
+                manualUploadInput.click();
+            });
+        }
+        
+        manualUploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                if (uploadBtnText) uploadBtnText.textContent = 'Upload Photo';
+                if (customUploadBtn) {
+                    customUploadBtn.style.setProperty('border', '1px dashed #2563eb', 'important');
+                    customUploadBtn.style.setProperty('background-color', '#eff6ff', 'important');
+                    customUploadBtn.style.setProperty('color', '#1e40af', 'important');
+                }
+                return;
+            }
+
+            // Update custom button styling & show selected filename
+            if (uploadBtnText) {
+                let fileName = file.name;
+                if (fileName.length > 12) {
+                    fileName = fileName.substring(0, 9) + '...';
+                }
+                uploadBtnText.textContent = fileName;
+            }
+            if (customUploadBtn) {
+                customUploadBtn.style.setProperty('border', '1px solid #16a34a', 'important');
+                customUploadBtn.style.setProperty('background-color', '#f0fdf4', 'important');
+                customUploadBtn.style.setProperty('color', '#15803d', 'important');
+            }
+
+            // Stop webcam if active
+            stopWebcam();
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Create canvas to scale image
+                    const width = 320;
+                    const height = 240;
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const context = canvas.getContext('2d');
+                    // Draw image stretched to cover aspect bounds cleanly
+                    context.drawImage(img, 0, 0, width, height);
+
+                    const base64Data = canvas.toDataURL('image/jpeg', 0.65);
+                    hiddenPhotoInput.value = base64Data;
+
+                    // Display previews
+                    image.src = base64Data;
+                    placeholder.style.display = 'none';
+                    video.style.display = 'none';
+                    image.style.display = 'block';
+
+                    startCamBtn.style.display = 'inline-block';
+                    startCamBtn.textContent = 'Use Webcam';
+                    snapBtn.style.display = 'none';
+                    retakeBtn.style.display = 'none';
+
+                    if (typeof showToast === 'function') {
+                        showToast('Uploaded image scaled and loaded successfully!', 'success');
+                    }
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+
+        // --- 4. PRINT GATE PASS & PRINT STIP HANDLING ---
+        const printPassBtn = document.getElementById('actionPrintPassBtn');
+        const printStipBtn = document.getElementById('printStipBtn');
+        const form = document.getElementById('gateEntryForm');
+
+        // Print Pass acts as Save + Print trigger
+        printPassBtn.addEventListener('click', function(e) {
+            // Set flag or post parameters
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'print';
+            form.appendChild(actionInput);
+            
+            // Trigger form submission
+            form.submit();
+        });
+
+        // Print Stip triggers printout on the latest record
+        printStipBtn.addEventListener('click', function() {
+            // Find the print link on the first row of the recent logs table
+            const firstPrintBtn = document.querySelector('.erp-mini-table tbody tr a');
+            if (firstPrintBtn) {
+                // Open printing popup
+                window.open(firstPrintBtn.getAttribute('href'), '_blank');
+            } else {
+                alert('No entries found to print. Please fill out and save an entry first!');
+            }
+        });
+
+
+        // --- 5. CLEAN AND CLEAR INTERACTION ---
+        document.getElementById('clearFormBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all form fields?')) {
+                // Clear inputs
+                document.getElementById('id_vehicle_number').value = '';
+                document.getElementById('id_driver_name').value = '';
+                document.getElementById('id_supplier').value = '';
+                document.getElementById('id_material_type').value = '';
+                hiddenPhotoInput.value = '';
+                manualUploadInput.value = '';
+
+                // Reset custom upload button
+                if (uploadBtnText) uploadBtnText.textContent = 'Upload Photo';
+                if (customUploadBtn) {
+                    customUploadBtn.style.setProperty('border', '1px dashed #2563eb', 'important');
+                    customUploadBtn.style.setProperty('background-color', '#eff6ff', 'important');
+                    customUploadBtn.style.setProperty('color', '#1e40af', 'important');
+                }
+                
+                // Clear webcam preview
+                stopWebcam();
+                image.style.display = 'none';
+                video.style.display = 'none';
+                placeholder.style.display = 'flex';
+                
+                startCamBtn.style.display = 'inline-block';
+                startCamBtn.textContent = 'Start Cam';
+                snapBtn.style.display = 'inline-block';
+                snapBtn.disabled = true;
+                retakeBtn.style.display = 'none';
+
+                // Recapture time
+                captureCurrentTime();
+
+                if (typeof showToast === 'function') {
+                    showToast('Gate entry form cleared.', 'info');
+                }
+            }
+        });
+
+        // --- 6. FLOATING LABEL STATE TOGGLE SYSTEM ---
+        function toggleFloat(el) {
+            if (el.value && el.value.trim() !== '') {
+                el.closest('.erp-field').classList.add('is-filled');
+            } else {
+                el.closest('.erp-field').classList.remove('is-filled');
+            }
+        }
+
+        // Initialize state for all inputs and select fields
+        document.querySelectorAll('.erp-field .form-control, .erp-field .form-select, .erp-field .erp-input').forEach(el => {
+            // Initial check after timeout to allow browser autofill
+            setTimeout(() => toggleFloat(el), 100);
+            
+            // Re-check on input, change, and blur events
+            el.addEventListener('input', () => toggleFloat(el));
+            el.addEventListener('change', () => toggleFloat(el));
+            el.addEventListener('blur', () => toggleFloat(el));
+        });
+    });
+</script>
+{% endblock %}

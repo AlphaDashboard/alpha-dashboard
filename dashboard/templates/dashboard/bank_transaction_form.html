@@ -1,0 +1,486 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Bank Transaction - AccountMaster Management{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'vendor/select2.min.css' %}" rel="stylesheet" />
+<link href="{% static 'vendor/select2-bootstrap-5-theme.min.css' %}"
+    rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
+<link rel="stylesheet" href="/static/css/common/custom-combo.css?v={% now 'U' %}">
+<link rel="stylesheet" href="{% static 'css/pages/create-bank-transaction.css' %}?v={% now 'U' %}">
+<style>
+    /* Bulletproof table header color override matching the dark bluish ERP footer color */
+    #dynamicTable thead.erp-table-header th,
+    #dynamicTable th,
+    .erp-table th,
+    .erp-table-header th,
+    thead th.sticky-col-1,
+    thead th.sticky-col-2,
+    thead th.sticky-col-right {
+        background-color: transparent !important; /* Set to transparent so pseudo-element background is visible instead */
+        color: #ffffff !important;
+        border-color: #475569 !important;
+        border-top: none !important;
+    }
+
+    /* Set up relative positioning on header cells to position the pseudo-element background */
+    #dynamicTable thead th {
+        position: relative !important;
+    }
+
+    /* Use pseudo-element to render the header background so it respects border-radius rendering */
+    #dynamicTable thead th::before {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-color: #64748b !important;
+        z-index: -1 !important;
+    }
+
+    /* Reset all table cells and pseudo-element header/footer corners to square */
+    #dynamicTable th, 
+    #dynamicTable td,
+    #dynamicTable thead th:first-child,
+    #dynamicTable thead th:last-child,
+    #dynamicTable tfoot td:first-child,
+    #dynamicTable tfoot td:last-child,
+    #dynamicTable thead th:first-child::before,
+    #dynamicTable thead th:last-child::before,
+    #dynamicTable tfoot td:first-child::before,
+    #dynamicTable tfoot td:last-child::before {
+        border-radius: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    /* Set up relative positioning and transparent bg for footer cells */
+    #dynamicTable tfoot td {
+        position: relative !important;
+        background-color: transparent !important;
+    }
+
+    /* Use pseudo-element to render the footer background so it respects border-radius rendering */
+    #dynamicTable tfoot td::before {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-color: #64748b !important;
+        z-index: -1 !important;
+    }
+
+    /* Reset table wrapper border-radius to square (rely on card container for clipping) */
+    .erp-bank-table-wrapper {
+        border-radius: 0 !important;
+    }
+
+    /* Force hardware-accelerated clipping and transparent background on card container */
+    .erp-card-table-flex {
+        position: relative !important;
+        z-index: 1 !important;
+        overflow: hidden !important;
+        border-radius: 4px !important;
+        transform: translate3d(0, 0, 0) !important;
+        -webkit-transform: translate3d(0, 0, 0) !important;
+        background-color: transparent !important;
+    }
+
+    /* Pseudo-element to draw the card border ON TOP of sticky headers/footers to hide any corner overflow */
+    .erp-card-table-flex::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 4px !important;
+        pointer-events: none !important;
+        z-index: 20 !important;
+    }
+
+    /* Bottom breathing room so the table card doesn't touch the page edge */
+    .erp-container-flex {
+        padding-bottom: 10px !important;
+    }
+
+    /* Adjust input date to fit beautifully and prevent overlapping the icon */
+    input[type="date"].row-chq-date {
+        text-align: left !important;
+        padding-left: 6px !important;
+        padding-right: 4px !important;
+        font-size: 11.5px !important;
+    }
+    input[type="date"].row-chq-date::-webkit-calendar-picker-indicator {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<script>
+    window.APP_CONFIG = {
+        voucherNo: "{{ voucher_no }}",
+        isEditMode: {% if voucher_no %}true{% else %} false{% endif %},
+        isViewMode: {% if is_view_mode %}true{% else %}false{% endif %}
+    };
+</script>
+
+<div class="container-fluid px-3 erp-container-flex" style="max-width: 100% !important; margin: 0 auto; margin-top: -18px !important;">
+    <!-- Page Header (Normalized 38px height, transparent background to match design) -->
+    <div class="d-flex justify-content-between align-items-center erp-header-bar" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; margin-bottom: 4px !important; margin-top: 0 !important; width: 100% !important; box-sizing: border-box !important;">
+        <h2 class="erp-title mb-0" style="font-size: 16px; font-weight: 700; color: #111827; margin: 0 !important; line-height: normal !important;">
+            {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Bank Transaction
+        </h2>
+        <div class="d-flex align-items-center gap-2">
+            {% if is_view_mode %}
+                {% if prev_pk %}
+                    <a href="{% url 'dashboard:bank_transaction_edit' pk=prev_pk %}?mode=view" id="prevRecordBtn" class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </a>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1" disabled style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; opacity: 0.5;">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </button>
+                {% endif %}
+                
+                {% if next_pk %}
+                    <a href="{% url 'dashboard:bank_transaction_edit' pk=next_pk %}?mode=view" id="nextRecordBtn" class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1" disabled style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; opacity: 0.5;">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                {% endif %}
+                
+                <a href="{% url 'dashboard:bank_transaction_edit' pk=voucher_no %}" class="btn btn-sm btn-success erp-btn-edit-mode px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; background-color: #10b981; border-color: #10b981; color: white;">
+                    <i class="bi bi-pencil-square"></i> Edit <span class="text-white-50" style="font-size: 10px; margin-left: 2px;">F2</span>
+                </a>
+            {% endif %}
+            <a href="{% url 'dashboard:bank_transaction_list' %}" class="erp-btn-back">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-2"
+        style="border-radius: 6px; font-size: 13px;"></div>
+
+    <form id="transactionForm" class="erp-form-flex" novalidate>
+        <!-- Header Section -->
+        <div class="card shadow-sm mb-2 erp-card erp-card-header-flex" style="border-radius: 4px;">
+            <div class="card-body px-3 pb-1 pt-0">
+                <!-- Row 1 -->
+                <div class="row gx-3 gy-0 mb-0 justify-content-between" style="margin-top: -20px;">
+                    <div class="col-md-4 erp-voucher-no">
+                        <div class="erp-field erp-floating-group">
+                            <input type="text" id="voucherNo" name="voucher_no" class="erp-input erp-floating-input"
+                                placeholder=" " required {% if voucher_no %}value="{{voucher_no}}"{% endif %}>
+                            <label class="erp-floating-label">Voucher No.</label>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields for backend compatibility -->
+                    <input type="hidden" id="tranType" name="tran_type" value="BANK">
+                    <input type="hidden" id="status" name="status" value="1">
+
+                    <div class="col-md-4">
+                        <div class="erp-field erp-mode-section">
+                            <!-- <label class="erp-toggle-label">Mode</label> -->
+                            <input type="hidden" id="rpid" name="rpid" value="I">
+                            <div class="erp-mode-toggle">
+                                <button type="button" class="erp-toggle-btn issue-btn active"
+                                    onclick="document.getElementById('rpid').value='I'; this.classList.add('active'); this.nextElementSibling.classList.remove('active');">ISSUE</button>
+                                <button type="button" class="erp-toggle-btn deposit-btn"
+                                    onclick="document.getElementById('rpid').value='D'; this.classList.add('active'); this.previousElementSibling.classList.remove('active');">DEPOSIT</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 erp-voucher-date">
+                        <div class="erp-field erp-floating-group">
+                            <input type="datetime-local" id="date" name="date" class="erp-input erp-floating-input"
+                                placeholder=" " required>
+                            <label class="erp-floating-label">Voucher Date</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="row gx-3 gy-0 mb-1" style="margin-top: -4px;">
+                    <div class="col-md-12">
+                        <div class="erp-field erp-floating-group erp-narration-section">
+                            <input type="text" id="narration" name="narration" class="erp-input erp-floating-input"
+                                placeholder=" " maxlength="200">
+                            <label class="erp-floating-label">Narration</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="row gx-3 gy-0 mb-0 justify-content-between">
+                    <div class="col-md-6" style="width: 45%; flex: 0 0 45%;">
+                        <div class="erp-field erp-floating-group erp-floating">
+                            <select id="bankAccount" name="bank_account" class="erp-input erp-floating-input" required>
+                                <option value=""></option>
+                            </select>
+                            <label class="erp-floating-label">Bank Account <span class="text-danger">*</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="erp-field erp-floating-group erp-floating">
+                            <input type="text" id="currentBalance" class="erp-input erp-floating-input text-end fw-bold text-success"
+                                value="0.00" readonly style="background-color: #f8f9fa;" placeholder=" ">
+                            <label class="erp-floating-label">Current Balance</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="card shadow-sm mb-0 erp-card erp-card-table-flex"
+                style="border-radius: 4px; background: white; border: 1px solid #dee2e6;">
+                <div class="table-responsive erp-table-wrapper erp-bank-table-wrapper" id="mainTableScroll">
+                    <table class="table mb-0 erp-table" id="dynamicTable">
+                        <colgroup>
+                            <col style="width: 25%;">
+                            <col style="width: 13%;">
+                            <col style="width: 12%;">
+                            <col style="width: 13%;">
+                            <col style="width: 12%;">
+                            <col style="width: 13%;">
+                            <col style="width: 12%;">
+                        </colgroup>
+                        <thead class="sticky-top shadow-sm erp-table-header">
+                            <tr>
+                                <th>Account Name</th>
+                                <th>Cheque No.</th>
+                                <th>Dated</th>
+                                <th>Payee Bank</th>
+                                <th>Amount</th>
+                                <th>Remarks</th>
+                                <th class="border-end-0">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dynamicTableBody">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                        <tfoot class="erp-table-footer">
+                            <tr>
+                                <td colspan="4" class="text-end align-middle fw-bold border-0"
+                                    style="padding-right: 16px; letter-spacing: 0.5px; font-size: 11px;">TOTAL AMOUNT
+                                </td>
+                                <td class="align-middle border-0 p-0">
+                                    <input type="text" id="totalAmountDisplay"
+                                        class="form-control text-end fw-bold m-0 w-100 total-input" value="0.00"
+                                        readonly>
+                                </td>
+                                <td colspan="2" class="border-0 align-middle text-end p-0">
+                                    <button type="submit" id="submitBtn" form="transactionForm" class="erp-btn-save shadow-sm">
+                                        <span id="submitSpinner" class="spinner-border spinner-border-sm me-2 d-none"></span>
+                                        <i class="bi bi-floppy"></i>
+                                        Save
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+    </form>
+</div>
+
+<template id="rowTemplate">
+    <tr class="transaction-row">
+        <td class="p-0 border-end border-bottom align-middle bg-white">
+            <select class="form-select row-account-master erp-table-control" style="width: 100%;" required></select>
+        </td>
+        <td class="p-0 border-end border-bottom align-middle">
+            <input type="text" class="form-control row-chq-no erp-table-control text-center" maxlength="50">
+        </td>
+        <td class="p-0 border-end border-bottom align-middle">
+            <input type="date" class="form-control row-chq-date erp-table-control">
+        </td>
+        <td class="p-0 border-end border-bottom align-middle">
+            <input type="text" class="form-control row-payee-bank erp-table-control text-center" maxlength="100">
+        </td>
+        <td class="p-0 border-end border-bottom bg-white align-middle">
+            <input type="number" step="0.01"
+                class="form-control text-end fw-semibold text-dark row-amount erp-table-control" placeholder="0.00"
+                required>
+        </td>
+        <td class="p-0 border-end border-bottom align-middle">
+            <input type="text" class="form-control row-remarks erp-table-control" maxlength="200">
+        </td>
+        <td class="text-center p-0 align-middle bg-white border-bottom">
+            <div class="d-flex w-100 h-100 align-items-center justify-content-center gap-2">
+                <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row">
+                    <i class="bi bi-plus-lg" style="font-size: 16px; font-weight: bold;"></i>
+                </button>
+                <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1"
+                    title="Delete Row">
+                    <i class="bi bi-trash" style="font-size: 15px;"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<!-- CREATE NEW ACCOUNT_MASTER MODAL -->
+<div class="modal fade" id="createAccountMasterModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <style>
+        .erp-modal-input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .erp-btn-close {
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+        }
+
+        .erp-btn-close:hover {
+            opacity: 1;
+        }
+    </style>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+        <form method="post" action="{% url 'dashboard:alpha_create' %}"
+            class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Create New
+                    AccountMaster</h5>
+                <button type="button" class="btn-close position-absolute erp-btn-close"
+                    style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                {% csrf_token %}
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Group ID <span
+                                class="text-secondary">(optional)</span></label>
+                        <input type="number" name="groupID" class="form-control erp-modal-input"
+                            placeholder="Enter Group ID"
+                            style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                        <small class="text-muted mt-1 d-block" style="font-size: 11px;">Numeric group identifier.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Category <span
+                                class="text-danger">*</span></label>
+                        <select name="category" class="form-select erp-modal-input"
+                            style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                            <option value="" disabled selected>---------</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Account Name <span
+                            class="text-danger">*</span></label>
+                    <input type="text" name="Account_Name" class="form-control erp-modal-input"
+                        placeholder="Enter Account Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Display Name <span
+                            class="text-danger">*</span></label>
+                    <input type="text" name="display_name" class="form-control erp-modal-input"
+                        placeholder="Enter Display Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+
+                <div class="row g-2 mb-1">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Opening Balance <span class="text-secondary">(optional)</span></label>
+                        <input type="number" step="0.01" name="cl_bal" value="0.00" class="form-control erp-modal-input"
+                            placeholder="0.00"
+                            style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Status</label>
+                        <select name="is_active" class="form-select erp-modal-input"
+                            style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                            <option value="true" selected>Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end"
+                style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px;"
+                    data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
+                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Record
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Load JS Module -->
+<script type="module" src="/static/js/modules/pages/bank-transaction-create.js?v={% now 'U' %}"></script>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'vendor/select2.min.js' %}"></script>
+<script type="module" src="/static/js/common-dropdown.js?v={% now 'U' %}"></script>
+<script type="module" src="/static/js/custom-combo.js?v={% now 'U' %}"></script>
+
+<!-- Floating Label Auto-Fill Logic -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function toggleFloat(el) {
+            if (el.value && el.value.trim() !== '') {
+                el.closest('.erp-floating').classList.add('is-filled');
+            } else {
+                el.closest('.erp-floating').classList.remove('is-filled');
+            }
+        }
+
+        // Listeners for standard inputs
+        document.querySelectorAll('.erp-floating .form-control, .erp-floating .form-select, .erp-floating .erp-input, .erp-floating .erp-floating-input').forEach(el => {
+            // Initial check
+            setTimeout(() => toggleFloat(el), 100);
+
+            // Event bindings
+            el.addEventListener('input', () => toggleFloat(el));
+            el.addEventListener('change', () => toggleFloat(el));
+            el.addEventListener('blur', () => toggleFloat(el));
+        });
+
+        // Listeners for Select2 if loaded
+        if (typeof jQuery !== 'undefined') {
+            setTimeout(function () {
+                jQuery('#bankAccount').on('change', function () {
+                    toggleFloat(this);
+                });
+                // Initial check for select2
+                toggleFloat(document.getElementById('bankAccount'));
+            }, 500);
+        }
+    });
+</script>
+{% endblock %}

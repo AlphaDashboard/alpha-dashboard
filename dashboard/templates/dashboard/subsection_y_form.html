@@ -1,0 +1,715 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Entry - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'vendor/select2.min.css' %}" rel="stylesheet" />
+<link href="{% static 'vendor/select2-bootstrap-5-theme.min.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
+<link rel="stylesheet" href="/static/css/common/custom-combo.css?v={% now 'U' %}">
+<style>
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .section-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    .summary-box {
+        background: #eef4ff;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    /* Wrapper container */
+    .erp-form-group {
+        position: relative !important;
+    }
+
+    /* Labels inside floating input system */
+    .erp-label-required, .erp-label-optional {
+        position: absolute;
+        left: 12px;
+        top: 9px;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        pointer-events: none;
+        transition: 0.15s ease all;
+        background: #ffffff;
+        padding: 0 6px;
+        z-index: 10 !important;
+        margin-bottom: 0 !important;
+        line-height: 1.4 !important;
+    }
+    .erp-label-required {
+        color: #0d6efd !important;
+    }
+    .erp-label-required::after {
+        content: " *";
+        color: #dc3545 !important;
+    }
+    .erp-label-optional {
+        color: #64748b !important;
+    }
+
+    /* Floating label trigger selectors */
+    .erp-form-group.floating .erp-label-required,
+    .erp-form-group.floating .erp-label-optional,
+    .erp-form-group input:focus ~ label,
+    .erp-form-group input:not(:placeholder-shown) ~ label,
+    .erp-form-group textarea:focus ~ label,
+    .erp-form-group textarea:not(:placeholder-shown) ~ label,
+    .erp-form-group select:focus ~ label {
+        top: -9px !important;
+        left: 10px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Active focus color indicator */
+    .erp-form-group input:focus ~ label,
+    .erp-form-group textarea:focus ~ label,
+    .erp-form-group select:focus ~ label,
+    .erp-form-group .select2-container--focus ~ label {
+        color: #2563eb !important;
+    }
+
+    /* Hide Select2 placeholder when select is not floating (empty & unfocused) */
+    .erp-form-group:not(.floating) .select2-selection__placeholder {
+        opacity: 0 !important;
+        transition: opacity 0.15s ease;
+    }
+
+    /* Show Select2 placeholder when floating */
+    .erp-form-group.floating .select2-selection__placeholder {
+        opacity: 1 !important;
+    }
+
+    /* Input & Select heights and borders */
+    .form-control, .form-select {
+        height: 38px !important;
+        font-size: 13px !important;
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #334155 !important;
+        background-color: #fff !important;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        outline: none !important;
+    }
+    .form-control[readonly], .form-control:disabled, .form-select:disabled {
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+        cursor: not-allowed;
+    }
+
+    /* Select2 integration matching height and borders */
+    .select2-container--bootstrap-5 .select2-selection {
+        height: 38px !important;
+        font-size: 13px !important;
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #fff !important;
+    }
+    .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+    }
+    .select2-container--bootstrap-5.select2-container--focus .select2-selection {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Calendar icon inside date inputs */
+    .flatpickr-date {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' class='bi bi-calendar3' viewBox='0 0 16 16'%3E%3Cpath d='M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z'/%3E%3Cpath d='M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 12px center !important;
+        background-size: 16px 16px !important;
+        padding-right: 36px !important;
+    }
+
+    /* Back button styling */
+    .erp-btn-back {
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.15s ease;
+    }
+    .erp-btn-back:hover { color: #111827; }
+
+    /* Validation styles */
+    .invalid-feedback-erp {
+        color: #ef4444;
+        font-size: 11px;
+        margin-top: 3px;
+        display: block;
+        font-weight: 500;
+    }
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+        box-shadow: 0 0 0 2px rgba(239,68,68,.12) !important;
+    }
+    #validationAlert {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444 !important;
+        color: #991b1b;
+        border-radius: 6px;
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+
+    /* Scrollable items table wrapper */
+    .erp-items-table-wrapper {
+        max-height: 270px !important;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+        position: relative !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+    }
+
+    /* Items table custom styles */
+    #itemsTable thead th {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+        background-color: #e2e8f0 !important;
+        color: #334155 !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 12px 10px;
+        vertical-align: middle;
+    }
+    .erp-th-required {
+        color: #0d6efd !important;
+    }
+    .erp-th-required::after {
+        content: " *";
+        color: #dc3545 !important;
+    }
+    .erp-th-optional {
+        color: #4b5563 !important;
+    }
+
+    /* Grid row layout elements */
+    #itemsTable tbody tr { height: 44px !important; }
+    #itemsTable tbody td {
+        height: 44px !important;
+        padding: 6px 8px !important;
+        vertical-align: middle !important;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f1f5f9;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+    #itemsTable tbody td select.form-select,
+    #itemsTable tbody td input.form-control {
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Style the footer cells directly to override bootstrap defaults */
+    #itemsTable tfoot td {
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
+        border-top: 2px solid #cbd5e1 !important;
+    }
+
+    /* Ensure Select2 single selection inside the grid matches 32px height */
+    #itemsTable .select2-container--bootstrap-5 .select2-selection,
+    #itemsTable .select2-container--bootstrap-5 .select2-selection--single {
+        height: 32px !important;
+        min-height: 32px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        border: 1px solid #cbd5e1 !important;
+        align-items: center !important;
+        display: flex !important;
+    }
+    #itemsTable .select2-container--bootstrap-5 .select2-selection .select2-selection__rendered,
+    #itemsTable .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        line-height: 30px !important;
+        padding-left: 8px !important;
+        color: #334155 !important;
+    }
+    #itemsTable .select2-container--bootstrap-5 .select2-selection .select2-selection__arrow,
+    #itemsTable .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+        height: 30px !important;
+    }
+
+    /* Grid Action Buttons */
+    .grid-action-btn {
+        width: 28px !important;
+        height: 28px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        border: 1px solid #cbd5e1 !important;
+        background-color: #ffffff !important;
+        color: #64748b !important;
+    }
+    
+    .grid-action-btn:hover {
+        background-color: #f1f5f9 !important;
+        color: #334155 !important;
+    }
+    
+    .grid-action-btn.add-row-btn:hover {
+        color: #10b981 !important;
+        background-color: #ecfdf5 !important;
+        border-color: #a7f3d0 !important;
+    }
+
+    .grid-action-btn.delete-row-btn:hover {
+        color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+        border-color: #fca5a5 !important;
+    }
+
+    /* Column separating borders exactly like Subsection B */
+    #itemsTable th, #itemsTable td {
+        border-right: 1px solid #e2e8f0 !important;
+    }
+    #itemsTable th:last-child, #itemsTable td:last-child {
+        border-right: none !important;
+    }
+    
+    /* Inline action bar attached below the item section */
+    .inline-action-bar {
+        background-color: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        border-radius: 0 0 10px 10px;
+        padding: 8px 16px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 14px;
+    }
+
+    /* Tab Styling exactly like second UI */
+    .nav-tabs {
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+    .nav-tabs .nav-link {
+        border: none !important;
+        color: #4b5563 !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        letter-spacing: 0.5px;
+        padding: 12px 16px !important;
+        background: transparent !important;
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd !important;
+        border-bottom: 2px solid #0d6efd !important;
+        background: transparent !important;
+    }
+    .nav-tabs .nav-link i {
+        font-size: 14px;
+        margin-right: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 pb-5">
+    
+    <!-- TOP HEADER & NAV BAR -->
+    <div class="d-flex align-items-center justify-content-between mb-2 mt-2">
+        <div>
+            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">
+                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}New{% endif %} Raw Material Purchase
+            </h2>
+            <p class="text-muted m-0 mt-1" style="font-size: 13px;">
+                Manage purchase headers, item lines, and dynamic state tax calculations.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            {% if is_view_mode %}
+                {% if prev_pk %}
+                    <a href="{% url 'dashboard:subsection_y_edit' pk=prev_pk %}?mode=view" id="prevRecordBtn" class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </a>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1" disabled style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; opacity: 0.5;">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </button>
+                {% endif %}
+                
+                {% if next_pk %}
+                    <a href="{% url 'dashboard:subsection_y_edit' pk=next_pk %}?mode=view" id="nextRecordBtn" class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1" disabled style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; opacity: 0.5;">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                {% endif %}
+                
+                <a href="{% url 'dashboard:subsection_y_edit' pk=voucher_no %}" class="btn btn-sm btn-success erp-btn-edit-mode px-2 py-1" style="height: 28px; line-height: 14px; font-size: 12px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; background-color: #10b981; border-color: #10b981; color: white;">
+                    <i class="bi bi-pencil-square"></i> Edit <span class="text-white-50" style="font-size: 10px; margin-left: 2px;">F2</span>
+                </a>
+            {% endif %}
+            <a href="{% url 'dashboard:subsection_y_list' %}" class="erp-btn-back">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN FORM BODY -->
+    <form id="voucherForm" class="needs-validation" novalidate>
+        
+        <!-- Validation Alert Banner -->
+        <div class="alert alert-danger d-none mb-4" id="validationAlert" role="alert">
+            <div class="d-flex">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                <div id="validationAlertMessage">Please correct the errors marked in red below.</div>
+            </div>
+        </div>
+
+        <!-- HEADER SECTION CARD -->
+        <div class="card p-4 mb-4">
+            <h5 class="section-title mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #edf2f7; padding-bottom: 8px;">
+                Header Information
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <div class="mb-3 form-group erp-form-group">
+                        <input type="text" id="voucherNo" name="VoucherNo" class="form-control" placeholder=" " {% if is_view_mode or voucher_no %}readonly{% endif %}>
+                        <label for="voucherNo" class="erp-label-optional">Voucher No</label>
+                        <div class="invalid-feedback-erp" id="val_voucherNo"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3 form-group erp-form-group">
+                        <input type="text" id="voucherDate" name="VoucherDate" class="form-control flatpickr-date" placeholder=" " {% if is_view_mode %}disabled{% endif %} required>
+                        <label for="voucherDate" class="erp-label-required">Voucher Date</label>
+                        <div class="invalid-feedback-erp" id="val_voucherDate"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 form-group erp-form-group">
+                        <select id="purchaseGroup" name="PurSalGroupID" class="form-select select2-init" data-placeholder="Select Group" {% if is_view_mode %}disabled{% endif %} required>
+                            <option value=""></option>
+                            {% for g in purchase_groups %}
+                            <option value="{{ g.SalPurGroupID }}" data-gst="{{ g.IsGSTApplicableY1N0|yesno:'1,0' }}" data-igst="{{ g.IGST1_CGST0|yesno:'1,0' }}">{{ g.SalPurGroupName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="purchaseGroup" class="erp-label-required">Purchase Group</label>
+                        <div class="invalid-feedback-erp" id="val_purchaseGroup"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3 form-group erp-form-group">
+                        <input type="text" id="orderNo" name="OrderNo" class="form-control" placeholder=" " {% if is_view_mode or voucher_no %}readonly{% endif %} required>
+                        <label for="orderNo" class="erp-label-required">PO / Order No</label>
+                        <div class="invalid-feedback-erp" id="val_orderNo"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 form-group erp-form-group">
+                        <input type="text" id="orderDate" name="OrderDate" class="form-control flatpickr-date" placeholder=" " {% if is_view_mode %}disabled{% endif %} required>
+                        <label for="orderDate" class="erp-label-required">PO / Order Date</label>
+                        <div class="invalid-feedback-erp" id="val_orderDate"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3 form-group erp-form-group">
+                        <select id="supplier" name="PartyID" class="form-select select2-init" data-placeholder="Search Supplier" {% if is_view_mode %}disabled{% endif %} required>
+                            <option value=""></option>
+                            {% for s in suppliers %}
+                            <option value="{{ s.id }}">{{ s.Account_Name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="supplier" class="erp-label-required">Supplier Name</label>
+                        <div class="invalid-feedback-erp" id="val_supplier"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 form-group erp-form-group">
+                        <select id="broker" name="BrokerID" class="form-select select2-init" data-placeholder="Select Broker" {% if is_view_mode %}disabled{% endif %}>
+                            <option value=""></option>
+                            {% for b in brokers %}
+                            <option value="{{ b.BrokerID }}">{{ b.BrokerName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="broker" class="erp-label-optional">Broker Name</label>
+                        <div class="invalid-feedback-erp" id="val_broker"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 form-group erp-form-group">
+                        <select id="zone" name="ZoneID" class="form-select select2-init" data-placeholder="Select Zone" {% if is_view_mode %}disabled{% endif %}>
+                            <option value=""></option>
+                            {% for z in zones %}
+                            <option value="{{ z.ZoneID }}">{{ z.ZoneName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="zone" class="erp-label-optional">Zone Name</label>
+                        <div class="invalid-feedback-erp" id="val_zone"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS & GRID CARD -->
+        <div class="card mb-4">
+            <div class="card-header bg-white border-bottom p-0">
+                <ul class="nav nav-tabs border-0 px-3" id="formTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-3 fw-bold text-uppercase" style="font-size:11px; letter-spacing:0.5px;" id="items-tab" data-bs-toggle="tab" data-bs-target="#items-pane" type="button" role="tab" aria-controls="items-pane" aria-selected="true">
+                            <i class="bi bi-box-seam me-1"></i> Item Details
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-3 fw-bold text-uppercase" style="font-size:11px; letter-spacing:0.5px;" id="terms-tab" data-bs-toggle="tab" data-bs-target="#terms-pane" type="button" role="tab" aria-controls="terms-pane" aria-selected="false">
+                            <i class="bi bi-file-earmark-ruled me-1"></i> Delivery & Terms
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-3 fw-bold text-uppercase" style="font-size:11px; letter-spacing:0.5px;" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-pane" type="button" role="tab" aria-controls="summary-pane" aria-selected="false">
+                            <i class="bi bi-calculator me-1"></i> Tax Summary & Expense
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card-body p-4">
+                <div class="tab-content" id="formTabsContent">
+                    
+                    <!-- TAB 1: ITEMS DETAIL GRID -->
+                    <div class="tab-pane fade show active" id="items-pane" role="tabpanel" aria-labelledby="items-tab" tabindex="0">
+                        <div class="table-responsive border rounded erp-items-table-wrapper" style="overflow-x: auto;">
+                            <table class="table mb-0 align-middle" id="itemsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;" class="text-center erp-th-optional">#</th>
+                                        <th style="width: 28%;" class="erp-th-required">Item Code & Name</th>
+                                        <th style="width: 10%; text-align: right;" class="erp-th-optional pe-3">Bags</th>
+                                        <th style="width: 12%; text-align: right;" class="erp-th-required pe-3">Weight (MT)</th>
+                                        <th style="width: 10%; text-align: right;" class="erp-th-optional pe-3">Unit Weight (MT)</th>
+                                        <th style="width: 12%; text-align: right;" class="erp-th-required pe-3">Unit Rate (₹)</th>
+                                        <th style="width: 15%; text-align: right;" class="erp-th-optional pe-3">Amount (₹)</th>
+                                        <th style="width: 8%;" class="text-center erp-th-optional">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemGridBody">
+                                    <!-- Dynamic rows will be injected by subsection-y-create.js -->
+                                </tbody>
+                                <tfoot class="fw-bold border-top" style="background-color: #e2e8f0 !important;">
+                                    <tr>
+                                        <td colspan="2" class="text-end pe-4 align-middle" style="font-size: 11px; text-transform: uppercase; color: #475569; font-weight: 700; letter-spacing: 0.5px;">Total</td>
+                                        <td class="text-end align-middle pe-3" style="font-size: 12px; font-weight: 700; color: #1e293b;">
+                                            <span id="gridTotalBags">0</span>
+                                        </td>
+                                        <td class="text-end align-middle pe-3" style="font-size: 12px; font-weight: 700; color: #1e293b;">
+                                            <span id="gridTotalWeight">0.000</span>
+                                        </td>
+                                        <td class="align-middle"></td>
+                                        <td class="align-middle"></td>
+                                        <td class="text-end align-middle pe-3" style="font-size: 12px; font-weight: 700; color: #1e293b;">
+                                            <span id="gridTotalAmount">0.00</span>
+                                        </td>
+                                        <td class="align-middle"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- TAB 2: DELIVERY & ERP TERMS -->
+                    <div class="tab-pane fade" id="terms-pane" role="tabpanel" aria-labelledby="terms-tab" tabindex="0">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <input type="text" id="deliveryLocation" name="DeliveryLocation" class="form-control" placeholder=" " {% if is_view_mode %}readonly{% endif %}>
+                                    <label for="deliveryLocation" class="erp-label-optional">Delivery Location</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <input type="text" id="specialInstructions" name="SpecialInstructions" class="form-control" placeholder=" " {% if is_view_mode %}readonly{% endif %}>
+                                    <label for="specialInstructions" class="erp-label-optional">Special Instructions / Remarks</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <input type="text" id="internalNotes" name="InternalNotes" class="form-control" placeholder=" " maxlength="1" {% if is_view_mode %}readonly{% endif %}>
+                                    <label for="internalNotes" class="erp-label-optional">Internal Notes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <select id="delTerms" name="DelTermsID" class="form-select select2-init" data-placeholder="Select Delivery Terms" {% if is_view_mode %}disabled{% endif %}>
+                                        <option value=""></option>
+                                        {% for opt in delivery_terms_options %}
+                                        <option value="{{ opt.id }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="delTerms" class="erp-label-optional">Delivery Terms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <select id="paymentTerms" name="PaymentTermsID" class="form-select select2-init" data-placeholder="Select Payment Terms" {% if is_view_mode %}disabled{% endif %}>
+                                        <option value=""></option>
+                                        {% for opt in payment_terms_options %}
+                                        <option value="{{ opt.id }}" data-days="{{ opt.days }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="paymentTerms" class="erp-label-optional">Payment Terms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <input type="number" id="creditDays" name="CreditDays" class="form-control" placeholder=" " min="0" {% if is_view_mode %}readonly{% endif %}>
+                                    <label for="creditDays" class="erp-label-optional">Credit Days</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <select id="freightTerm" name="FreightTermID" class="form-select select2-init" data-placeholder="Select Freight Term" {% if is_view_mode %}disabled{% endif %}>
+                                        <option value=""></option>
+                                        {% for opt in freight_terms_options %}
+                                        <option value="{{ opt.id }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="freightTerm" class="erp-label-optional">Freight Term</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-0 form-group erp-form-group">
+                                    <select id="incoterm" name="IncotermID" class="form-select select2-init" data-placeholder="Select Incoterm" {% if is_view_mode %}disabled{% endif %}>
+                                        <option value=""></option>
+                                        {% for opt in incoterms_options %}
+                                        <option value="{{ opt.id }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="incoterm" class="erp-label-optional">Incoterm</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- TAB 3: TAX SUMMARY & EXPENSE -->
+                    <div class="tab-pane fade" id="summary-pane" role="tabpanel" aria-labelledby="summary-tab" tabindex="0">
+                        <div class="row g-4 justify-content-start">
+                            <div class="col-md-4">
+                                <div class="summary-box">
+                                    <h6 class="fw-bold mb-3" style="font-size:12px; color:#475569; border-bottom:1px solid #cbd5e1; padding-bottom:6px;">TAX & EXPENSE DETAILS</h6>
+                                    
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted" style="font-size:13px;">Basic Gross Total:</span>
+                                        <span class="fw-semibold text-dark" id="summaryGross">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted" style="font-size:13px;">CGST (State Split):</span>
+                                        <span class="fw-semibold text-dark" id="summaryCGST">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted" style="font-size:13px;">SGST (State Split):</span>
+                                        <span class="fw-semibold text-dark" id="summarySGST">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span class="text-muted" style="font-size:13px;">IGST (Inter-state):</span>
+                                        <span class="fw-semibold text-dark" id="summaryIGST">0.00</span>
+                                    </div>
+                                    
+                                    <div class="mb-3 mt-2 form-group erp-form-group">
+                                        <input type="number" id="freightExpense" name="FreightExpense" class="form-control text-end fw-semibold" placeholder=" " value="0.00" step="0.01" {% if is_view_mode %}readonly{% endif %}>
+                                        <label for="freightExpense" class="erp-label-optional">Freight Expense</label>
+                                    </div>
+
+                                    <hr class="my-3">
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-primary" style="font-size:14px;">GRAND TOTAL:</span>
+                                        <span class="fw-bold text-primary fs-5" id="summaryGrandTotal">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Inline Action Bar — attached below item tabs -->
+        <div class="inline-action-bar">
+            <div class="d-flex align-items-center">
+                <span class="text-muted fw-semibold" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Total Amount (₹)</span>
+                <span id="bottomGrandTotal" class="fw-bold text-dark ms-2 me-3" style="font-size: 14px;">0.00</span>
+            </div>
+            {% if not is_view_mode %}
+            <button type="button" id="saveVoucherBtn" class="btn btn-success fw-semibold d-flex align-items-center gap-1" style="height: 32px; font-size:12px; border-radius:5px; padding: 0 14px; background-color: #198754; border-color: #198754;">
+                <i class="bi bi-floppy" style="font-size:12px;"></i> Save Record
+            </button>
+            {% else %}
+            <a href="{% url 'dashboard:subsection_y_edit' voucher_no %}" class="btn btn-primary fw-semibold d-flex align-items-center gap-1 erp-btn-edit-mode" style="height: 32px; font-size:12px; border-radius:5px; padding: 0 14px; text-decoration: none; background-color: #2563eb; border-color: #2563eb;">
+                <i class="bi bi-pencil-square" style="font-size:12px;"></i> Edit Mode
+            </a>
+            {% endif %}
+        </div>
+
+    </form>
+</div>
+
+<!-- DATA CONFIG INJECTIONS FOR JS MODULE -->
+<script>
+    window.APP_CONFIG = {
+        voucherNo: "{{ voucher_no }}",
+        isEditMode: {% if voucher_no %}true{% else %}false{% endif %},
+        isViewMode: {% if is_view_mode %}true{% else %}false{% endif %},
+        materials: [
+            {% for it in items %}
+            {
+                id: {{ it.id }},
+                text: "{{ it.material_code }} - {{ it.material_name }}",
+                unit_weight: "{{ it.unit_weight|default:'0' }}",
+                PurchaseGST: "{{ it.PurchaseGST|default:'0' }}",
+                IsRateInclGSTY1N0: {% if it.IsRateInclGSTY1N0 %}true{% else %}false{% endif %}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+</script>
+
+<!-- DEFER SCRIPTS -->
+<script src="{% static 'vendor/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'vendor/select2.min.js' %}"></script>
+<script type="module" src="{% static 'js/modules/pages/subsection-y-create.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

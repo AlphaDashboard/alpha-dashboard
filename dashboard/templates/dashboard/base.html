@@ -1,0 +1,650 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AccountMaster Management{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'vendor/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.css' %}">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    
+    <!-- Master Enterprise CSS (Linked directly with cache busting to prevent caching) -->
+    <link rel="stylesheet" href="{% static 'css/common/layout.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'css/common/forms.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'css/common/tables.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'css/common/buttons.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'css/common/utilities.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'css/common/erp-data-table.css' %}?v={% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'vendor/flatpickr.min.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="sidebar-collapsed">
+
+    <!-- Page Loader -->
+    <div class="page-loader" id="globalLoader">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    {% include 'dashboard/includes/navbar.html' %}
+    {% include 'dashboard/includes/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Modern Toast Messages System -->
+        {% if messages %}
+            <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1060;">
+                {% for message in messages %}
+                    <div class="toast align-items-center text-white bg-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}primary{% endif %} border-0 mb-2 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body fw-bold d-flex align-items-center">
+                                {% if message.tags == 'error' %}<i class="bi bi-x-circle-fill me-2 fs-5"></i>{% elif message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 fs-5"></i>{% endif %}
+                                {{ message }}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div id="dynamic-content-area" class="content-fade">
+            <div id="main-dashboard-content">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Dynamic Sub-section Placeholder -->
+            <div id="placeholder-content" style="display: none;" class="mt-4">
+                <!-- JS injected content goes here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/flatpickr.min.js' %}"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        // Ensure sidebar starts collapsed by default
+        document.body.classList.add('sidebar-collapsed');
+
+        // --- Sidebar Hover Auto-Expand when Collapsed ---
+        sidebar.addEventListener('mouseenter', function() {
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                sidebar.classList.add('sidebar-hover-expanded');
+            }
+        });
+        
+        sidebar.addEventListener('mouseleave', function() {
+            sidebar.classList.remove('sidebar-hover-expanded');
+        });
+
+        // --- Submenu Hover Expand/Collapse (Settings, Section 1, Section 2, Section 3) ---
+        document.querySelectorAll('.sidebar .nav-item').forEach(navItem => {
+            const collapseEl = navItem.querySelector('.collapse');
+            const trigger = navItem.querySelector('.section-link');
+            if (collapseEl && trigger) {
+                const hasActiveLink = collapseEl.querySelector('.active-link');
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+                
+                navItem.addEventListener('mouseenter', function() {
+                    if (window.innerWidth > 768) {
+                        // Accordion-like behavior: collapse other non-active submenus on enter
+                        document.querySelectorAll('.sidebar .nav-item').forEach(otherItem => {
+                            if (otherItem !== navItem) {
+                                const otherCollapseEl = otherItem.querySelector('.collapse');
+                                if (otherCollapseEl && !otherCollapseEl.querySelector('.active-link')) {
+                                    const otherBsCollapse = bootstrap.Collapse.getOrCreateInstance(otherCollapseEl, { toggle: false });
+                                    otherBsCollapse.hide();
+                                }
+                            }
+                        });
+                        bsCollapse.show();
+                    }
+                });
+
+                navItem.addEventListener('mouseleave', function() {
+                    if (window.innerWidth > 768 && !collapseEl.querySelector('.active-link')) {
+                        bsCollapse.hide();
+                    }
+                });
+            }
+        });
+        
+        // --- Mobile Sidebar Toggle ---
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            if (sidebar.classList.contains('show')) {
+                overlay.classList.add('show-overlay');
+            } else {
+                overlay.classList.remove('show-overlay');
+            }
+        });
+        
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show-overlay');
+        });
+
+        // Rotate carets AND toggle folder icons on collapse
+        document.querySelectorAll('.sidebar .collapse').forEach(collapseEl => {
+            collapseEl.addEventListener('show.bs.collapse', function (e) {
+                const triggerId = e.target.id;
+                const link = document.querySelector(`a[href="#${triggerId}"]`);
+                if (link) {
+                    const icon = link.querySelector('.caret-icon');
+                    if (icon) icon.style.transform = 'rotate(180deg)';
+                    
+                    const folderIcon = link.querySelector('.bi-folder2');
+                    if (folderIcon) {
+                        folderIcon.classList.replace('bi-folder2', 'bi-folder2-open');
+                    }
+                }
+            });
+            collapseEl.addEventListener('hide.bs.collapse', function (e) {
+                const triggerId = e.target.id;
+                const link = document.querySelector(`a[href="#${triggerId}"]`);
+                if (link) {
+                    const icon = link.querySelector('.caret-icon');
+                    if (icon) icon.style.transform = 'rotate(0deg)';
+                    
+                    const folderIcon = link.querySelector('.bi-folder2-open');
+                    if (folderIcon) {
+                        folderIcon.classList.replace('bi-folder2-open', 'bi-folder2');
+                    }
+                }
+            });
+        });
+        
+        // Init shown carets and icons
+        document.querySelectorAll('.sidebar .collapse.show').forEach(el => {
+            const link = document.querySelector(`a[href="#${el.id}"]`);
+            if (link) {
+                const icon = link.querySelector('.caret-icon');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+                const folderIcon = link.querySelector('.bi-folder2');
+                if (folderIcon) folderIcon.classList.replace('bi-folder2', 'bi-folder2-open');
+            }
+        });
+
+        // Dynamic Content Loading with Smooth Cross-Fade
+        document.querySelectorAll('.sub-section-link[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Clear active states
+                document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active-link'));
+                this.classList.add('active-link');
+                
+                const section = this.getAttribute('data-section');
+                const subsection = this.getAttribute('data-subsection');
+                const contentArea = document.getElementById('dynamic-content-area');
+                
+                // Initiate fade out
+                contentArea.classList.add('hidden');
+                
+                setTimeout(() => {
+                    // Hide main content
+                    document.getElementById('main-dashboard-content').style.display = 'none';
+                    
+                    // Show dynamic placeholder
+                    const placeholder = document.getElementById('placeholder-content');
+                    placeholder.style.display = 'block';
+                    
+                    // Inject aesthetic skeleton/placeholder
+                    placeholder.innerHTML = `
+                        <div class="row min-vh-50 justify-content-center align-items-center mt-5">
+                            <div class="col-md-8 text-center py-5 bg-white rounded-4 shadow-sm border border-light" style="transform: translateY(0);">
+                                <div class="display-3 text-primary mb-4" style="opacity: 0.8;"><i class="bi bi-cpu"></i></div>
+                                <h2 class="fw-bold text-dark">${subsection}</h2>
+                                <p class="text-muted fs-5 mb-4">Navigated to <strong>${section}</strong>. This panel dynamically synchronizes content related to ${subsection}.</p>
+                                
+                                <!-- Cosmetic Loaders -->
+                                <div class="mt-4 d-flex justify-content-center gap-2">
+                                    <div class="spinner-grow spinner-grow-sm text-primary" style="animation-delay: 0s;"></div>
+                                    <div class="spinner-grow spinner-grow-sm text-primary" style="animation-delay: 0.15s;"></div>
+                                    <div class="spinner-grow spinner-grow-sm text-primary" style="animation-delay: 0.3s;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Trigger fade in
+                    contentArea.classList.remove('hidden');
+                }, 250); // Matches CSS transition duration
+                
+                // On mobile, close sidebar after clicking sub-item
+                if(window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('show');
+                    document.getElementById('sidebarOverlay').classList.remove('show-overlay');
+                }
+            });
+        });
+        
+        // Highlight logic for Dashboard active state initially
+        const isDashboard = window.location.pathname === '/account_master/' || window.location.pathname === '/';
+        if (isDashboard) {
+            document.getElementById('dashboard-link').classList.add('active-link');
+        }
+
+        // Initialize Flatpickr on all date inputs for a compact consistent calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof flatpickr !== 'undefined') {
+                flatpickr(".flatpickr-date", {
+                    dateFormat: "Y-m-d",
+                    allowInput: true,
+                    disableMobile: true
+                });
+            }
+            
+            // Modern Toast Auto-Initialize
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function (toastEl) {
+                var t = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
+                t.show();
+                return t;
+            });
+
+            // Global Escape key shortcut for Back button navigation (capturing phase to run before component handlers close overlays)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    // Prevent navigation if dropdowns, datepickers, or modals are open and need to be dismissed
+                    const isSelect2Open = document.querySelectorAll('.select2-container--open, .select2-dropdown').length > 0;
+                    const isModalOpen = document.querySelector('.modal.show') !== null;
+                    const isFlatpickrOpen = document.querySelector('.flatpickr-calendar.open') !== null;
+                    
+                    if (!isSelect2Open && !isModalOpen && !isFlatpickrOpen) {
+                        const backBtn = document.querySelector('.erp-btn-back');
+                        if (backBtn) {
+                            event.preventDefault();
+                            backBtn.click();
+                        }
+                    }
+                }
+            }, true);
+
+            // Global Arrow key record navigation and F2 edit mode shortcuts
+            document.addEventListener('keydown', function(event) {
+                console.log("BASE KEYDOWN:", event.key);
+                const isSelect2Open = document.querySelectorAll('.select2-container--open, .select2-dropdown').length > 0;
+                const isModalOpen = document.querySelector('.modal.show') !== null;
+                const isFlatpickrOpen = document.querySelector('.flatpickr-calendar.open') !== null;
+                
+                console.log("isSelect2Open:", isSelect2Open, "isModalOpen:", isModalOpen, "isFlatpickrOpen:", isFlatpickrOpen);
+                if (isSelect2Open || isModalOpen || isFlatpickrOpen) {
+                    return;
+                }
+
+                // F2 to trigger edit mode
+                if (event.key === 'F2') {
+                    const editBtn = document.querySelector('.erp-btn-edit-mode');
+                    if (editBtn) {
+                        event.preventDefault();
+                        if (editBtn.tagName === 'A') {
+                            window.location.href = editBtn.href;
+                        } else {
+                            editBtn.click();
+                        }
+                    }
+                    return;
+                }
+
+                // ArrowLeft / ArrowRight navigation
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                    const activeEl = document.activeElement;
+                    const isViewMode = window.APP_CONFIG && window.APP_CONFIG.isViewMode;
+                    if (!isViewMode && activeEl && (
+                        ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName) ||
+                        activeEl.isContentEditable
+                    )) {
+                        return;
+                    }
+
+                    if (event.key === 'ArrowLeft') {
+                        const prevBtn = document.querySelector('.erp-btn-prev');
+                        if (prevBtn && !prevBtn.disabled && !prevBtn.hasAttribute('disabled')) {
+                            event.preventDefault();
+                            prevBtn.click();
+                        }
+                    } else if (event.key === 'ArrowRight') {
+                        const nextBtn = document.querySelector('.erp-btn-next');
+                        if (nextBtn && !nextBtn.disabled && !nextBtn.hasAttribute('disabled')) {
+                            event.preventDefault();
+                            nextBtn.click();
+                        }
+                    }
+                }
+            }, true);
+
+            // ── AJAX record navigation for View mode (preventing screen shake) ──
+            function reinitFlatpickr() {
+                if (typeof flatpickr !== 'undefined') {
+                    flatpickr(".flatpickr-date", {
+                        dateFormat: "Y-m-d",
+                        allowInput: true,
+                        disableMobile: true
+                    });
+                }
+            }
+            window.reinitFlatpickr = reinitFlatpickr;
+
+            function reinitFloatingLabels() {
+                function toggleFloat(el) {
+                    const field = el.closest('.erp-field, .erp-floating');
+                    if (!field) return;
+                    if (el.value && el.value.trim() !== '') {
+                        field.classList.add('is-filled');
+                    } else {
+                        field.classList.remove('is-filled');
+                    }
+                }
+
+                document.querySelectorAll('.erp-field .form-control, .erp-field .form-select, .erp-field .erp-input, .erp-field .erp-floating-input, .erp-floating .form-control, .erp-floating .form-select, .erp-floating .erp-input, .erp-floating .erp-floating-input').forEach(el => {
+                    setTimeout(() => toggleFloat(el), 100);
+                    
+                    // Remove existing listeners to prevent duplicates
+                    if (el._toggleFloatListener) {
+                        el.removeEventListener('input', el._toggleFloatListener);
+                        el.removeEventListener('change', el._toggleFloatListener);
+                        el.removeEventListener('blur', el._toggleFloatListener);
+                    }
+                    
+                    el._toggleFloatListener = () => toggleFloat(el);
+                    el.addEventListener('input', el._toggleFloatListener);
+                    el.addEventListener('change', el._toggleFloatListener);
+                    el.addEventListener('blur', el._toggleFloatListener);
+                });
+
+                if (typeof jQuery !== 'undefined') {
+                    setTimeout(function () {
+                        jQuery('#bankAccount').off('change.float').on('change.float', function () {
+                            const el = document.getElementById('bankAccount');
+                            if (el) {
+                                const field = el.closest('.erp-field, .erp-floating');
+                                if (field) {
+                                    if (el.value && el.value.trim() !== '') {
+                                        field.classList.add('is-filled');
+                                    } else {
+                                        field.classList.remove('is-filled');
+                                    }
+                                }
+                            }
+                        });
+                        const el = document.getElementById('bankAccount');
+                        if (el) {
+                            const field = el.closest('.erp-field, .erp-floating');
+                            if (field) {
+                                if (el.value && el.value.trim() !== '') {
+                                    field.classList.add('is-filled');
+                                } else {
+                                    field.classList.remove('is-filled');
+                                }
+                            }
+                        }
+                    }, 500);
+                }
+            }
+            window.reinitFloatingLabels = reinitFloatingLabels;
+
+            function ajaxNavigate(targetUrl, bypassOverlay = false) {
+                const dynamicArea = document.getElementById('dynamic-content-area');
+                const contentArea = document.getElementById('main-dashboard-content');
+                if (!dynamicArea || !contentArea) {
+                    window.location.href = targetUrl;
+                    return;
+                }
+
+                let overlay = null;
+                if (!bypassOverlay) {
+                    console.log('LOAD OVERLAY TRIGGERED');
+                    // Lock current height on the parent container to prevent visual jumping
+                    const currentHeight = dynamicArea.offsetHeight;
+                    dynamicArea.style.minHeight = currentHeight + 'px';
+
+                    // Append a modern, blurred loading overlay over the dynamic area
+                    overlay = document.getElementById('ajax-loading-overlay');
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.id = 'ajax-loading-overlay';
+                        overlay.style.position = 'absolute';
+                        overlay.style.top = '0';
+                        overlay.style.left = '0';
+                        overlay.style.width = '100%';
+                        overlay.style.height = '100%';
+                        overlay.style.background = 'rgba(255, 255, 255, 0.6)';
+                        overlay.style.backdropFilter = 'blur(2px)';
+                        overlay.style.display = 'flex';
+                        overlay.style.justifyContent = 'center';
+                        overlay.style.alignItems = 'center';
+                        overlay.style.zIndex = '999';
+                        overlay.style.opacity = '0';
+                        overlay.style.transition = 'opacity 0.1s ease-in-out';
+                        overlay.innerHTML = `
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span class="text-secondary fw-semibold" style="font-size: 11px; letter-spacing: 0.05em; font-family: 'Inter', sans-serif;">SYNCHRONIZING DATA...</span>
+                            </div>
+                        `;
+                        
+                        // Make sure dynamicArea is relatively positioned
+                        const originalPosition = window.getComputedStyle(dynamicArea).position;
+                        if (originalPosition === 'static') {
+                            dynamicArea.style.position = 'relative';
+                        }
+                        dynamicArea.appendChild(overlay);
+                    }
+                    
+                    // Trigger reflow & fade-in
+                    void overlay.offsetWidth;
+                    overlay.style.opacity = '1';
+                }
+
+                let isResolved = false;
+                function resolveNavigation() {
+                    if (isResolved) return;
+                    isResolved = true;
+
+                    if (overlay) {
+                        overlay.style.opacity = '0';
+                        setTimeout(() => {
+                            overlay.remove();
+                            if (dynamicArea) {
+                                dynamicArea.style.minHeight = '';
+                            }
+                        }, 100);
+                    }
+                }
+
+                // Listen for custom "erp-form-ready" event
+                document.addEventListener('erp-form-ready', resolveNavigation, { once: true });
+                
+                // Hard timeout fallback (1.5 seconds) in case of API/network failure
+                setTimeout(resolveNavigation, 1500);
+
+                fetch(targetUrl)
+                    .then(response => response.text())
+                    .then(html => {
+                        window.history.pushState(null, '', targetUrl);
+
+                        // Update the stored selected row for focus restoration on listing pages
+                        const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/'];
+                        const matchingListPath = listPaths.find(lp => targetUrl.includes(lp));
+                        if (matchingListPath) {
+                            const match = targetUrl.match(new RegExp(matchingListPath + '([^/]+)/edit'));
+                            if (match) {
+                                const pk = match[1];
+                                sessionStorage.setItem('last_selected_row_' + matchingListPath, pk);
+                            }
+                        }
+
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        document.title = doc.title;
+
+                        const newContentArea = doc.getElementById('main-dashboard-content');
+                        if (newContentArea) {
+                            contentArea.innerHTML = newContentArea.innerHTML;
+                        }
+
+                        // Evaluate scripts in the new content (like APP_CONFIG)
+                        const scripts = doc.querySelectorAll('script');
+                        scripts.forEach(s => {
+                            if (s.textContent.includes('window.APP_CONFIG')) {
+                                eval(s.textContent);
+                            }
+                        });
+
+                        // Re-run initializations
+                        if (window.reinitVoucher) {
+                            window.reinitVoucher();
+                        }
+                        if (window.reinitBankTransaction) {
+                            window.reinitBankTransaction();
+                        }
+                        
+                        reinitFlatpickr();
+                        reinitFloatingLabels();
+                    })
+                    .catch(err => {
+                        console.error('AJAX navigation failed, falling back to full reload:', err);
+                        resolveNavigation();
+                        window.location.href = targetUrl;
+                    });
+            }
+
+            function navigateSeamlessly(targetUrl) {
+                // 1. Store scroll positions
+                const storedScrollY = window.scrollY;
+                const tableScrollEl = document.getElementById('mainTableScroll');
+                const storedTableScrollTop = tableScrollEl ? tableScrollEl.scrollTop : 0;
+
+                // 2. Fetch target page HTML
+                fetch(targetUrl)
+                    .then(response => response.text())
+                    .then(html => {
+                        // 3. Update URL in browser address bar without reload
+                        window.history.pushState(null, '', targetUrl);
+
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        // 4. Update Document Title
+                        document.title = doc.title;
+
+                        // 5. Update Prev, Next, and Edit buttons inline inside existing DOM
+                        function updateNavButtonInline(currentBtnSelector, newBtnElement) {
+                            const currentBtn = document.querySelector(currentBtnSelector);
+                            if (!currentBtn || !newBtnElement) return;
+
+                            if (currentBtn.tagName !== newBtnElement.tagName) {
+                                const parent = currentBtn.parentNode;
+                                const replacement = newBtnElement.cloneNode(true);
+                                parent.replaceChild(replacement, currentBtn);
+                            } else {
+                                if (currentBtn.tagName === 'A') {
+                                    currentBtn.href = newBtnElement.href;
+                                } else if (currentBtn.tagName === 'BUTTON') {
+                                    if (newBtnElement.hasAttribute('disabled')) {
+                                        currentBtn.setAttribute('disabled', 'true');
+                                    } else {
+                                        currentBtn.removeAttribute('disabled');
+                                    }
+                                }
+                                currentBtn.className = newBtnElement.className;
+                                currentBtn.style.cssText = newBtnElement.style.cssText;
+                                currentBtn.innerHTML = newBtnElement.innerHTML;
+                            }
+                        }
+
+                        updateNavButtonInline('.erp-btn-prev', doc.querySelector('.erp-btn-prev'));
+                        updateNavButtonInline('.erp-btn-next', doc.querySelector('.erp-btn-next'));
+                        updateNavButtonInline('.erp-btn-edit-mode', doc.querySelector('.erp-btn-edit-mode'));
+
+                        // 6. Extract the new voucher ID from APP_CONFIG of loaded page HTML
+                        let newVoucherNo = '';
+                        const scripts = doc.querySelectorAll('script');
+                        scripts.forEach(s => {
+                            if (s.textContent.includes('window.APP_CONFIG')) {
+                                const match = s.textContent.match(/(?:voucherNo|groupId):\s*["']([^"']+)["']/);
+                                if (match) {
+                                    newVoucherNo = match[1];
+                                }
+                            }
+                        });
+
+                        // 7. Update window.APP_CONFIG on the current page to keep it consistent
+                        if (window.APP_CONFIG) {
+                            window.APP_CONFIG.voucherNo = newVoucherNo;
+                            window.APP_CONFIG.groupId = newVoucherNo;
+                        }
+
+                        if (newVoucherNo && window.currentFormInstance) {
+                            // 8. Load existing data dynamically
+                            window.currentFormInstance.loadExistingData(newVoucherNo)
+                                .then(() => {
+                                    // 9. Re-lock view mode controls
+                                    if (typeof window.currentFormInstance.lockViewMode === 'function') {
+                                        window.currentFormInstance.lockViewMode();
+                                    }
+
+                                    // 10. Restore stored scroll positions to prevent visual jump/shake
+                                    window.scrollTo(0, storedScrollY);
+                                    const tableScroll = document.getElementById('mainTableScroll');
+                                    if (tableScroll) {
+                                        tableScroll.scrollTop = storedTableScrollTop;
+                                    }
+                                });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Seamless navigation failed, falling back to full reload:', err);
+                        window.location.href = targetUrl;
+                    });
+            }
+
+            document.addEventListener('click', function(e) {
+                console.log("BASE CLICK target:", e.target, "tagName:", e.target.tagName);
+                const btn = e.target.closest('.erp-btn-prev, .erp-btn-next, #prevRecordBtn, #nextRecordBtn');
+                console.log("BASE CLICK btn:", btn);
+                if (btn && btn.tagName === 'A') {
+                    // Check if we are on view page of Voucher, Bank Transaction, Section C, SalPurGroup, or SubSectionY
+                    const isVoucherView = window.location.pathname.includes('/voucher/') && window.location.pathname.includes('/edit/');
+                    const isBankTransactionView = window.location.pathname.includes('/bank-transaction/') && window.location.pathname.includes('/edit/');
+                    const isSectionCView = window.location.pathname.includes('/section-c/') && window.location.pathname.includes('/edit/');
+                    const isSalPurGroupView = window.location.pathname.includes('/sal-pur-group/') && window.location.pathname.includes('/edit/');
+                    const isSubSectionYView = window.location.pathname.includes('/subsection-y/') && window.location.pathname.includes('/edit/');
+                    
+                    if (isVoucherView || isBankTransactionView || isSectionCView || isSalPurGroupView || isSubSectionYView) {
+                        const url = new URL(btn.href || window.location.href);
+                        if (url.searchParams.get('mode') === 'view' || window.location.search.includes('mode=view')) {
+                            e.preventDefault();
+                            console.log('PREV/NEXT CLICKED');
+                            if (window.currentFormInstance && typeof window.currentFormInstance.loadExistingData === 'function') {
+                                navigateSeamlessly(btn.href);
+                            } else {
+                                ajaxNavigate(btn.href, true);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script src="{% static 'vendor/chart.js' %}"></script>
+    <script src="{% static 'js/row-restore.js' %}?v={% now 'U' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,164 @@
+/* --- Common Utility & Component Styles --- */
+
+/* Cards & Sections */
+.card {
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.06) !important;
+}
+
+.card-header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 16px 24px;
+}
+
+.card-body {
+    padding: 24px !important;
+}
+
+/* Typography Helpers */
+.erp-page-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+}
+
+.erp-section-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Micro Interactions */
+.btn, .dropdown-menu, tr, .card, a, input, select {
+    transition: all 0.2s ease;
+}
+
+/* Dropdown Polish */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    z-index: 9999 !important;
+    animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    padding: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin-bottom: 2px;
+    font-weight: 500;
+    color: #475569;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f5f9 !important;
+    color: #2563eb !important;
+}
+
+@keyframes dropdownFade {
+    0% { opacity: 0; transform: scaleY(0.95) translateY(-5px); }
+    100% { opacity: 1; transform: scaleY(1) translateY(0); }
+}
+
+/* Status Badges */
+.badge {
+    transition: all 0.2s ease;
+}
+
+.badge.bg-success, .text-success.badge {
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+    padding: 6px 12px;
+    font-weight: 600;
+}
+
+.badge.bg-danger, .badge.bg-secondary, .text-danger.badge {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 6px 12px;
+    font-weight: 600;
+}
+
+/* Subtle badge styles used on lists */
+.bg-success-subtle {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+}
+
+.bg-danger-subtle {
+    background-color: #f8d7da !important;
+    color: #842029 !important;
+}
+
+.badge.bg-success-subtle {
+    background-color: #dcfce7 !important;
+    color: #059669 !important;
+    border: 1px solid #bbf7d0;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge.bg-danger-subtle {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Modals */
+.modal-backdrop.show {
+    backdrop-filter: blur(4px);
+    opacity: 0.7;
+    background-color: rgba(30, 41, 59, 0.4);
+}
+
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Elegant Custom Scrollbar helper classes */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

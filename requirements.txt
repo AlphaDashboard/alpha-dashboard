@@ -1,0 +1,20 @@
+# Alpha Dashboard - Python Package Requirements
+# Generated from working environment - exact versions pinned for reproducibility
+#
+# Install with:  pip install -r requirements.txt
+
+# Core Django framework
+Django==6.0.3
+asgiref==3.11.1
+sqlparse==0.5.5
+tzdata==2025.3
+
+# Django REST Framework (used for API endpoints)
+djangorestframework==3.16.1
+
+# Excel import/export support
+openpyxl==3.1.5
+
+# PostgreSQL driver (only needed if using PostgreSQL instead of SQLite)
+# Safe to install even if not using PostgreSQL
+psycopg2-binary>=2.9.9

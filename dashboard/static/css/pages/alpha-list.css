@@ -1,0 +1,475 @@
+/* --- Page Specific Styles: Alpha List --- */
+
+/* PAGE LAYOUT & CONTAINERS */
+.list-container {
+    margin-top: -20px !important;
+}
+
+.breadcrumb-modern {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+}
+.breadcrumb-modern span {
+    color: #64748b;
+}
+
+/* HEADER ACTION BUTTONS & TOOLBAR GROUP */
+.toolbar-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px !important;
+    padding: 2px !important;
+    display: flex;
+    gap: 4px;
+}
+.toolbar-group .btn-light {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #64748b !important;
+    border-radius: 3px !important;
+    padding: 4px 8px !important;
+    height: 26px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.toolbar-group .btn-light:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* CONTROL & BUTTON HEIGHTS (32px NORMALIZATION) */
+.filter-bar .form-control,
+.filter-bar .form-select,
+.filter-bar .btn,
+.filter-bar .input-group-text {
+    height: 32px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+}
+
+.filter-bar .form-control:focus,
+.filter-bar .form-select:focus {
+    border-color: #3b82f6 !important;
+    background-color: #ffffff !important;
+}
+
+/* PREMIUM SOFT BADGES */
+.badge {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em;
+    padding: 2px 10px !important;
+}
+.bg-success-subtle {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+.bg-danger-subtle {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.25) !important;
+}
+
+/* TABLE STYLING COMPACT DENSITY */
+.erp-table-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.erp-data-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: none !important;
+    width: 100%;
+}
+
+.erp-data-table,
+.erp-data-table > :not(caption) > * > * {
+    border-color: #f1f5f9 !important;
+}
+
+.erp-data-table th,
+.erp-data-table td {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: 1px solid #f1f5f9 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.erp-data-table th {
+    background-color: #4b5563 !important; /* Dark slate background matching Vouchers page exactly */
+    color: #ffffff !important; /* White text matching Vouchers exactly */
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #374151 !important;
+    padding: 10px 16px !important;
+    text-align: left;
+    height: 36px;
+    vertical-align: middle;
+}
+
+.erp-data-table td {
+    padding: 8px 16px !important;
+    vertical-align: middle;
+    font-size: 12px !important;
+    color: #374151 !important;
+    height: 38px;
+}
+
+.erp-data-table tbody tr {
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.erp-data-table tbody tr:hover td {
+    background-color: #f8fafc !important;
+}
+
+.erp-data-table td:last-child,
+.erp-data-table th:last-child {
+    border-right: none !important;
+}
+
+/* ACTION DROPDOWN NORMALIZATION */
+.action-dropdown .btn-light {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid #e5e7eb !important;
+    background: #fff !important;
+    color: #374151 !important;
+    border-radius: 4px !important;
+    margin: 0 auto !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.action-dropdown .btn-light:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+.action-dropdown .dropdown-menu {
+    font-size: 13px !important;
+    min-width: 160px;
+    z-index: 1055 !important;
+    margin-top: 2px !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* PAGINATION FOOTER NORMALIZATION */
+.erp-pagination-container {
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+    background-color: #ffffff;
+}
+
+.erp-page-btn {
+    border-radius: 4px !important;
+    border: 1px solid #d1d5db !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    padding: 4px 10px !important;
+    background: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.erp-page-btn:hover {
+    background: #f3f4f6 !important;
+    border-color: #cbd5e1 !important;
+    color: #111827 !important;
+}
+
+.pagination .active .erp-page-btn {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* PREMIUM TOGGLE TRACK SWITCH FOR FORM STATUS */
+.erp-toggle-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.erp-toggle-container input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.erp-toggle-track {
+    position: relative;
+    width: 82px;
+    height: 28px;
+    background-color: #fee2e2;
+    border-radius: 14px;
+    border: 1px solid #fca5a5;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+.erp-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.2), 0 1px 2px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.erp-toggle-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.erp-toggle-text.on-text {
+    left: 8px;
+    color: #059669;
+    opacity: 0;
+}
+
+.erp-toggle-text.off-text {
+    right: 8px;
+    color: #dc2626;
+    opacity: 1;
+}
+
+.erp-toggle-container input[type="checkbox"]:checked ~ .erp-toggle-track {
+    background-color: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.erp-toggle-container input[type="checkbox"]:checked ~ .erp-toggle-track .erp-toggle-thumb {
+    transform: translateX(54px);
+    box-shadow: 0 1px 3px rgba(5, 150, 105, 0.2), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.erp-toggle-container input[type="checkbox"]:checked ~ .erp-toggle-track .on-text {
+    opacity: 1;
+}
+
+.erp-toggle-container input[type="checkbox"]:checked ~ .erp-toggle-track .off-text {
+    opacity: 0;
+}
+
+.erp-toggle-container:hover .erp-toggle-track {
+    filter: brightness(0.95);
+}
+
+.erp-toggle-container input[type="checkbox"]:checked:hover ~ .erp-toggle-track {
+    filter: brightness(1.05);
+}
+
+/* QUICK-ACTION MODAL STYLING */
+.modal-content {
+    border-radius: 8px !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e5e7eb !important;
+    background-color: #f8fafc !important;
+    padding: 12px 24px !important;
+}
+
+.modal-footer {
+    border-top: 1px solid #e5e7eb !important;
+    background-color: #f8fafc !important;
+    padding: 12px 24px !important;
+}
+
+.modal-body {
+    padding: 24px !important;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    height: 36px !important;
+    border-radius: 4px !important;
+    border-color: #d1d5db !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+.modal-body .col-form-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #4b5563 !important;
+}
+
+/* STANDALONE FORM PAGE NORMALIZATION */
+#alphaForm .form-control,
+#alphaForm .form-select {
+    height: 36px !important;
+    border-radius: 4px !important;
+    border-color: #cbd5e1 !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    box-shadow: none !important;
+}
+
+#alphaForm .form-control:focus,
+#alphaForm .form-select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+#alphaForm .btn {
+    height: 36px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+/* --- Floating bottom erp footer --- */
+.erp-list-footer-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: calc(var(--sidebar-width, 240px) + 20px);
+    right: 20px;
+    z-index: 1050;
+    height: 36px;
+    background: #4b5563;
+    border-radius: 0 0 8px 8px;
+    border-top: 2px solid #374151;
+    border-left: 1px solid #6b7280;
+    border-right: 1px solid #6b7280;
+    border-bottom: 1px solid #374151;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    display: flex;
+    align-items: center;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.erp-list-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 24px;
+    gap: 16px;
+}
+
+.erp-list-footer-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.erp-list-footer-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 769px) {
+    body.sidebar-collapsed .erp-list-footer-fixed,
+    html.sidebar-collapsed-preload body .erp-list-footer-fixed {
+        left: calc(var(--sidebar-collapsed-width, 78px) + 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .erp-list-footer-fixed {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+    }
+}
+
+/* ERP VALIDATION STYLING OVERRIDES */
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15) !important;
+}
+
+.form-control.is-valid, .form-select.is-valid {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15) !important;
+}
+
+.invalid-feedback, .invalid-feedback-erp {
+    color: #dc3545 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    margin-top: 4px !important;
+    display: block !important;
+}
+
+/* VIEW-ONLY MODE STYLING */
+.erp-view-only-banner {
+    border-radius: 4px !important;
+    border-left: 4px solid #0ea5e9 !important;
+    font-size: 13px !important;
+    background-color: #eff6ff !important;
+    color: #1d4ed8 !important;
+}
+
+/* Strict 3-section layout scrolling rules for Alpha List */
+body {
+    overflow: hidden !important;
+}
+
+.main-content {
+    padding-bottom: 0 !important;
+}
+

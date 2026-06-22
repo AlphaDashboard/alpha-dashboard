@@ -1,0 +1,187 @@
+/* --- Shared Searchable Select2 Dropdown Styling --- */
+
+/* Dropdown Container */
+.select2-container--bootstrap-5 .select2-selection {
+    height: var(--erp-h, 36px) !important;
+    min-height: var(--erp-h, 36px) !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    padding: 0 12px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid #ced4da !important;
+    box-sizing: border-box !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Rendered Text Alignment */
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    line-height: normal !important;
+    padding: 0 8px !important;
+    margin: 0 !important;
+    color: #212529 !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Arrow & Indicators */
+.select2-container--bootstrap-5 .select2-selection__indicator,
+.select2-container--bootstrap-5 .select2-selection__arrow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    width: 32px !important;
+}
+
+/* Dropdown Popup Menu */
+.select2-dropdown {
+    animation: fadeInDropdown 0.2s ease-out;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+    border-radius: 8px !important;
+    z-index: 9999 !important;
+    min-width: 380px !important; /* Ensure adequate width for 3-column grid */
+    overflow: hidden !important;
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlighting and Hover States */
+.select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected],
+.select2-container--bootstrap-5 .select2-results__option[aria-selected="true"] {
+    background-color: #eff6ff !important;
+    color: #2563eb !important;
+    font-weight: 600 !important;
+}
+
+.select2-results__option {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    color: #334155 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.select2-results__option:last-child {
+    border-bottom: none !important;
+}
+
+/* Override option paddings for multi-column and custom options */
+.select2-results__option:has(.select2-table-row),
+.select2-results__option:has(.create-new-account_master-option),
+.select2-results__option:has(.create-new-alpha-option) {
+    padding: 0 !important;
+}
+
+/* Search Box inside dropdown */
+.select2-search--dropdown {
+    padding: 8px !important;
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.select2-search__field {
+    height: 32px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    border: 1px solid #cbd5e1 !important;
+    outline: none !important;
+    background-color: #ffffff !important;
+}
+
+.select2-search__field:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Dynamic Add New Option design */
+.select2-results__option:has(.create-new-alpha-option) {
+    padding: 0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.create-new-alpha-option {
+    padding: 4px 8px !important; /* Shrunk from 6px 12px */
+    font-size: 11px !important; /* Shrunk from 13px */
+    font-weight: 500 !important;
+    color: #2563eb !important;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background-color: #f8fafc;
+}
+
+.create-new-alpha-option i {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #2563eb !important;
+    line-height: 1;
+}
+
+/* Hover State */
+.select2-results__option--highlighted .create-new-alpha-option,
+.create-new-alpha-option:hover {
+    background-color: #eff6ff !important;
+    color: #1d4ed8 !important;
+}
+
+.select2-results__option--highlighted .create-new-alpha-option i,
+.create-new-alpha-option:hover i {
+    color: #1d4ed8 !important;
+}
+
+/* Validation styling */
+.erp-card .select2-container.is-invalid .select2-selection--single,
+.erp-card .select2-container.is-invalid-erp .select2-selection--single,
+.erp-table .select2-container.is-invalid .select2-selection--single,
+.erp-table .select2-container.is-invalid-erp .select2-selection--single,
+.select2-container.is-invalid .select2-selection--single,
+.select2-container.is-invalid-erp .select2-selection--single,
+.select2-container--bootstrap-5.is-invalid-erp .select2-selection {
+    border: 1px solid #ef4444 !important;
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Custom Scrollbar for Select2 Results */
+.select2-results__options::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+.select2-results__options::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+.select2-results__options::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1 !important;
+    border-radius: 3px !important;
+}
+.select2-results__options::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8 !important;
+}
+.select2-results__options {
+    scrollbar-width: thin !important;
+    scrollbar-color: #cbd5e1 transparent !important;
+}
+
+/* Custom wide dropdown for Bank Account */
+.bank-account-dropdown .select2-dropdown,
+.custom-combo-dropdown.bank-account-dropdown {
+    min-width: 580px !important;
+}

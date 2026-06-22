@@ -1,0 +1,791 @@
+/* ==========================================================================
+   SUB SECTION B-2 SPECIFIC STYLES
+   Visual identity is perfectly aligned with Bank Transaction baseline.
+   All shared ERP styles are cloned here for complete module isolation.
+   ========================================================================== */
+
+:root {
+    --erp-h: 36px;
+    --erp-rad: 4px;
+    --erp-border: #d1d5db;
+    --erp-focus: #3b82f6;
+    --erp-table-row-min-h: 34px;
+    --erp-table-input-h: 22px;
+    --erp-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Page Containers */
+.erp-container-flex {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 75px);
+    overflow: hidden;
+}
+
+/* ERP Header Bar - normalized 38px height, transparent layout for perfect alignment */
+.erp-header-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding: 0 !important;
+    margin-bottom: 4px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.erp-header-bar .erp-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    line-height: normal !important;
+}
+
+/* Table Body Scrollbar to match standard high density layout */
+#dynamicTableBody::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+#dynamicTableBody::-webkit-scrollbar-track {
+    background: #f1f5f9 !important;
+}
+
+#dynamicTableBody::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 3px !important;
+}
+
+#dynamicTableBody::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
+}
+
+
+.erp-form-flex {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    gap: 8px;
+}
+
+/* Header card flex */
+.erp-card-header-flex {
+    flex: 0 0 auto;
+}
+
+/* Table Card flex - expands to consume available vertical viewport space */
+/* Location: dashboard/static/css/pages/subsection-b2.css */
+/* Used in: dashboard/templates/dashboard/subsection_b2_form.html (Table outer card container) */
+.erp-card-table-flex {
+    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden !important;
+}
+
+
+
+.erp-btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px !important;
+    padding: 2px 14px !important;
+    border-radius: 4px !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border: 1px solid #1d4ed8 !important;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+}
+
+.erp-btn-save:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1e40af !important;
+}
+
+.erp-btn-save:disabled {
+    background-color: #93c5fd !important;
+    border-color: #93c5fd !important;
+    cursor: not-allowed;
+}
+
+/* Form inputs styling */
+.erp-field label:not(.erp-floating-label),
+.erp-form-label {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 0 2px 0 !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: #111827 !important;
+    letter-spacing: 0.02em;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    pointer-events: none;
+    z-index: auto;
+    top: auto;
+    left: auto;
+}
+
+.erp-floating-group {
+    position: relative;
+    width: 100%;
+}
+
+.erp-floating-label {
+    position: absolute !important;
+    left: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: #ffffff !important;
+    padding: 0 4px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    pointer-events: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 !important;
+    z-index: 5 !important;
+}
+
+.erp-floating-input:focus ~ .erp-floating-label,
+.erp-floating-input:not(:placeholder-shown) ~ .erp-floating-label,
+.erp-floating-group.is-filled .erp-floating-label {
+    top: 0px !important;
+    transform: translateY(-50%) !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: #475569 !important;
+    z-index: 10 !important;
+    line-height: 1 !important;
+}
+
+.erp-field {
+    margin-top: 6px !important;
+}
+
+.erp-input {
+    width: 100%;
+    height: var(--erp-h) !important;
+    min-height: var(--erp-h) !important;
+    max-height: var(--erp-h) !important;
+    border: 1px solid var(--erp-border) !important;
+    border-radius: var(--erp-rad) !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+    color: #0f172a !important;
+    background: #fff !important;
+    outline: none !important;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    line-height: normal !important;
+    box-sizing: border-box !important;
+}
+.erp-input:focus {
+    border-color: var(--erp-focus) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+.erp-input[readonly]:focus,
+.erp-input:read-only:focus {
+    border-color: var(--erp-border) !important;
+    box-shadow: none !important;
+}
+
+#currentBalance.text-success {
+    color: #10b981 !important; /* Ensure dynamic balance is emerald green, bypassing dark erp-input color override */
+}
+
+/* Custom segmented switch mode toggles */
+.erp-mode-section {
+    margin-top: 14px !important; /* Pushed down slightly for perfect alignment with standard 36px input boxes */
+    transform: none !important;
+}
+
+.erp-narration-section {
+    margin-top: -3px !important;
+}
+
+.erp-mode-toggle {
+    display: flex;
+    max-width: 200px; /* Limit toggle container width matching baseline UI density */
+    width: 100%;
+    margin: 0 auto; /* Center perfectly in the middle column layout */
+    align-items: center;
+    background: #e2e8f0;
+    border-radius: 999px;
+    padding: 2px;
+    gap: 0;
+    height: 24px;
+    border: 1px solid #cbd5e1;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.erp-mode-toggle .erp-toggle-btn {
+    flex: 1;
+    border-radius: 999px;
+    height: 18px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #475569;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    user-select: none;
+    white-space: nowrap;
+    border: none;
+    outline: none;
+}
+
+.erp-mode-toggle .erp-toggle-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+}
+
+.erp-mode-toggle .issue-btn.active {
+    background-color: #ef4444 !important;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.4) !important;
+    color: #ffffff !important;
+}
+
+.erp-mode-toggle .deposit-btn.active {
+    background-color: #10b981 !important;
+    box-shadow: 0 1px 3px rgba(16, 185, 129, 0.4) !important;
+    color: #ffffff !important;
+}
+
+/* Table Layout, Scroll, and Sizing */
+/* Location: dashboard/static/css/pages/subsection-b2.css */
+/* Used in: dashboard/templates/dashboard/subsection_b2_form.html (Table responsive container wrapper) */
+.erp-table-wrapper {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Location: dashboard/static/css/pages/subsection-b2.css */
+/* Used in: dashboard/templates/dashboard/subsection_b2_form.html (Table element with standard HTML layout) */
+.erp-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 0 !important;
+}
+
+/* Location: dashboard/static/css/pages/subsection-b2.css */
+/* Used in: dashboard/templates/dashboard/subsection_b2_form.html (Table header th elements) */
+.erp-table-header th {
+    height: 30px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px !important;
+    vertical-align: middle;
+    text-align: center;
+    border-top: none !important;
+}
+
+.erp-table-body td {
+    padding: 0 !important;
+    vertical-align: middle;
+    height: var(--erp-table-row-min-h) !important;
+}
+
+/* Scope column widths strictly under B-2 class to avoid leakage */
+.erp-b2-table-wrapper th:nth-child(1) { width: 25%; }  /* Account Name */
+.erp-b2-table-wrapper th:nth-child(2) { width: 11%; }  /* Cheque No. */
+.erp-b2-table-wrapper th:nth-child(3) { width: 15%; }  /* Dated */
+.erp-b2-table-wrapper th:nth-child(4) { width: 12%; }  /* Payee Bank */
+.erp-b2-table-wrapper th:nth-child(5) { width: 12%; }  /* Amount */
+.erp-b2-table-wrapper th:nth-child(6) { width: 13%; }  /* Remarks */
+.erp-b2-table-wrapper th:nth-child(7) { width: 12%; }  /* Action */
+
+/* Form controls in table rows */
+.erp-table-control {
+    height: 28px !important;
+    min-height: 28px !important;
+    line-height: 28px !important;
+    border: 1px solid var(--erp-border) !important;
+    border-radius: var(--erp-rad) !important;
+    background-color: #fff !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    display: block !important;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+    box-shadow: none !important;
+    color: #0f172a;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.erp-table-control:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+}
+
+.erp-table-control:focus {
+    border-color: var(--erp-focus) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+/* Adjust input date to fit beautifully and prevent overlapping the icon */
+input[type="date"].row-chq-date {
+    text-align: left !important;
+    padding-left: 6px !important;
+    padding-right: 4px !important;
+    font-size: 11.5px !important;
+}
+
+input[type="date"].row-chq-date::-webkit-calendar-picker-indicator {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Row Action Buttons */
+.erp-action-btn {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 4px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0 !important;
+    cursor: pointer;
+}
+
+.erp-btn-add {
+    background-color: #eff6ff !important;
+    color: #3b82f6 !important;
+}
+
+.erp-btn-add:hover {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.erp-btn-delete {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+
+.erp-btn-delete:hover {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Sticky footers inside forms */
+.erp-table-footer {
+    position: sticky;
+    bottom: 0;
+    background: #64748b !important;
+    border-top: 2px solid #475569 !important;
+    z-index: 50;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+}
+
+.erp-table-footer td {
+    height: 38px !important;
+    padding: 4px 8px !important;
+    background-color: #64748b !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.erp-table-footer td:first-child,
+.erp-table-footer .erp-footer-label-cell {
+    border-bottom-left-radius: 4px !important;
+}
+
+.erp-table-footer td:last-child {
+    border-bottom-right-radius: 4px !important;
+}
+
+.erp-table-footer .erp-footer-label-cell {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    text-align: right !important; /* Guarantee right alignment in colspan cell */
+}
+
+.erp-table-footer .total-input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    line-height: 30px !important;
+    padding: 0 8px !important;
+    width: 100% !important;
+    color: #ffffff !important;
+    text-align: right !important;
+    outline: none !important;
+}
+
+/* Save button customized to target green color */
+.erp-table-footer .erp-btn-save {
+    height: 30px !important;
+    line-height: 30px !important;
+    padding: 0 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    margin-right: 12px !important;
+    border-radius: 4px !important;
+    background-color: #10b981 !important;
+    border: 1px solid #059669 !important;
+    color: #ffffff !important;
+}
+
+.erp-table-footer .erp-btn-save:hover {
+    background-color: #059669 !important;
+    border-color: #047857 !important;
+}
+
+/* Select2 integration overrides inside table */
+.erp-b2-table-wrapper .select2-container--bootstrap-5 {
+    width: 100% !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection {
+    height: 28px !important;
+    min-height: 28px !important;
+    border: 1px solid var(--erp-border) !important;
+    border-radius: var(--erp-rad) !important;
+    background-color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5:hover .select2-selection {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.erp-b2-table-wrapper .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    border-color: var(--erp-focus) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection__rendered {
+    line-height: normal !important;
+    font-size: 12px !important;
+    padding-left: 6px !important;
+    color: #0f172a !important;
+    width: 100%;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection__placeholder {
+    color: #94a3b8 !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+    height: 28px !important;
+    right: 6px !important;
+    top: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Validation styling */
+.invalid-feedback-erp {
+    display: block;
+    color: #dc3545;
+    font-size: 10px;
+    margin-top: 1px;
+    font-weight: 500;
+    text-align: left;
+    padding: 0 4px;
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+    background-color: #fff8f8 !important;
+}
+
+.is-invalid-erp {
+    border-bottom: 1.5px solid #dc3545 !important;
+}
+
+/* Disabled number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Scrollbar polish */
+.erp-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.erp-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.erp-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.erp-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Fixed footer on the list page */
+.erp-list-footer-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: calc(var(--sidebar-width, 240px) + 20px);
+    right: 20px;
+    z-index: 1050;
+    height: 36px;
+    background: #4b5563;
+    border-radius: 0 0 8px 8px;
+    border-top: 2px solid #374151;
+    border-left: 1px solid #6b7280;
+    border-right: 1px solid #6b7280;
+    border-bottom: 1px solid #374151;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    display: flex;
+    align-items: center;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.erp-list-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 24px;
+    gap: 16px;
+}
+
+.erp-list-footer-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.erp-list-footer-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 769px) {
+    body.sidebar-collapsed .erp-list-footer-fixed {
+        left: calc(var(--sidebar-collapsed-width, 78px) + 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .erp-list-footer-fixed {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+    }
+}
+
+/* Normalize datetime-local and date input fields to align perfectly with text inputs */
+input[type="datetime-local"].erp-input,
+input[type="date"].erp-input {
+    height: var(--erp-h, 36px) !important;
+    min-height: var(--erp-h, 36px) !important;
+    max-height: var(--erp-h, 36px) !important;
+    line-height: 1 !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* ==========================================================================
+   Premium Select2 Styling Normalization for Subsection B-2 Table
+   ========================================================================== */
+
+/* 1. Prevent the <td> flex cell from over-expanding when Select2 resets */
+.erp-b2-table-wrapper #dynamicTable td:nth-child(1) {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+/* 2. Force Select2 container to always fill the table cell (100% width) */
+.erp-b2-table-wrapper .select2-container--bootstrap-5 {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+}
+
+/* 3. Ensure the selection box itself always fills the container and matches compact 28px height */
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection {
+    width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    background-color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. Hover and Focus States */
+.erp-b2-table-wrapper .select2-container--bootstrap-5:hover .select2-selection {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.erp-b2-table-wrapper .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+/* 5. Centered Rendered selection text and right-padding to avoid clear × overlap */
+#dynamicTable .select2-container .select2-selection--single .select2-selection__rendered {
+    font-size: 11.5px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 36px !important; /* reserves space for BOTH clear 'x' and arrow */
+    color: #0f172a !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    line-height: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Placeholder styling inside grid select box */
+#dynamicTable .select2-container .select2-selection--single .select2-selection__placeholder {
+    color: #94a3b8 !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+}
+
+/* 6. Dynamic Clear "×" Icon - Balanced alignment & micro-interaction */
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+    position: absolute !important;
+    right: 20px !important; /* perfectly placed between text and arrow */
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    height: 16px !important;
+    width: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    color: #94a3b8 !important;
+    cursor: pointer !important;
+    transition: color 0.15s ease !important;
+}
+
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear:hover {
+    color: #ef4444 !important;
+}
+
+/* 7. Dropdown Arrow - Balanced alignment */
+.erp-b2-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+    height: 26px !important;
+    right: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 12px !important;
+}
+
+/* 8. Locked / Disabled view-mode override styles */
+.erp-b2-table-wrapper .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+    background-color: #f3f4f6 !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+}
+
+/* Hide invalid text feedback inside dynamic table cells to prevent layout breakage, as top alert shows them */
+.erp-b2-table-wrapper #dynamicTable td .invalid-feedback-erp {
+    display: none !important;
+}

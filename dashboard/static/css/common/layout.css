@@ -1,0 +1,285 @@
+/* --- Common Layout Styles --- */
+
+:root {
+    --sidebar-width: 270px;
+    --sidebar-collapsed-width: 78px;
+    --primary-color: #0f4c81; /* Professional enterprise blue */
+    --secondary-color: #1e293b;
+    --accent-success: #10b981;
+    --accent-error: #ef4444;
+    --bg-light: #f8fafc;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    font-size: 14px !important;
+    line-height: 1.5;
+    color: #111827;
+    background-color: #f5f7fb;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+h1, h2, h3 { font-weight: 600; color: #0f172a; }
+h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
+.fw-bold { font-weight: 600 !important; }
+.text-dark { color: #0f172a !important; }
+
+/* Sidebar Styling */
+.sidebar {
+    position: fixed;
+    top: 72px;
+    bottom: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    z-index: 1058; /* Float above relative table filters and fixed footers */
+    padding: 16px 0;
+    background-color: #1e293b;
+    color: #f8fafc;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar a {
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin: 4px 16px;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.sidebar .nav-link {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar .collapse .nav-link {
+    height: 38px;
+    padding-left: 32px;
+    font-size: 13px;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar .collapse .nav-link:hover {
+    color: #ffffff;
+}
+
+.sidebar .active-link {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(37,99,235,0.2);
+    border-radius: 10px;
+    height: 44px;
+    margin: 2px 16px;
+}
+
+/* Mobile Sidebar Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 1056; /* Float above relative filters and dropdowns to dim content */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show-overlay {
+    display: block;
+    opacity: 1;
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    margin-top: 72px;
+    min-height: calc(100vh - 72px);
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop Collapsed State */
+@media (min-width: 769px) {
+    body.sidebar-collapsed .sidebar,
+    html.sidebar-collapsed-preload body .sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+    body.sidebar-collapsed .sidebar .nav-link span,
+    body.sidebar-collapsed .sidebar .caret-icon {
+        display: none;
+    }
+    body.sidebar-collapsed .sidebar .nav-link i {
+        margin-right: 0 !important;
+        font-size: 1.25rem;
+    }
+    body.sidebar-collapsed .main-content,
+    html.sidebar-collapsed-preload body .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+}
+
+/* Mobile Responsiveness for Layout */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .page-loader {
+        left: 0;
+    }
+}
+
+/* Custom Page Loader */
+.page-loader {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: var(--sidebar-width);
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-loader.active {
+    display: flex;
+}
+
+/* --- Collapsed Sidebar Hover Expansion Support --- */
+@media (min-width: 769px) {
+    /* 1. Hide submenus when collapsed and not hovered */
+    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .collapse {
+        display: none !important;
+    }
+    
+    /* 2. Hide text nodes of main links when collapsed and not hovered */
+    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link {
+        font-size: 0 !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 4px 12px !important;
+        border-radius: 8px !important;
+    }
+    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link i {
+        margin-right: 0 !important;
+        font-size: 1.25rem !important;
+    }
+    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link span {
+        display: none !important;
+    }
+    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .caret-icon {
+        display: none !important;
+    }
+
+    /* 3. Expand sidebar and restore styles when hover-expanded */
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded {
+        width: var(--sidebar-width) !important;
+        box-shadow: 4px 0 20px rgba(15, 23, 42, 0.15) !important;
+        z-index: 1058 !important; /* Force priority layering during hover states */
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link {
+        font-size: 14px !important;
+        justify-content: flex-start !important;
+        padding: 0 16px !important;
+        margin: 4px 16px !important;
+        border-radius: 8px !important;
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .collapse .nav-link {
+        font-size: 13px !important;
+        padding-left: 42px !important;
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link i {
+        margin-right: 8px !important;
+        font-size: 1rem !important;
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link span {
+        display: inline-block !important;
+        opacity: 0;
+        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.05s;
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .caret-icon {
+        display: inline-block !important;
+        opacity: 0;
+        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.05s;
+    }
+    
+    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .collapse {
+        opacity: 0;
+        animation: fadeInSubmenu 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.1s;
+    }
+
+    /* Shift main content dynamically when sidebar is hovered (prevents content hiding) */
+    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content {
+        margin-left: var(--sidebar-width) !important;
+    }
+
+    /* Shift fixed list footer dynamically when sidebar is hovered */
+    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content .erp-list-footer-fixed {
+        left: calc(var(--sidebar-width) + 20px) !important;
+    }
+
+    /* Shift fixed form footer dynamically when sidebar is hovered */
+    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .erp-footer-fixed,
+    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content .erp-footer-fixed {
+        left: var(--sidebar-width) !important;
+        width: calc(100% - var(--sidebar-width)) !important;
+    }
+}
+
+@keyframes fadeInText {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInSubmenu {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Global transitions synchronization overrides */
+.erp-list-footer-fixed {
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), right 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.erp-footer-fixed {
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}

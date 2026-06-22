@@ -1,0 +1,227 @@
+/* --- Common Button Styles --- */
+
+button, .btn {
+    height: 38px;
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(37,99,235,0.2);
+    font-weight: 600;
+    padding: 10px 24px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e3a8a) !important;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(37,99,235,0.3);
+}
+
+.btn-outline-secondary, .btn-light, .btn-secondary {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    font-weight: 500;
+    padding: 10px 24px;
+}
+
+.btn-outline-secondary:hover, .btn-light:hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+    transform: scale(1.02);
+}
+
+/* ==========================================================================
+   High Density ERP Button System (extracted from dashboard-erp.css)
+   ========================================================================== */
+
+.erp-btn {
+    height: var(--erp-h, 24px);
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--erp-rad, 4px) !important;
+    transition: all 0.2s ease;
+}
+
+.erp-btn-sm {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--erp-rad, 4px) !important;
+    transition: all 0.2s ease;
+}
+
+.erp-btn:hover,
+.erp-btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Modern ERP High-Density Grid Row Action Buttons */
+.erp-action-btn {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.erp-btn-add {
+    background-color: #eff6ff !important;
+    color: #3b82f6 !important;
+}
+.erp-btn-add:hover {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.erp-btn-delete {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+.erp-btn-delete:hover {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Enterprise SaaS Grid Action Toggle Button (reused on List Views)
+   ========================================================================== */
+
+.btn-saas-action {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+    height: 26px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-saas-action:hover, .btn-saas-action:focus, .dropdown.show .btn-saas-action {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transform: translateY(-0.5px);
+    color: #0f172a;
+    outline: none;
+}
+
+.btn-saas-action i {
+    font-size: 12px;
+    color: #64748b;
+    margin-left: -2px;
+}
+
+.btn-saas-action::after {
+    display: none !important;
+}
+
+/* ==========================================================================
+   ERP Back Button (Compact Primary Style)
+   ========================================================================== */
+.erp-btn-back {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border: none !important;
+    color: #ffffff !important;
+    height: 28px !important;
+    padding: 0 12px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.15);
+}
+
+.erp-btn-back i {
+    color: #ffffff !important;
+}
+
+.erp-btn-back:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e3a8a) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(37,99,235,0.25);
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   ERP Save Button (Sticky Footer)
+   ========================================================================== */
+.erp-btn-save {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+    border: 1px solid #047857 !important;
+    color: #ffffff !important;
+    height: 32px !important;
+    padding: 0 20px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 12px !important; /* Moved slightly left */
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2) !important;
+}
+
+.erp-btn-save i {
+    font-size: 14px !important;
+    margin-right: 6px !important;
+}
+
+.erp-btn-save:hover {
+    background: linear-gradient(180deg, #059669 0%, #047857 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
+.erp-btn-save:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(5, 150, 105, 0.2) !important;
+}
+
+/* Prevent layout shaking on filter form buttons and controls by disabling scale transform and transition */
+#filterForm .btn,
+#filterForm select,
+#filterForm input,
+.list-header .btn {
+    transform: none !important;
+    transition: none !important;
+}

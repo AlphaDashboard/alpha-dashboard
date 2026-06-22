@@ -1,0 +1,470 @@
+/* --- Common Form Styles --- */
+
+.form-label, label {
+    font-size: 13px !important;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #334155;
+    letter-spacing: 0.02em;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.mb-3, .col-md-4, .col-md-6 {
+    margin-bottom: 16px;
+}
+
+/* Standard Inputs & Controls */
+input, select, textarea, .form-control, .form-select, .select2-container--default .select2-selection--single {
+    height: 38px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    color: #1e293b;
+}
+
+textarea {
+    height: 36px !important;
+    resize: none;
+}
+
+.select2-container .select2-selection--single {
+    height: 36px !important;
+    display: flex;
+    align-items: center;
+}
+
+.select2-selection__rendered {
+    line-height: normal !important;
+    padding-left: 6px !important;
+}
+
+.form-control:focus, .form-select:focus, .select2-container--bootstrap-5.select2-container--focus .select2-selection {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2) !important;
+    outline: none;
+}
+
+.form-control:disabled, .form-control[readonly], .form-select:disabled, .bg-light[readonly] {
+    background-color: #e5e7eb !important;
+    color: #64748b;
+    border-color: #e2e8f0 !important;
+    cursor: not-allowed;
+}
+
+/* Drag & Drop File Upload Inputs */
+input[type="file"] {
+    border: 2px dashed #94a3b8 !important;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+input[type="file"]:hover {
+    border-color: var(--primary-color) !important;
+    background-color: #f0fdf4;
+}
+
+/* ==========================================================================
+   Bulletproof Compact ERP Forms (extracted from dashboard-erp.css)
+   ========================================================================== */
+
+:root {
+    --erp-h: 24px;
+    --erp-rad: 4px;
+    --erp-border: #d1d5db;
+    --erp-focus: #3b82f6;
+}
+
+/* Disable Number Spinners globally for precision accounting entry */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.erp-field {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.erp-field label {
+    position: absolute;
+    top: -7px;
+    left: 6px;
+    background: #fff;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #495057;
+    z-index: 10;
+    line-height: 1;
+    margin: 0;
+    pointer-events: none;
+}
+
+.erp-input,
+.form-select.erp-input {
+    width: 100%;
+    height: var(--erp-h) !important;
+    min-height: var(--erp-h) !important;
+    max-height: var(--erp-h) !important;
+    box-sizing: border-box !important;
+    border-radius: var(--erp-rad) !important;
+    padding: 0 8px !important;
+    border: 1px solid var(--erp-border) !important;
+    box-shadow: none !important;
+    font-size: 12px !important;
+    color: #0f172a;
+    background: #fff;
+    outline: none !important;
+    transition: all 0.2s ease;
+    line-height: normal !important;
+}
+
+.erp-input:hover,
+.form-select.erp-input:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+}
+
+.erp-input:focus,
+.form-select.erp-input:focus {
+    border-color: var(--erp-focus) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+}
+
+/* Select2 integration in ERP Fields */
+.erp-field .select2-container .select2-selection--single {
+    height: var(--erp-h) !important;
+    border: 1px solid var(--erp-border) !important;
+    border-radius: var(--erp-rad) !important;
+    display: flex;
+    align-items: center;
+    padding: 0 6px !important;
+}
+
+.erp-field .select2-container .select2-selection__rendered {
+    padding: 0 !important;
+    font-size: 12px !important;
+    color: #212529 !important;
+    line-height: normal !important;
+}
+
+.erp-field .select2-selection__arrow {
+    height: var(--erp-h) !important;
+    right: 10px !important;
+}
+
+/* Segmented Switches */
+.erp-segment {
+    display: inline-flex;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    border-radius: 20px !important; /* Smooth pill style */
+    border: 1px solid #cbd5e1;
+    overflow: hidden;
+    background: #f1f5f9;
+    width: 100%;
+    box-sizing: border-box !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.erp-segment input {
+    display: none;
+}
+
+.erp-seg-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Makes buttons equal width automatically */
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    margin: 0;
+    transition: all 0.2s ease;
+    border-right: 1px solid #e2e8f0;
+    letter-spacing: 0.5px;
+    padding: 0 12px;
+}
+
+.erp-seg-btn:last-child {
+    border-right: none;
+}
+
+.erp-segment input:checked+.issue-btn {
+    background: #ef4444; /* Modern crisp red */
+    color: white;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+    border-right-color: transparent;
+}
+
+.erp-segment input:checked+.deposit-btn {
+    background: #10b981; /* Modern crisp green */
+    color: white;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+/* Validation Styles */
+.erp-input.is-invalid,
+.erp-table-control.is-invalid,
+.select2-container.is-invalid .select2-selection--single {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.erp-input.is-invalid:focus,
+.erp-table-control.is-invalid:focus,
+.select2-container.is-invalid--focus .select2-selection--single {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.erp-input.is-valid,
+.erp-table-control.is-valid,
+.select2-container.is-valid .select2-selection--single {
+    border-color: #10b981 !important;
+}
+
+.invalid-feedback-erp {
+    display: none;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 10px;
+    color: #ef4444;
+    font-weight: 500;
+    text-align: left;
+}
+
+/* ==========================================================================
+   Compact ERP Field Sizing 
+   ========================================================================== */
+@media (min-width: 768px) {
+    .erp-voucher-no,
+    .erp-voucher-date {
+        flex: 0 0 22% !important;
+        max-width: 22% !important;
+    }
+}
+
+/* ==========================================================================
+   Flatpickr Professional ERP Theme Overrides (Date/Time Picker)
+   ========================================================================== */
+
+/* 1. Main Calendar Container */
+body .flatpickr-calendar {
+    width: 230px !important; 
+    padding: 6px !important; 
+    border-radius: 8px !important; 
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.12) !important; 
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    margin-top: 4px !important;
+}
+
+/* 2. Month/Year Header Section */
+body .flatpickr-calendar .flatpickr-months {
+    height: 30px !important;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+body .flatpickr-calendar .flatpickr-month {
+    height: 30px !important;
+}
+
+body .flatpickr-current-month {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px;
+}
+
+body .flatpickr-current-month .flatpickr-monthDropdown-months,
+body .flatpickr-current-month input.cur-year {
+    height: 24px !important;
+    padding: 0 2px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    border: none !important; /* Overrides global input borders */
+    background: transparent !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+body .flatpickr-current-month .numInputWrapper {
+    height: 24px !important;
+    width: 44px !important;
+    border: none !important;
+}
+
+body .flatpickr-current-month .flatpickr-monthDropdown-months {
+    appearance: none;
+    width: auto !important;
+}
+
+/* Month Navigation Arrows */
+body .flatpickr-calendar .flatpickr-prev-month,
+body .flatpickr-calendar .flatpickr-next-month {
+    height: 30px !important;
+    padding: 6px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body .flatpickr-calendar .flatpickr-prev-month svg,
+body .flatpickr-calendar .flatpickr-next-month svg {
+    width: 10px;
+    height: 10px;
+    fill: #64748b !important;
+}
+
+/* 3. Weekdays & Days Grid */
+body .flatpickr-calendar .flatpickr-weekdays {
+    height: 20px !important;
+}
+
+body .flatpickr-calendar .flatpickr-weekday {
+    font-size: 10px !important; 
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+}
+
+body .flatpickr-calendar .flatpickr-days {
+    width: 100% !important;
+}
+
+body .flatpickr-calendar .dayContainer {
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: none !important;
+    justify-content: space-around;
+}
+
+body .flatpickr-calendar .flatpickr-day {
+    height: 26px !important;
+    line-height: 26px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    border-radius: 6px !important;
+    margin: 1px 0 !important;
+    border: 1px solid transparent !important;
+}
+
+/* Selected & Hover States */
+body .flatpickr-calendar .flatpickr-day.selected,
+body .flatpickr-calendar .flatpickr-day.startRange,
+body .flatpickr-calendar .flatpickr-day.endRange,
+body .flatpickr-calendar .flatpickr-day.selected:focus,
+body .flatpickr-calendar .flatpickr-day.selected:hover {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3) !important;
+}
+
+body .flatpickr-calendar .flatpickr-day:hover:not(.selected) {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body .flatpickr-calendar .flatpickr-day.today {
+    border-color: #cbd5e1 !important;
+}
+
+/* 4. Bottom Time Section */
+body .flatpickr-calendar .flatpickr-time {
+    border-top: 1px solid #f1f5f9 !important;
+    height: 34px !important; 
+    max-height: 34px !important;
+    line-height: 34px !important;
+    margin-top: 4px !important; 
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #ffffff !important;
+    border-bottom: none !important;
+}
+
+body .flatpickr-time .numInputWrapper {
+    height: 26px !important;
+    width: 36px !important;
+}
+
+body .flatpickr-time input.numInput.flatpickr-hour,
+body .flatpickr-time input.numInput.flatpickr-minute {
+    height: 26px !important;
+    font-size: 12px !important; 
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    border: none !important; /* Overrides global input border */
+    background: transparent !important;
+    padding: 0 !important;
+    text-align: center !important;
+    box-shadow: none !important;
+}
+
+body .flatpickr-time input.numInput:hover,
+body .flatpickr-time input.numInput:focus {
+    background: #f8fafc !important;
+}
+
+body .flatpickr-time .flatpickr-time-separator {
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    width: 10px !important;
+    height: 26px !important;
+    line-height: 26px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+body .flatpickr-time .flatpickr-am-pm {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #3b82f6 !important;
+    height: 26px !important;
+    line-height: 26px !important;
+    width: 28px !important;
+    margin-left: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+body .flatpickr-time .flatpickr-am-pm:hover {
+    background: #f8fafc !important;
+}
+
+/* Remove awkward tooltip arrows */
+body .flatpickr-calendar.arrowTop:before,
+body .flatpickr-calendar.arrowTop:after,
+body .flatpickr-calendar.arrowBottom:before,
+body .flatpickr-calendar.arrowBottom:after {
+    display: none !important;
+}
+

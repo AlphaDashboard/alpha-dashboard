@@ -1,0 +1,1867 @@
+/* --- From bank_transaction_form.html --- */
+
+    /* Variables */
+    :root {
+        --erp-h: 24px;
+        --erp-rad: 4px;
+        --erp-border: #d1d5db;
+        --erp-focus: #3b82f6;
+        --erp-table-row-min-h: 26px;
+    }
+
+    /* Modern ERP Action Buttons */
+    .erp-action-btn {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .erp-btn-add {
+        background-color: #eff6ff !important;
+        color: #3b82f6 !important;
+    }
+    .erp-btn-add:hover {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    .erp-btn-delete {
+        background-color: #fef2f2 !important;
+        color: #ef4444 !important;
+    }
+    .erp-btn-delete:hover {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+    }    
+    
+    :root {
+        --erp-table-input-h: 22px;
+        --erp-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Typography Hierarchy */
+    .erp-page-title {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: #0f172a;
+        letter-spacing: -0.3px;
+    }
+
+    .erp-section-title {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Dropdown Z-Index Fix */
+    .select2-container--default .select2-dropdown {
+        z-index: 2000 !important;
+    }
+
+    /* Bulletproof ERP Fields */
+    .erp-field {
+        position: relative;
+        width: 100%;
+        margin-top: 10px;
+        /* Space for the fixed label */
+    }
+
+    .erp-field label {
+        position: absolute;
+        top: -7px;
+        left: 6px;
+        background: #fff;
+        padding: 0 4px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #495057;
+        z-index: 10;
+        line-height: 1;
+        margin: 0;
+        pointer-events: none;
+    }
+
+    .erp-input {
+        width: 100%;
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        max-height: var(--erp-h) !important;
+        border: 1px solid var(--erp-border);
+        border-radius: var(--erp-rad) !important;
+        padding: 0 6px;
+        font-size: 12px;
+        color: #212529;
+        background: #fff;
+        outline: none;
+        transition: border-color 0.15s;
+        line-height: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Disable Number Spinners and Scroll Jumping */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .erp-input:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Select2 integration */
+    .erp-field .select2-container .select2-selection--single {
+        height: var(--erp-h) !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        display: flex;
+        align-items: center;
+        padding: 0 6px !important;
+    }
+
+    .erp-field .select2-container .select2-selection__rendered {
+        padding: 0 !important;
+        font-size: 12px !important;
+        color: #212529 !important;
+        line-height: normal !important;
+    }
+
+    .erp-field .select2-selection__arrow {
+        height: var(--erp-h) !important;
+        right: 10px !important;
+    }
+
+    /* Segmented Switches */
+    .erp-segment {
+        display: inline-flex;
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        max-height: var(--erp-h) !important;
+        border-radius: var(--erp-rad);
+        border: 1px solid var(--erp-border);
+        overflow: hidden;
+        background: #f8f9fa;
+        width: 100%;
+        box-sizing: border-box !important;
+    }
+
+    .erp-segment input {
+        display: none;
+    }
+
+    .erp-seg-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #6c757d;
+        cursor: pointer;
+        margin: 0;
+        transition: all 0.15s;
+        border-right: 1px solid #ced4da;
+        letter-spacing: 0.5px;
+    }
+
+    .erp-seg-btn:last-child {
+        border-right: none;
+    }
+
+    .erp-segment input:checked+.issue-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .erp-segment input:checked+.deposit-btn {
+        background: #198754;
+        color: white;
+    }
+
+    /* Fixed Footer alignment with Sidebar */
+    body {
+        overflow-x: hidden !important;
+    }
+
+    .erp-footer-fixed {
+        position: fixed;
+        bottom: 0;
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        z-index: 1040;
+        box-sizing: border-box !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (min-width: 769px) {
+
+        body.sidebar-collapsed .erp-footer-fixed,
+        html.sidebar-collapsed-preload body .erp-footer-fixed {
+            left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .erp-footer-fixed {
+            left: 0;
+            width: 100%;
+        }
+    }
+
+    /* Layout & Cards */
+    .erp-card {
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        box-shadow: var(--erp-shadow) !important;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .erp-card:hover {
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    @media (max-width: 1200px) {}
+
+    @media (max-width: 768px) {}
+
+    @media (max-width: 576px) {}
+
+    /* Standard Inputs & Controls */
+    .erp-input,
+    .form-select.erp-input {
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        box-sizing: border-box !important;
+        border-radius: var(--erp-rad) !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+        border: 1px solid var(--erp-border);
+        box-shadow: none !important;
+        transition: all 0.2s ease;
+        color: #0f172a;
+    }
+
+    .erp-input:hover,
+    .form-select.erp-input:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-input:focus,
+    .form-select.erp-input:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        background-color: #fff !important;
+        outline: none !important;
+    }
+
+    /* Validation Styles */
+    .erp-input.is-invalid,
+    .erp-table-control.is-invalid,
+    .erp-card .select2-container.is-invalid .select2-selection--single,
+    .erp-card .select2-container.is-invalid-erp .select2-selection--single,
+    .erp-table .select2-container.is-invalid .select2-selection--single,
+    .erp-table .select2-container.is-invalid-erp .select2-selection--single,
+    .select2-container.is-invalid .select2-selection--single,
+    .select2-container.is-invalid-erp .select2-selection--single,
+    .select2-container--bootstrap-5.is-invalid-erp .select2-selection {
+        border: 1px solid #ef4444 !important;
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+    }
+    
+    .erp-input.is-invalid:focus,
+    .erp-table-control.is-invalid:focus,
+    .select2-container.is-invalid--focus .select2-selection--single,
+    .erp-card .select2-container.is-invalid--focus .select2-selection--single,
+    .erp-table .select2-container.is-invalid--focus .select2-selection--single {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+    }
+
+    .erp-input.is-valid,
+    .erp-table-control.is-valid,
+    .erp-card .select2-container.is-valid .select2-selection--single,
+    .erp-table .select2-container.is-valid .select2-selection--single,
+    .select2-container.is-valid .select2-selection--single {
+        border: 1px solid #10b981 !important;
+        border-color: #10b981 !important;
+    }
+
+    .invalid-feedback-erp {
+        display: none;
+        width: 100%;
+        margin-top: 2px;
+        font-size: 10px;
+        color: #ef4444;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .is-invalid ~ .invalid-feedback-erp,
+    .is-invalid-erp ~ .invalid-feedback-erp,
+    .select2-container.is-invalid + .invalid-feedback-erp,
+    .select2-container.is-invalid-erp + .invalid-feedback-erp {
+        display: block !important;
+    }
+
+    /* Cursors */
+    input[type="text"].erp-input,
+    input[type="number"].erp-input { cursor: text !important; }
+    input[type="date"].erp-input,
+    .form-select.erp-input { cursor: pointer !important; }
+
+    .erp-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+        border-radius: 4px !important;
+        cursor: pointer;
+        border: 1px solid #94a3b8;
+    }
+
+    /* Buttons */
+    .erp-btn {
+        height: var(--erp-h);
+        padding: 0 18px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--erp-rad) !important;
+        transition: all 0.2s ease;
+    }
+
+    .erp-btn-sm {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: var(--erp-rad) !important;
+        transition: all 0.2s ease;
+    }
+
+    .erp-btn:hover,
+    .erp-btn-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Table System */
+    .erp-table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .erp-table th {
+        height: 32px !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        text-transform: uppercase;
+        color: #f8f9fa !important;
+        background-color: #343a40 !important;
+        letter-spacing: 0.5px;
+        padding: 0 4px !important;
+        border-top: none;
+        vertical-align: middle;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .erp-table td {
+        padding: 0 !important;
+        vertical-align: middle;
+    }
+
+    .transaction-row {
+        height: var(--erp-table-row-min-h) !important;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Table Inputs */
+    .erp-table-control {
+        height: 36px !important;
+        min-height: 36px !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        background-color: #fff !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 2px 0 !important;
+        display: block !important;
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        box-shadow: none !important;
+        color: #0f172a;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="date"].erp-table-control::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    .erp-table-control:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-table-control:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        background-color: #fff !important;
+        outline: none !important;
+    }
+
+    /* Cursors */
+    input[type="text"].erp-table-control,
+    input[type="number"].erp-table-control { cursor: text !important; }
+    input[type="date"].erp-table-control,
+    .form-select.erp-table-control { cursor: pointer !important; }
+
+    /* Sticky Columns */
+    .sticky-col-1 {
+        position: sticky !important;
+        left: 0;
+        z-index: 2;
+        background-color: #f8fafc !important;
+    }
+
+    .sticky-col-2 {
+        position: sticky !important;
+        left: 45px;
+        z-index: 2;
+        background-color: #fff !important;
+        box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.1);
+        border-right: 1px solid var(--erp-border) !important;
+    }
+
+    .sticky-col-left-span {
+        position: sticky !important;
+        left: 0;
+        z-index: 2;
+    }
+
+    .sticky-col-right {
+        position: sticky !important;
+        right: 0;
+        z-index: 2;
+        background-color: #fff !important;
+        box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.1);
+        border-left: 1px solid var(--erp-border) !important;
+    }
+
+    thead th.sticky-col-1,
+    thead th.sticky-col-2,
+    thead th.sticky-col-right {
+        z-index: 12 !important;
+        background-color: #a0aab5 !important;
+    }
+
+    #footerTableScroll .sticky-col-left-span,
+    #footerTableScroll .sticky-col-right {
+        background-color: #a0aab5 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Form Select2 Integration (Top Form) */
+    .erp-card .select2-container .select2-selection--single {
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        box-sizing: border-box !important;
+        border-radius: var(--erp-rad) !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+        border: 1px solid var(--erp-border) !important;
+        background-color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        box-shadow: none !important;
+    }
+
+    .erp-card .select2-container:hover .select2-selection--single {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-card .select2-container--focus .select2-selection--single,
+    .erp-card .select2-container--open .select2-selection--single {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        outline: none !important;
+    }
+
+    .erp-card .select2-container .select2-selection--single .select2-selection__rendered {
+        padding: 0 !important;
+        line-height: normal !important;
+        color: #0f172a !important;
+        width: 100%;
+    }
+
+    .erp-card .select2-container .select2-selection--single .select2-selection__arrow {
+        height: var(--erp-h) !important;
+        right: 8px !important;
+        top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Table Select2 Integration */
+    .erp-table .select2-container {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 2px 0 !important;
+        display: block;
+    }
+
+    .erp-table .select2-container .select2-selection--single {
+        height: 36px !important;
+        min-height: 36px !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        background-color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .erp-table .select2-container:hover .select2-selection--single {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+        cursor: pointer !important;
+    }
+
+    .erp-table .select2-container--focus .select2-selection--single,
+    .erp-table .select2-container--open .select2-selection--single {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        outline: none !important;
+    }
+
+    .erp-table .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: normal !important;
+        font-size: 12px !important;
+        padding-left: 6px !important;
+        color: #0f172a !important;
+        width: 100%;
+    }
+
+    .erp-table .select2-container .select2-selection--single .select2-selection__arrow {
+        height: var(--erp-table-input-h) !important;
+        right: 6px !important;
+        top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Dropdown Global Fixes (Applies to all Select2 menus) */
+    .select2-dropdown {
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        z-index: 9999 !important;
+        font-size: 12px !important;
+    }
+
+    .select2-search--dropdown {
+        padding: 6px !important;
+    }
+
+    .select2-search__field {
+        height: 28px !important;
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        outline: none !important;
+    }
+
+    .select2-search__field:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: inset 0 0 0 1px var(--erp-focus) !important;
+    }
+
+    .select2-results__option {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+    .select2-container--bootstrap-5 .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: var(--erp-focus) !important;
+        color: white !important;
+    }
+
+    /* Interactions */
+    .transaction-row:focus-within,
+    .transaction-row:hover {
+        background-color: #f8fafc;
+    }
+
+    .remove-row-btn {
+        transition: all 0.2s ease;
+        color: #94a3b8 !important;
+    }
+
+    .remove-row-btn:hover {
+        color: #ef4444 !important;
+        background-color: #fee2e2;
+    }
+
+    /* Empty State for Table Body */
+    #dynamicTableBody:empty::after {
+        content: "No transactions added. Click '+' to add a row.";
+        display: block;
+        text-align: center;
+        padding: 40px 0;
+        color: #94a3b8;
+        font-size: 14px;
+        font-style: italic;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        pointer-events: none;
+    }
+
+    #dynamicTable {
+        margin-bottom: 0 !important;
+    }
+
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Hide footer scrollbar visually but keep its width for alignment */
+    #footerTableScroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-track {
+        background: #a0aab5;
+        border-radius: 0;
+        border: none;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-thumb {
+        background: #a0aab5;
+        border-radius: 0;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-corner {
+        background: #a0aab5;
+    }
+
+/* --- From bank_transaction_list.html --- */
+
+    /* Professional ERP Layout System Variables */
+    :root {
+        --erp-control-height: 34px;
+        --erp-font-size: 12px;
+        --erp-radius: 6px;
+        --erp-border: #e5e7eb;
+        --erp-focus: #3b82f6;
+    }
+
+    /* Base Typography & Background */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: var(--erp-font-size);
+        color: #374151;
+    }
+
+    /* ERP Table Structure */
+    .erp-table {
+        border-collapse: collapse;
+        table-layout: fixed; /* Ensures column widths are respected strictly */
+        border: 1px solid #e5e7eb;
+    }
+    
+    .erp-table thead tr {
+        height: 36px;
+    }
+
+    .erp-table th {
+        box-sizing: border-box;
+        height: 36px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475467;
+        background: #f8fafc;
+        padding: 0 8px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        vertical-align: middle;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        box-shadow: none !important;
+        border-top: none !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .status-column,
+    .actions-column {
+        font-size: 12px !important;
+        letter-spacing: 0 !important;
+        padding: 0 4px !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    .erp-table tbody tr {
+        height: 34px;
+    }
+
+    .erp-table td {
+        font-size: 12px;
+        color: #374151;
+        padding: 4px 8px !important;
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .erp-table tbody tr:hover td {
+        background-color: #f8fafc;
+    }
+
+    /* Nested Action Buttons within Table */
+    .erp-table .btn-sm {
+        height: 28px !important;
+        padding: 0 10px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Empty State Optimization */
+    #transactionTableBody tr td[colspan="8"] {
+        vertical-align: middle !important;
+        padding: 0 !important;
+        white-space: normal;
+    }
+    .empty-state-container {
+        min-height: 280px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    #transactionTableBody tr td.text-center.py-5 i {
+        font-size: 56px !important;
+        color: #9ca3af;
+        margin-bottom: 16px;
+        display: block;
+    }
+    #transactionTableBody tr td.text-center.py-5 h5 {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        margin-bottom: 8px;
+    }
+    #transactionTableBody tr td.text-center.py-5 p {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin-bottom: 0;
+    }
+
+    /* Compact Scrollbar */
+    .table-responsive::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: transparent; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    .table-responsive::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    
+    /* Control Focus State */
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Action Dropdown Styling */
+    .action-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 34px !important;
+        padding: 0 14px !important;
+        border-radius: 6px !important;
+        font-size: 13px;
+        font-weight: 600;
+        background-color: #ffffff;
+        border: 1px solid #dbe2ea;
+        color: #1e293b;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover, .action-btn:focus, .dropdown.show .action-btn {
+        background-color: #f8fafc;
+        color: #1e293b;
+        border-color: #dbe2ea;
+    }
+    
+    .action-menu {
+        background-color: #ffffff;
+        width: 220px;
+        border-radius: 16px;
+        padding: 12px 0;
+        border: none !important;
+        margin-top: 8px !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12) !important;
+        z-index: 1050;
+    }
+    
+    .action-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 48px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #374151;
+        padding: 0 20px;
+        transition: background-color 0.2s;
+    }
+    
+    .action-menu .dropdown-item:hover {
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+
+    /* SAAS ACTIONS BUTTON */
+    .btn-saas-action {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        height: 32px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-saas-action:hover, .btn-saas-action:focus, .dropdown.show .btn-saas-action {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+/* --- From section_c_form.html --- */
+
+    /* Variables */
+    :root {
+        --erp-h: 24px;
+        --erp-rad: 4px;
+        --erp-border: #d1d5db;
+        --erp-focus: #3b82f6;
+        --erp-table-row-min-h: 26px;
+    }
+
+    /* Modern ERP Action Buttons */
+    .erp-action-btn {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .erp-btn-add {
+        background-color: #eff6ff !important;
+        color: #3b82f6 !important;
+    }
+    .erp-btn-add:hover {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    .erp-btn-delete {
+        background-color: #fef2f2 !important;
+        color: #ef4444 !important;
+    }
+    .erp-btn-delete:hover {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+    }    
+    
+    :root {
+        --erp-table-input-h: 22px;
+        --erp-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Typography Hierarchy */
+    .erp-page-title {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: #0f172a;
+        letter-spacing: -0.3px;
+    }
+
+    .erp-section-title {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Dropdown Z-Index Fix */
+    .select2-container--default .select2-dropdown {
+        z-index: 2000 !important;
+    }
+
+    /* Bulletproof ERP Fields */
+    .erp-field {
+        position: relative;
+        width: 100%;
+        margin-top: 10px;
+        /* Space for the fixed label */
+    }
+
+    .erp-field label {
+        position: absolute;
+        top: -7px;
+        left: 6px;
+        background: #fff;
+        padding: 0 4px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #495057;
+        z-index: 10;
+        line-height: 1;
+        margin: 0;
+        pointer-events: none;
+    }
+
+    .erp-input {
+        width: 100%;
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        max-height: var(--erp-h) !important;
+        border: 1px solid var(--erp-border);
+        border-radius: var(--erp-rad) !important;
+        padding: 0 6px;
+        font-size: 12px;
+        color: #212529;
+        background: #fff;
+        outline: none;
+        transition: border-color 0.15s;
+        line-height: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Disable Number Spinners and Scroll Jumping */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .erp-input:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Select2 integration */
+    .erp-field .select2-container .select2-selection--single {
+        height: var(--erp-h) !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        display: flex;
+        align-items: center;
+        padding: 0 6px !important;
+    }
+
+    .erp-field .select2-container .select2-selection__rendered {
+        padding: 0 !important;
+        font-size: 12px !important;
+        color: #212529 !important;
+        line-height: normal !important;
+    }
+
+    .erp-field .select2-selection__arrow {
+        height: var(--erp-h) !important;
+        right: 10px !important;
+    }
+
+    /* Segmented Switches */
+    .erp-segment {
+        display: inline-flex;
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        max-height: var(--erp-h) !important;
+        border-radius: var(--erp-rad);
+        border: 1px solid var(--erp-border);
+        overflow: hidden;
+        background: #f8f9fa;
+        width: 100%;
+        box-sizing: border-box !important;
+    }
+
+    .erp-segment input {
+        display: none;
+    }
+
+    .erp-seg-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #6c757d;
+        cursor: pointer;
+        margin: 0;
+        transition: all 0.15s;
+        border-right: 1px solid #ced4da;
+        letter-spacing: 0.5px;
+    }
+
+    .erp-seg-btn:last-child {
+        border-right: none;
+    }
+
+    .erp-segment input:checked+.issue-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .erp-segment input:checked+.deposit-btn {
+        background: #198754;
+        color: white;
+    }
+
+    /* Fixed Footer alignment with Sidebar */
+    body {
+        overflow-x: hidden !important;
+    }
+
+    .erp-footer-fixed {
+        position: fixed;
+        bottom: 0;
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        z-index: 1040;
+        box-sizing: border-box !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (min-width: 769px) {
+
+        body.sidebar-collapsed .erp-footer-fixed,
+        html.sidebar-collapsed-preload body .erp-footer-fixed {
+            left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .erp-footer-fixed {
+            left: 0;
+            width: 100%;
+        }
+    }
+
+    /* Layout & Cards */
+    .erp-card {
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        box-shadow: var(--erp-shadow) !important;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .erp-card:hover {
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    @media (max-width: 1200px) {}
+
+    @media (max-width: 768px) {}
+
+    @media (max-width: 576px) {}
+
+    /* Standard Inputs & Controls */
+    .erp-input,
+    .form-select.erp-input {
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        box-sizing: border-box !important;
+        border-radius: var(--erp-rad) !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+        border: 1px solid var(--erp-border);
+        box-shadow: none !important;
+        transition: all 0.2s ease;
+        color: #0f172a;
+    }
+
+    .erp-input:hover,
+    .form-select.erp-input:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-input:focus,
+    .form-select.erp-input:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        background-color: #fff !important;
+        outline: none !important;
+    }
+
+    /* Validation Styles */
+    .erp-input.is-invalid,
+    .erp-table-control.is-invalid,
+    .select2-container.is-invalid .select2-selection--single {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+    }
+    
+    .erp-input.is-invalid:focus,
+    .erp-table-control.is-invalid:focus,
+    .select2-container.is-invalid--focus .select2-selection--single {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+    }
+
+    .erp-input.is-valid,
+    .erp-table-control.is-valid,
+    .select2-container.is-valid .select2-selection--single {
+        border-color: #10b981 !important;
+    }
+
+    .invalid-feedback-erp {
+        display: none;
+        width: 100%;
+        margin-top: 2px;
+        font-size: 10px;
+        color: #ef4444;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .is-invalid ~ .invalid-feedback-erp {
+        display: block;
+    }
+
+    /* Cursors */
+    input[type="text"].erp-input,
+    input[type="number"].erp-input { cursor: text !important; }
+    input[type="date"].erp-input,
+    .form-select.erp-input { cursor: pointer !important; }
+
+    .erp-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+        border-radius: 4px !important;
+        cursor: pointer;
+        border: 1px solid #94a3b8;
+    }
+
+    /* Buttons */
+    .erp-btn {
+        height: var(--erp-h);
+        padding: 0 18px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--erp-rad) !important;
+        transition: all 0.2s ease;
+    }
+
+    .erp-btn-sm {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: var(--erp-rad) !important;
+        transition: all 0.2s ease;
+    }
+
+    .erp-btn:hover,
+    .erp-btn-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Table System */
+    .erp-table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .erp-table th {
+        height: 32px !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        text-transform: uppercase;
+        color: #f8f9fa !important;
+        background-color: #343a40 !important;
+        letter-spacing: 0.5px;
+        padding: 0 4px !important;
+        border-top: none;
+        vertical-align: middle;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .erp-table td {
+        padding: 0 !important;
+        vertical-align: middle;
+    }
+
+    .transaction-row {
+        height: var(--erp-table-row-min-h) !important;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Table Inputs */
+    .erp-table-control {
+        height: 36px !important;
+        min-height: 36px !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        background-color: #fff !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 2px 0 !important;
+        display: block !important;
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        box-shadow: none !important;
+        color: #0f172a;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="date"].erp-table-control::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    .erp-table-control:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-table-control:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        background-color: #fff !important;
+        outline: none !important;
+    }
+
+    /* Cursors */
+    input[type="text"].erp-table-control,
+    input[type="number"].erp-table-control { cursor: text !important; }
+    input[type="date"].erp-table-control,
+    .form-select.erp-table-control { cursor: pointer !important; }
+
+    /* Sticky Columns */
+    .sticky-col-1 {
+        position: sticky !important;
+        left: 0;
+        z-index: 2;
+        background-color: #f8fafc !important;
+    }
+
+    .sticky-col-2 {
+        position: sticky !important;
+        left: 45px;
+        z-index: 2;
+        background-color: #fff !important;
+        box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.1);
+        border-right: 1px solid var(--erp-border) !important;
+    }
+
+    .sticky-col-left-span {
+        position: sticky !important;
+        left: 0;
+        z-index: 2;
+    }
+
+    .sticky-col-right {
+        position: sticky !important;
+        right: 0;
+        z-index: 2;
+        background-color: #fff !important;
+        box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.1);
+        border-left: 1px solid var(--erp-border) !important;
+    }
+
+    thead th.sticky-col-1,
+    thead th.sticky-col-2,
+    thead th.sticky-col-right {
+        z-index: 12 !important;
+        background-color: #a0aab5 !important;
+    }
+
+    #footerTableScroll .sticky-col-left-span,
+    #footerTableScroll .sticky-col-right {
+        background-color: #a0aab5 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Form Select2 Integration (Top Form) */
+    .erp-card .select2-container .select2-selection--single {
+        height: var(--erp-h) !important;
+        min-height: var(--erp-h) !important;
+        box-sizing: border-box !important;
+        border-radius: var(--erp-rad) !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+        border: 1px solid var(--erp-border) !important;
+        background-color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        box-shadow: none !important;
+    }
+
+    .erp-card .select2-container:hover .select2-selection--single {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+    }
+
+    .erp-card .select2-container--focus .select2-selection--single,
+    .erp-card .select2-container--open .select2-selection--single {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        outline: none !important;
+    }
+
+    .erp-card .select2-container .select2-selection--single .select2-selection__rendered {
+        padding: 0 !important;
+        line-height: normal !important;
+        color: #0f172a !important;
+        width: 100%;
+    }
+
+    .erp-card .select2-container .select2-selection--single .select2-selection__arrow {
+        height: var(--erp-h) !important;
+        right: 8px !important;
+        top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Table Select2 Integration */
+    .erp-table .select2-container {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 2px 0 !important;
+        display: block;
+    }
+
+    .erp-table .select2-container .select2-selection--single {
+        height: 36px !important;
+        min-height: 36px !important;
+        border: 1px solid var(--erp-border) !important;
+        border-radius: var(--erp-rad) !important;
+        background-color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .erp-table .select2-container:hover .select2-selection--single {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+        cursor: pointer !important;
+    }
+
+    .erp-table .select2-container--focus .select2-selection--single,
+    .erp-table .select2-container--open .select2-selection--single {
+        border-color: var(--erp-focus) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        outline: none !important;
+    }
+
+    .erp-table .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: normal !important;
+        font-size: 12px !important;
+        padding-left: 6px !important;
+        color: #0f172a !important;
+        width: 100%;
+    }
+
+    .erp-table .select2-container .select2-selection--single .select2-selection__arrow {
+        height: var(--erp-table-input-h) !important;
+        right: 6px !important;
+        top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Dropdown Global Fixes (Applies to all Select2 menus) */
+    .select2-dropdown {
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        z-index: 9999 !important;
+        font-size: 12px !important;
+    }
+
+    .select2-search--dropdown {
+        padding: 6px !important;
+    }
+
+    .select2-search__field {
+        height: 28px !important;
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        border-radius: var(--erp-rad) !important;
+        border: 1px solid var(--erp-border) !important;
+        outline: none !important;
+    }
+
+    .select2-search__field:focus {
+        border-color: var(--erp-focus) !important;
+        box-shadow: inset 0 0 0 1px var(--erp-focus) !important;
+    }
+
+    .select2-results__option {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+    .select2-container--bootstrap-5 .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: var(--erp-focus) !important;
+        color: white !important;
+    }
+
+    /* Interactions */
+    .transaction-row:focus-within,
+    .transaction-row:hover {
+        background-color: #f8fafc;
+    }
+
+    .remove-row-btn {
+        transition: all 0.2s ease;
+        color: #94a3b8 !important;
+    }
+
+    .remove-row-btn:hover {
+        color: #ef4444 !important;
+        background-color: #fee2e2;
+    }
+
+    /* Empty State for Table Body */
+    #dynamicTableBody:empty::after {
+        content: "No transactions added. Click '+' to add a row.";
+        display: block;
+        text-align: center;
+        padding: 40px 0;
+        color: #94a3b8;
+        font-size: 14px;
+        font-style: italic;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        pointer-events: none;
+    }
+
+    #dynamicTable {
+        margin-bottom: 0 !important;
+    }
+
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Hide footer scrollbar visually but keep its width for alignment */
+    #footerTableScroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-track {
+        background: #a0aab5;
+        border-radius: 0;
+        border: none;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-thumb {
+        background: #a0aab5;
+        border-radius: 0;
+    }
+
+    #footerTableScroll::-webkit-scrollbar-corner {
+        background: #a0aab5;
+    }
+
+/* --- From section_c_list.html --- */
+
+    /* Professional ERP Layout System Variables */
+    :root {
+        --erp-control-height: 34px;
+        --erp-font-size: 12px;
+        --erp-radius: 6px;
+        --erp-border: #e5e7eb;
+        --erp-focus: #3b82f6;
+    }
+
+    /* Base Typography & Background */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: var(--erp-font-size);
+        color: #374151;
+    }
+
+    /* ERP Table Structure */
+    .erp-table {
+        border-collapse: collapse;
+        table-layout: fixed; /* Ensures column widths are respected strictly */
+        border: 1px solid #e5e7eb;
+    }
+    
+    .erp-table thead tr {
+        height: 36px;
+    }
+
+    .erp-table th {
+        box-sizing: border-box;
+        height: 36px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475467;
+        background: #f8fafc;
+        padding: 0 8px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        vertical-align: middle;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        box-shadow: none !important;
+        border-top: none !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .status-column,
+    .actions-column {
+        font-size: 12px !important;
+        letter-spacing: 0 !important;
+        padding: 0 4px !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    .erp-table tbody tr {
+        height: 34px;
+    }
+
+    .erp-table td {
+        font-size: 12px;
+        color: #374151;
+        padding: 4px 8px !important;
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .erp-table tbody tr:hover td {
+        background-color: #f8fafc;
+    }
+
+    /* Nested Action Buttons within Table */
+    .erp-table .btn-sm {
+        height: 28px !important;
+        padding: 0 10px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Empty State Optimization */
+    #transactionTableBody tr td[colspan="8"] {
+        vertical-align: middle !important;
+        padding: 0 !important;
+        white-space: normal;
+    }
+    .empty-state-container {
+        min-height: 280px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    #transactionTableBody tr td.text-center.py-5 i {
+        font-size: 56px !important;
+        color: #9ca3af;
+        margin-bottom: 16px;
+        display: block;
+    }
+    #transactionTableBody tr td.text-center.py-5 h5 {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        margin-bottom: 8px;
+    }
+    #transactionTableBody tr td.text-center.py-5 p {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin-bottom: 0;
+    }
+
+    /* Compact Scrollbar */
+    .table-responsive::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: transparent; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    .table-responsive::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    
+    /* Control Focus State */
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* ERP Segment Toggle (Deposit/Issue Style) */
+    .erp-segment input[type="radio"] {
+        display: none;
+    }
+    .erp-seg-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6c757d;
+        cursor: pointer;
+        margin: 0;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-right: 1px solid #ced4da;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .erp-seg-btn:last-child {
+        border-right: none;
+    }
+    .erp-seg-btn:hover {
+        background: #f8f9fa;
+        color: #495057;
+    }
+    .erp-segment input:checked + .active-btn {
+        background: #059669; /* Emerald 600 */
+        color: white;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .erp-segment input:checked + .inactive-btn {
+        background: #dc2626; /* Red 600 */
+        color: white;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Action Dropdown Styling */
+    .action-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 34px !important;
+        padding: 0 14px !important;
+        border-radius: 6px !important;
+        font-size: 13px;
+        font-weight: 600;
+        background-color: #ffffff;
+        border: 1px solid #dbe2ea;
+        color: #1e293b;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover, .action-btn:focus, .dropdown.show .action-btn {
+        background-color: #f8fafc;
+        color: #1e293b;
+        border-color: #dbe2ea;
+    }
+    
+    .action-menu {
+        background-color: #ffffff;
+        width: 220px;
+        border-radius: 16px;
+        padding: 12px 0;
+        border: none !important;
+        margin-top: 8px !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12) !important;
+        z-index: 1050;
+    }
+    
+    .action-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 48px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #374151;
+        padding: 0 20px;
+        transition: background-color 0.2s;
+    }
+    
+    .action-menu .dropdown-item:hover {
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+
+    /* SAAS ACTIONS BUTTON */
+    .btn-saas-action {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        height: 32px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-saas-action:hover, .btn-saas-action:focus, .dropdown.show .btn-saas-action {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+/* ==========================================================================
+   Clean removal of all success checkmark/tick indicators and green borders
+   ========================================================================== */
+.erp-input.is-valid,
+.erp-input:valid,
+.erp-table-control.is-valid,
+.erp-table-control:valid,
+.form-control.is-valid,
+.form-control:valid,
+.form-select.is-valid,
+.form-select:valid {
+    background-image: none !important;
+    border-color: #d1d5db !important; /* normal erp border */
+    padding-right: 8px !important; /* restore normal padding */
+}
+
+/* Specifically prevent green highlight on focus for valid fields */
+.erp-input.is-valid:focus,
+.erp-input:valid:focus,
+.erp-table-control.is-valid:focus,
+.erp-table-control:valid:focus,
+.form-control.is-valid:focus,
+.form-control:valid:focus,
+.form-select.is-valid:focus,
+.form-select:valid:focus {
+    border-color: #3b82f6 !important; /* normal erp focus border */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Select2 container overrides for is-valid and :valid */
+.select2-container.is-valid .select2-selection,
+.select2-container:valid .select2-selection,
+.select2-container--bootstrap-5.is-valid .select2-selection,
+.select2-container--bootstrap-5:valid .select2-selection,
+.select2-container.is-valid .select2-selection--single,
+.select2-container:valid .select2-selection--single {
+    background-image: none !important;
+    border-color: #d1d5db !important;
+    background-color: #fff !important;
+}
+

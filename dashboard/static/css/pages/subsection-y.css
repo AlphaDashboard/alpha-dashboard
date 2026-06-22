@@ -1,0 +1,81 @@
+/* --- Sub Section Y Floating Footer --- */
+.erp-list-footer-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: calc(var(--sidebar-width, 240px) + 20px);
+    right: 20px;
+    z-index: 1050;
+    height: 36px;
+    background: #4b5563;
+    border-radius: 0 0 8px 8px;
+    border-top: 2px solid #374151;
+    border-left: 1px solid #6b7280;
+    border-right: 1px solid #6b7280;
+    border-bottom: 1px solid #374151;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    display: flex;
+    align-items: center;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.erp-list-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 24px;
+    gap: 16px;
+}
+
+.erp-list-footer-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.erp-list-footer-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 769px) {
+    body.sidebar-collapsed .erp-list-footer-fixed,
+    html.sidebar-collapsed-preload body .erp-list-footer-fixed {
+        left: calc(var(--sidebar-collapsed-width, 78px) + 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .erp-list-footer-fixed {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+    }
+}
+
+/* Dropdown caret hiding */
+.hide-caret::after {
+    display: none !important;
+}
+
+/* Strict 3-section layout scrolling rules for Sub Section Y List */
+body {
+    overflow: hidden !important;
+}
+
+.main-content {
+    padding-bottom: 0 !important;
+}

@@ -1,0 +1,328 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Gate Pass - {{ entry.gate_pass_id }}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.css' %}">
+    
+    <style>
+        /* receipt-scale styling optimized for standard thermal rolls (80mm) */
+        html, body {
+            background-color: #ffffff;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .print-wrapper-gatepass {
+            width: 80mm;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 5mm;
+            box-sizing: border-box;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1; /* Visual guide in preview */
+        }
+
+        /* Branding Header */
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #000000;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .receipt-header h1 {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 0 0 2px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-header p {
+            font-size: 10px;
+            color: #4b5563;
+            margin: 0;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .receipt-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            background: #000000;
+            color: #ffffff;
+            padding: 3px 0;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Barcode Mono representation */
+        .barcode-area {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .barcode-lines {
+            font-family: 'Courier Prime', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .barcode-id {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        /* Information Grid */
+        .info-grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .info-grid td {
+            padding: 4px 0;
+            vertical-align: top;
+            font-size: 11px;
+        }
+
+        .info-grid td.label-cell {
+            font-weight: 700;
+            width: 40%;
+            text-transform: uppercase;
+            font-size: 10px;
+            color: #374151;
+        }
+
+        .info-grid td.value-cell {
+            width: 60%;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        /* Driver Photo Rendering */
+        .photo-box {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 12px 0;
+        }
+
+        .photo-inner {
+            width: 120px;
+            height: 90px;
+            border: 1px solid #000000;
+            background-color: #f3f4f6;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+        }
+
+        .photo-inner i {
+            font-size: 28px;
+            color: #9ca3af;
+        }
+
+        /* Signatures block */
+        .sig-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+            border-top: 1px dashed #000000;
+            padding-top: 25px;
+            text-align: center;
+        }
+
+        .sig-line {
+            border-top: 1px solid #000000;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding-top: 4px;
+            color: #374151;
+        }
+
+        /* Print instructions toolbar for preview */
+        .preview-toolbar {
+            width: 80mm;
+            margin: 10px auto;
+            display: flex;
+            gap: 10px;
+            box-sizing: border-box;
+            padding: 0 5px;
+        }
+
+        .btn-print {
+            flex: 1;
+            height: 32px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(37,99,235,0.2);
+        }
+
+        .btn-print-cancel {
+            height: 32px;
+            padding: 0 16px;
+            background: #ffffff;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-print-cancel:hover {
+            background: #f9fafb;
+        }
+
+        /* Print Media queries override styles */
+        @media print {
+            .preview-toolbar {
+                display: none !important;
+            }
+            .print-wrapper-gatepass {
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Actions Toolbar in Browser View (hidden on print) -->
+    <div class="preview-toolbar">
+        <button onclick="window.print();" class="btn-print">
+            <i class="bi bi-printer-fill"></i> Print Pass
+        </button>
+        <a href="{% url 'dashboard:gate_entry' %}" class="btn-print-cancel">
+            Back
+        </a>
+    </div>
+
+    <!-- Main Printable Check-in Pass Wrapper -->
+    <div class="print-wrapper-gatepass">
+        
+        <!-- Receipt Header Branding -->
+        <div class="receipt-header">
+            <h1>AccountMaster Enterprises</h1>
+            <p>Gate Check-In Slip</p>
+        </div>
+
+        <!-- AccountMasternumeric Pseudo Barcode -->
+        <div class="barcode-area">
+            <div class="barcode-lines">||||| | |||| ||| | ||</div>
+            <div class="barcode-id">{{ entry.gate_pass_id }}</div>
+        </div>
+
+        <div class="receipt-title">Gate Pass</div>
+
+        <!-- Info Grid -->
+        <table class="info-grid">
+            <tr>
+                <td class="label-cell">Gate Pass ID:</td>
+                <td class="value-cell">{{ entry.gate_pass_id }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Entry Time:</td>
+                <td class="value-cell">{{ entry.entry_datetime|date:"m/d/Y h:i A" }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Supplier:</td>
+                <td class="value-cell">{{ entry.supplier.Account_Name }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Vehicle No:</td>
+                <td class="value-cell">{{ entry.vehicle_number }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Material:</td>
+                <td class="value-cell">{{ entry.material_type.material_name }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Driver Name:</td>
+                <td class="value-cell">{{ entry.driver_name }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Created By:</td>
+                <td class="value-cell">{{ operator_name }}</td>
+            </tr>
+        </table>
+
+        <!-- Driver Captured Image Box -->
+        <div class="photo-box">
+            <div class="photo-inner">
+                {% if entry.photo %}
+                    <img src="{{ entry.photo }}" alt="Driver Photo">
+                {% else %}
+                    <i class="bi bi-person-fill"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Operator & Driver Signature lines -->
+        <div class="sig-block">
+            <div>
+                <div style="height: 25px;"></div>
+                <div class="sig-line">Operator Sig</div>
+            </div>
+            <div>
+                <div style="height: 25px;"></div>
+                <div class="sig-line">Driver Sig</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Automatic Browser printing popup script -->
+    <script>
+        window.addEventListener('load', function() {
+            // Slight timeout to let fonts and images buffer
+            setTimeout(function() {
+                window.print();
+            }, 300);
+        });
+    </script>
+</body>
+</html>

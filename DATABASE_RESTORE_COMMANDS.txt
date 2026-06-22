@@ -1,0 +1,46 @@
+================================================================
+ALPHA DASHBOARD - DATABASE RESTORE & PERMISSION COMMANDS
+================================================================
+
+If your database is corrupted or you are doing a fresh setup on a new machine, follow these steps and commands:
+
+----------------------------------------------------------------
+STEP 1: CREATE DATABASE AND ROLE
+----------------------------------------------------------------
+If the PostgreSQL user "alpha_user" does not exist on your system, 
+open pgAdmin, connect to your server, open the Query Tool and run:
+
+CREATE ROLE alpha_user WITH LOGIN PASSWORD 'Chetan@123' SUPERUSER;
+
+
+----------------------------------------------------------------
+STEP 2: RESTORE THE DATABASE BACKUP
+----------------------------------------------------------------
+1. Drop the corrupted/old "alpha_dashboard_trial" database in pgAdmin.
+2. Create a new empty database named "alpha_dashboard_trial".
+3. Open Command Prompt (CMD) in the project directory where the backup file is located.
+4. Run the following restore command:
+
+psql -U postgres -d alpha_dashboard_trial -f complete_database_backup.sql
+
+(Or if you are restoring as "alpha_user"):
+psql -U alpha_user -d alpha_dashboard_trial -f complete_database_backup.sql
+
+
+----------------------------------------------------------------
+STEP 3: GRANT PRIVILEGES (TO PREVENT PERMISSION DENIED ERROR)
+----------------------------------------------------------------
+If you get a "permission denied for table tblCategory" error, open the 
+Query Tool in pgAdmin for the "alpha_dashboard_trial" database and run:
+
+GRANT ALL PRIVILEGES ON SCHEMA public TO alpha_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO alpha_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO alpha_user;
+
+
+----------------------------------------------------------------
+STEP 4: RUN DJANGO MIGRATIONS
+----------------------------------------------------------------
+Open Command Prompt (CMD) in the project directory and run:
+
+python manage.py migrate

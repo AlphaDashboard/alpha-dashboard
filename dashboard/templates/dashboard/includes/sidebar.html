@@ -1,0 +1,86 @@
+<!-- Sidebar Component -->
+<div class="sidebar shadow-sm" id="sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link fs-5 fw-bold text-white mb-2" id="dashboard-link" href="{% url 'dashboard:alpha_list' %}">
+                <i class="bi bi-grid-1x2-fill fs-5 me-2"></i> <span>Dashboard</span>
+            </a>
+        </li>
+        
+        <!-- Settings -->
+        <li class="nav-item">
+            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#settingsMenu">
+                <i class="bi bi-gear-fill fs-5 me-2"></i> <span>Settings</span>
+                <i class="bi bi-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name == 'alpha_list' or request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' or request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' or request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}show{% endif %}" id="settingsMenu">
+                <ul class="nav flex-column ps-3">
+                    <li>
+                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'alpha_list' %}active-link{% endif %}" href="{% url 'dashboard:alpha_list' %}">
+                            Account Master
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' %}active-link{% endif %}" href="{% url 'dashboard:gate_entry' %}" data-section="Settings" data-subsection="AccountMaster Sub Group 1">
+                            AccountMaster Sub Group 1
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' %}active-link{% endif %}" href="{% url 'dashboard:sal_pur_group_list' %}" data-section="Settings" data-subsection="Purchase Sale Group">
+                            Purchase Sale Group
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}active-link{% endif %}" href="{% url 'dashboard:user_master_list' %}" data-section="Settings" data-subsection="User Master">
+                            User Master
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </li>
+        
+        <!-- Section 1 -->
+        <li class="nav-item">
+            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section1">
+                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 1</span>
+                <i class="bi bi-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' or request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' or request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}show{% endif %}" id="section1">
+                <ul class="nav flex-column ps-3">
+                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' %}active-link{% endif %}" href="{% url 'dashboard:voucher_list' %}" data-section="Section 1" data-subsection="Sub Section A (Vouchers)">Sub Section A</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' %}active-link{% endif %}" href="{% url 'dashboard:bank_transaction_list' %}" data-section="Section 1" data-subsection="Sub Section B">Sub Section B</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}active-link{% endif %}" href="{% url 'dashboard:section_c_list' %}" data-section="Section 1" data-subsection="Sub Section C">Sub Section C</a></li>
+                </ul>
+            </div>
+        </li>
+        <!-- Section 2 -->
+        <li class="nav-item">
+            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section2">
+                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 2</span>
+                <i class="bi bi-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' or request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' %}show{% endif %}" id="section2">
+                <ul class="nav flex-column ps-3">
+                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_x_list' %}" data-section="Section 2" data-subsection="Sub Section X">Sub Section X</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_y_list' %}" data-section="Section 2" data-subsection="Sub Section Y">Sub Section Y</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 2" data-subsection="Sub Section Z">Sub Section Z</a></li>
+                </ul>
+            </div>
+        </li>
+        <!-- Section 3 -->
+        <li class="nav-item">
+            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section3">
+                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 3</span>
+                <i class="bi bi-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse" id="section3">
+                <ul class="nav flex-column ps-3">
+                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section P">Sub Section P</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section Q">Sub Section Q</a></li>
+                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section R">Sub Section R</a></li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>

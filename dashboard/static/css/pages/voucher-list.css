@@ -1,0 +1,169 @@
+/* --- Page Specific Styles: Voucher List --- */
+
+.hover-lift {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important;
+}
+
+.dropdown-hover-lift {
+    transition: all 0.2s;
+}
+
+.dropdown-hover-lift:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+.custom-pagination .page-link {
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    color: #475569;
+}
+
+.custom-pagination .active .page-link {
+    background-color: #2563eb;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.enterprise-filter-bar {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Strict 3-section layout scrolling rules for Voucher List */
+body {
+    overflow: hidden !important;
+}
+
+.main-content {
+    padding-bottom: 0 !important;
+}
+
+/* Premium Subtle Lite Grids for Voucher List Table */
+.erp-data-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: none !important;
+}
+
+.erp-data-table th,
+.erp-data-table td {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: 1px solid #eaeef2 !important;
+    border-bottom: 1px solid #eaeef2 !important;
+}
+
+.erp-data-table th {
+    border-bottom: 2px solid #cbd5e1 !important;
+}
+
+.erp-data-table td:last-child,
+.erp-data-table th:last-child {
+    border-right: none !important;
+}
+
+/* --- Voucher List Floating Footer --- */
+.erp-list-footer-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: calc(var(--sidebar-width, 240px) + 20px);
+    right: 20px;
+    z-index: 1050;
+    height: 36px;
+    background: #4b5563;
+    border-radius: 0 0 8px 8px;
+    border-top: 2px solid #374151;
+    border-left: 1px solid #6b7280;
+    border-right: 1px solid #6b7280;
+    border-bottom: 1px solid #374151;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    display: flex;
+    align-items: center;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.erp-list-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 24px;
+    gap: 16px;
+}
+
+.erp-list-footer-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.erp-list-footer-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 769px) {
+    body.sidebar-collapsed .erp-list-footer-fixed,
+    html.sidebar-collapsed-preload body .erp-list-footer-fixed {
+        left: calc(var(--sidebar-collapsed-width, 78px) + 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .erp-list-footer-fixed {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+    }
+}
+
+/* CONTROL & BUTTON HEIGHTS (32px NORMALIZATION) */
+.filter-bar .form-control,
+.filter-bar .form-select,
+.filter-bar .btn,
+.filter-bar .input-group-text {
+    height: 32px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+}
+
+.filter-bar .form-control:focus,
+.filter-bar .form-select:focus {
+    border-color: #3b82f6 !important;
+    background-color: #ffffff !important;
+}

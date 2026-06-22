@@ -1,0 +1,160 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}User Master - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/subsection-b2.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="list-header flex-shrink-0" style="margin-bottom: 4px; margin-top: -20px;">
+        <div class="d-flex justify-content-between align-items-start" style="margin-bottom: 4px;">
+            <div style="margin-top: 4px;">
+                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">
+                    User Master
+                </h2>
+                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage user records, employee identification numbers, and roles.</p>
+            </div>
+            <a href="{% url 'dashboard:user_master_create' %}" class="btn btn-primary shadow-sm" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; width: calc(14% - 4px); padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; letter-spacing: 0.1px; margin-top: 4px; margin-right: 7px;">
+                Create New
+            </a>
+        </div>
+
+        <!-- Filters/Search Card -->
+        <div class="card border-0 mb-1 shadow-sm" style="border-radius: 4px; background: #ffffff; border: 1px solid #e5e7eb !important; position: relative; z-index: 1050;">
+            <form id="filterForm" class="d-flex align-items-center m-0 w-100" style="gap: 6px; flex-wrap: nowrap; padding: 6px 6px;">
+                
+                <!-- Search Input -->
+                <div style="flex: 45; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1;"></i>
+                        <input type="text" id="searchInput" class="form-control bg-light text-dark w-100" placeholder="Search User ID, Name, Emp ID..." style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <!-- Role Filter -->
+                <div style="flex: 20; min-width: 0;">
+                    <select id="roleFilter" class="form-select bg-light text-dark w-100" style="height: 32px !important; padding: 4px 24px 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                        <option value="">Role...</option>
+                        <option value="User">User</option>
+                        <option value="Maker">Maker</option>
+                        <option value="Checker">Checker</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div style="flex: 15; min-width: 0;">
+                    <input type="hidden" id="statusFilter" name="status" value="">
+                    <div class="dropdown position-relative w-100">
+                        <button type="button" id="actionsDropdownBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-between shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="height: 32px !important; padding: 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 600; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                            <span id="actionsLabel" class="text-truncate">Status</span> <i class="bi bi-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="actionsMenu" style="font-size: 12px; min-width: 120px;">
+                            <li><a class="dropdown-item py-1" href="#" data-value="active">Active</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="inactive">Inactive</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="all">All</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex: 10; min-width: 0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex: 10; min-width: 0;">
+                    <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div> <!-- END list-header -->
+
+    <!-- ── Data Table ──────────────────────────────────────────────────────── -->
+    <div class="erp-table-wrapper mb-0" style="overflow:visible;">
+        <div class="erp-table-scroll" style="height: calc(100vh - 245px); overflow-y: auto; overflow-x: auto;">
+            <table class="table table-bordered mb-0 erp-data-table">
+                <thead class="erp-table-header">
+                    <tr>
+                        <th style="width:20%; cursor:pointer;" data-sort="user_id" class="sortable-header text-nowrap">
+                            User ID <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:30%; cursor:pointer;" data-sort="user_name" class="sortable-header text-nowrap">
+                            User Name <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:15%; cursor:pointer;" data-sort="role" class="sortable-header text-nowrap">
+                            Role <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:15%; cursor:pointer;" data-sort="empid" class="sortable-header text-nowrap">
+                            Emp ID <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:12%;" class="text-nowrap text-center">Status</th>
+                        <th class="action-column text-center" style="width:8%;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="erp-table-body">
+                    <!-- Rows injected by user-master-list.js -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ── Pagination Bar ──────────────────────────────────────────────────── -->
+        <div class="erp-pagination-container d-flex justify-content-between align-items-center px-3 py-2 bg-white border-top" style="border-bottom-left-radius:8px; border-bottom-right-radius:8px;">
+            <div class="erp-pagination-info text-muted" style="font-size:0.8rem;">
+                Showing <span id="paginationStart" class="fw-semibold text-dark">0</span> to <span id="paginationEnd" class="fw-semibold text-dark">0</span> of <span id="paginationTotal" class="fw-semibold text-dark">0</span> entries
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationControls" style="gap:4px;">
+                    <!-- Rendered by JS -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- ── Total Users Footer ── -->
+<div class="erp-list-footer-fixed" id="erpListFooter">
+    <div class="erp-list-footer-inner" style="display: flex; width: 100%; padding: 0; gap: 0; justify-content: start;">
+        <!-- Spacer matching columns before Status (80% width) -->
+        <div style="width: 80%; flex-shrink: 0;"></div>
+        
+        <!-- Total Users Column matching Status column (12% width) -->
+        <div class="d-flex align-items-center justify-content-end text-end" style="width: 12%; padding-right: 16px; gap: 16px; box-sizing: border-box; flex-shrink: 0;">
+            <span class="erp-list-footer-label" style="margin: 0;">TOTAL USERS</span>
+            <span id="totalUsersDisplay" class="erp-list-footer-amount" style="color: #60a5fa; font-weight: 700;">0</span>
+        </div>
+        
+        <!-- Spacer matching columns after Status (8% width) -->
+        <div style="width: 8%; flex-shrink: 0;"></div>
+    </div>
+</div>
+
+<!-- STATUS TOGGLE MODAL (Soft Delete) -->
+<div class="modal fade" id="statusToggleModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow border-0 bg-white" style="border-radius: 8px;">
+            <div class="modal-header border-bottom px-4 py-2">
+                <h6 class="modal-title fw-bold text-dark w-100 text-center m-0" id="statusModalTitle">Mark Inactive</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white rounded text-center py-4 px-4">
+                <p class="mb-0 fw-medium text-dark" style="font-size: 14px;">Are you sure you want to <span id="statusModalActionText">mark</span> this user<br><span id="statusModalSuffix"> inactive</span>?</p>
+            </div>
+            <div class="modal-footer border-0 p-2 d-flex justify-content-end" style="background-color: #f8fafc; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                <button type="button" class="btn btn-light border fw-medium btn-sm" style="border-radius: 4px; padding: 5px 12px; font-size: 13px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-sm text-white fw-bold" id="statusModalConfirmBtn" style="border-radius: 4px; padding: 5px 12px; font-size: 13px;">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS Module -->
+<script type="module" src="{% static 'js/modules/pages/user-master-list.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

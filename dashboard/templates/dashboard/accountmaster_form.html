@@ -1,0 +1,305 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/account_master-list.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3" style="max-width: 800px; margin: 0 auto; margin-top: -18px !important;">
+    <!-- Page Header (Normalized 38px height, transparent background to match design) -->
+    <div class="d-flex justify-content-between align-items-center erp-header-bar" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; margin-bottom: 4px !important; margin-top: 0 !important; width: 100% !important; box-sizing: border-box !important;">
+        <h2 class="erp-title mb-0" style="font-size: 16px; font-weight: 700; color: #111827; margin: 0 !important; line-height: normal !important;">
+            {% if form.instance.pk %}Edit AccountMaster Record{% else %}Create New AccountMaster{% endif %}
+        </h2>
+        <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'dashboard:alpha_list' %}{% endif %}" class="erp-btn-back">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+    </div>
+    
+    <div class="card shadow-sm border-0 mt-2 erp-card" style="border-radius: 4px;">
+        <div class="card-body p-4 p-md-5">
+            <form method="post" novalidate id="alphaForm">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4 shadow-sm border-0 border-start border-4 border-danger">
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <div class="row g-4">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label fw-semibold text-dark">{{ form.groupID.label }} <span class="text-danger">*</span></label>
+                        {{ form.groupID }}
+                        <div class="form-text mt-1 text-muted">{{ form.groupID.help_text }}</div>
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <label class="form-label fw-semibold text-dark">{{ form.category.label }} <span class="text-danger">*</span></label>
+                        {{ form.category }}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label fw-semibold text-dark">{{ form.Account_Name.label }} <span class="text-danger">*</span></label>
+                        {{ form.Account_Name }}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label fw-semibold text-dark">{{ form.display_name.label }} <span class="text-danger">*</span></label>
+                        {{ form.display_name }}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label fw-semibold text-dark">{{ form.cl_bal.label }} <span class="text-danger">*</span></label>
+                        {{ form.cl_bal }}
+                    </div>
+                    
+                    <div class="col-12 mt-4 p-3 bg-light border" style="border-radius: 4px;">
+                        <div class="d-flex align-items-center">
+                            <label class="erp-toggle-container m-0">
+                                {{ form.is_active }}
+                                <div class="erp-toggle-track">
+                                    <div class="erp-toggle-thumb"></div>
+                                    <span class="erp-toggle-text on-text">ACTIVE</span>
+                                    <span class="erp-toggle-text off-text">INACTIVE</span>
+                                </div>
+                            </label>
+                            <span class="fw-bold ms-3" style="font-size: 13px; color: #374151;">Status</span>
+                        </div>
+                        <div class="text-muted small mt-2" style="margin-left: 2px;">{{ form.is_active.help_text }}</div>
+                    </div>
+                </div>
+                
+                <hr class="my-4 border-light">
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'dashboard:alpha_list' %}{% endif %}" class="btn btn-light px-4 border text-dark fw-medium" style="height: 32px !important; border-radius: 6px; font-size: 13px; display: inline-flex; align-items: center; padding: 0 16px;">Cancel</a>
+                    <button type="submit" class="erp-btn-save shadow-sm" id="submitBtn">
+                        <i class="bi bi-save me-2"></i> Save Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const config = {
+        isViewMode: new URLSearchParams(window.location.search).get('mode') === 'view'
+    };
+    
+    let isDirty = false;
+    let _isHydrating = true;
+    const formEl = document.getElementById('alphaForm');
+    
+    // ── 1. View-Only Mode Locking Logic ──
+    function lockViewMode() {
+        if (!formEl) return;
+        
+        // Inject read-only informational banner
+        const cardBody = formEl.closest('.card-body');
+        if (cardBody) {
+            const banner = document.createElement('div');
+            banner.className = 'alert alert-info erp-view-only-banner py-2 px-3 mb-4 d-flex align-items-center';
+            banner.style.borderRadius = '4px';
+            banner.style.borderLeft = '4px solid #0ea5e9';
+            banner.style.fontSize = '13px';
+            banner.style.backgroundColor = '#eff6ff';
+            banner.style.color = '#1d4ed8';
+            banner.innerHTML = `
+                <i class="bi bi-info-circle-fill me-2 text-info fs-6"></i>
+                <span class="fw-semibold">View-Only Mode</span>: Viewing record in read-only mode.
+            `;
+            cardBody.insertBefore(banner, cardBody.firstChild);
+        }
+        
+        // Disable all inputs, selects, textareas
+        formEl.querySelectorAll('input, select, textarea').forEach(el => {
+            el.disabled = true;
+            el.classList.add('bg-light');
+        });
+        
+        // Disable active toggles
+        formEl.querySelectorAll('.erp-toggle-container').forEach(container => {
+            container.style.setProperty('pointer-events', 'none', 'important');
+            container.style.setProperty('opacity', '0.7', 'important');
+        });
+        
+        // Hide save/update button
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.style.setProperty('display', 'none', 'important');
+        }
+    }
+    
+    // ── 2. Real-Time Field-Level Validation UX ──
+    function validateField(field) {
+        if (!field || _isHydrating || config.isViewMode) return true;
+        if (!field.matches('input, select, textarea')) return true;
+        
+        const parent = field.closest('.form-group') || field.parentElement;
+        if (!parent) return true;
+        
+        const existingFeedback = parent.querySelector('.invalid-feedback-erp') || parent.querySelector('.invalid-feedback');
+        if (existingFeedback) existingFeedback.remove();
+        
+        const val = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (field.required) {
+            if (!val) {
+                isValid = false;
+                errorMessage = 'This field is required.';
+            }
+        }
+        
+        if (isValid) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        } else {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+            
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback-erp';
+            feedback.textContent = errorMessage;
+            
+            // Append under input
+            field.after(feedback);
+        }
+        
+        return isValid;
+    }
+    
+    // ── 3. Unsaved Changes Guard (Dirty Tracking) ──
+    if (config.isViewMode) {
+        lockViewMode();
+    } else {
+        if (formEl) {
+            // Track modifications
+            formEl.addEventListener('input', function(e) {
+                if (!_isHydrating) {
+                    isDirty = true;
+                }
+            });
+            formEl.addEventListener('change', function(e) {
+                if (!_isHydrating) {
+                    isDirty = true;
+                }
+            });
+            
+            // Reset dirty on successful submit
+            formEl.addEventListener('submit', function(e) {
+                // Form validation check
+                let isFormValid = true;
+                formEl.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (!validateField(input)) {
+                        isFormValid = false;
+                    }
+                });
+                
+                if (!isFormValid) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                isDirty = false;
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) {
+                    submitBtn.style.pointerEvents = 'none';
+                    submitBtn.style.opacity = '0.7';
+                }
+            });
+        }
+        
+        // Browser reload / tab close guard
+        const WARN_MSG = 'Changes are not saved. Are you sure you want to leave?';
+        window.addEventListener('beforeunload', function (e) {
+            if (!isDirty) return;
+            e.preventDefault();
+            e.returnValue = WARN_MSG;
+            return WARN_MSG;
+        });
+        
+        // Navigation links click intercept (back buttons, sidebar, etc.)
+        document.addEventListener('click', function (e) {
+            const anchor = e.target.closest('a');
+            if (!anchor) return;
+            
+            const href = anchor.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            
+            const isSidebarLink = anchor.closest('.sidebar') !== null;
+            const isBackBtn = anchor.textContent.includes('Back') || anchor.classList.contains('btn-light') || anchor.closest('.card-header') !== null;
+            
+            if (isDirty && (isSidebarLink || isBackBtn)) {
+                e.preventDefault();
+                if (confirm(WARN_MSG)) {
+                    isDirty = false;
+                    window.location.href = href;
+                }
+            }
+        });
+        
+        // Popstate back guard
+        history.pushState({ erpFormGuard: true }, '');
+        window.addEventListener('popstate', function (e) {
+            if (isDirty) {
+                history.pushState({ erpFormGuard: true }, '');
+                if (confirm(WARN_MSG)) {
+                    isDirty = false;
+                    history.go(-2);
+                }
+            }
+        });
+    }
+    
+    // ── 4. Numeric Scroll/Wheel Protection ──
+    document.addEventListener('wheel', function(e) {
+        if (document.activeElement && document.activeElement.type === 'number') {
+            e.preventDefault();
+            document.activeElement.blur();
+        }
+    }, { passive: false });
+    
+    document.addEventListener('keydown', function(e) {
+        if (document.activeElement && document.activeElement.type === 'number' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+            e.preventDefault();
+        }
+    });
+    
+    // Bind real-time validation events
+    if (formEl) {
+        formEl.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('blur', () => validateField(input));
+            input.addEventListener('input', () => {
+                if (input.classList.contains('is-invalid')) {
+                    validateField(input);
+                }
+            });
+            input.addEventListener('change', () => validateField(input));
+        });
+    }
+    
+    // Release hydration lock
+    setTimeout(() => {
+        _isHydrating = false;
+    }, 100);
+});
+</script>
+{% endblock %}
+

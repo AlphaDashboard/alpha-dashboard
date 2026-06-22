@@ -1,0 +1,433 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Vouchers - AccountMaster Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/voucher-list.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="list-container d-flex flex-column" style="height: calc(100vh - 100px); overflow: hidden; margin-top: -20px;">
+    <div class="list-header flex-shrink-0" style="margin-bottom: 8px;">
+        <div class="d-flex justify-content-between align-items-start" style="margin-bottom: 4px;">
+            <div style="margin-top: 4px;">
+                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">Vouchers</h2>
+                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage accounting vouchers and their transaction lines.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'dashboard:voucher_export' %}?{{ request.GET.urlencode }}" class="btn btn-outline-success shadow-sm hover-lift" title="Export to Excel" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; margin-top: 4px;">
+                    <i class="bi bi-file-earmark-spreadsheet me-2" style="font-size: 11px;"></i><span class="d-none d-md-inline">Export</span>
+                </a>
+                <button class="btn btn-outline-secondary shadow-sm hover-lift" title="Import from Excel" data-bs-toggle="modal" data-bs-target="#importModal" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; margin-top: 4px;">
+                    <i class="bi bi-upload me-2" style="font-size: 11px;"></i><span class="d-none d-md-inline">Import</span>
+                </button>
+                <a href="{% url 'dashboard:voucher_create' %}" class="btn btn-primary shadow-sm hover-lift" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; margin-top: 4px; margin-right: 7px;">
+                    <i class="bi bi-plus-lg me-2" style="font-size: 11px;"></i>New Voucher
+                </a>
+            </div>
+        </div>
+
+        <!-- Filters/Search Card -->
+        <div class="card border-0 mb-1 shadow-sm fade-in-up" style="border-radius: 4px; background: #ffffff; border: 1px solid #e5e7eb !important; position: relative; z-index: 1050;">
+            <form method="get" id="filterForm" class="d-flex align-items-center m-0 w-100 filter-bar" style="gap: 6px; flex-wrap: nowrap; padding: 6px 6px;">
+                
+                <!-- Search Input -->
+                <div style="flex: 20; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1;"></i>
+                        <input type="text" class="form-control bg-light text-dark w-100" id="searchInput" name="search" value="{{ search_query }}" placeholder="Search Text..." style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <!-- Search By Dropdown -->
+                <div style="flex: 15; min-width: 0;">
+                    <select name="search_by" id="searchBy" class="form-select bg-light text-dark w-100" style="height: 32px !important; padding: 4px 24px 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                        <option value="">Search By...</option>
+                        <option value="voucher_number" {% if search_by == 'voucher_number' %}selected{% endif %}>Voucher No</option>
+                        <option value="voucher_date" {% if search_by == 'voucher_date' %}selected{% endif %}>Voucher Date</option>
+                        <option value="remarks" {% if search_by == 'remarks' %}selected{% endif %}>Remarks</option>
+                        <option value="amount" {% if search_by == 'amount' %}selected{% endif %}>Amount</option>
+                        <option value="status" {% if search_by == 'status' %}selected{% endif %}>Status</option>
+                    </select>
+                </div>
+
+                <!-- Date From -->
+                <div style="flex: 13; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-calendar3 text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; pointer-events: none; z-index: 5;"></i>
+                        <input type="text" name="date_from" value="{{ date_from }}" class="form-control flatpickr-date bg-light text-dark w-100" placeholder="From" style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; cursor: pointer; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <!-- Date To -->
+                <div style="flex: 13; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-calendar3 text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; pointer-events: none; z-index: 5;"></i>
+                        <input type="text" name="date_to" value="{{ date_to }}" class="form-control flatpickr-date bg-light text-dark w-100" placeholder="To" style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; cursor: pointer; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <!-- Actions Filter -->
+                <div style="flex: 15; min-width: 0;">
+                    <input type="hidden" id="statusFilter" name="status" value="{{ status_filter }}">
+                    <div class="dropdown position-relative w-100">
+                        <button type="button" id="actionsDropdownBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="height: 32px !important; padding: 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 600; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                            <i class="bi bi-sliders" style="margin-right: 4px; font-size: 11px;"></i> 
+                            <span id="actionsLabel">
+                                {% if status_filter == 'active' %}Active
+                                {% elif status_filter == 'inactive' %}Inactive
+                                {% else %}Status{% endif %}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="actionsMenu" style="font-size: 12px; min-width: 120px;">
+                            <li><a class="dropdown-item py-1" href="#" data-value="active">Active</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="inactive">Inactive</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="all">All</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <a href="{% url 'dashboard:voucher_list' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box; text-decoration: none;">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div> <!-- END list-header -->
+
+
+    <!-- Data Table Wrapper -->
+    <div class="erp-table-wrapper flex-grow-1 d-flex flex-column mb-0" style="overflow:hidden; min-height:0;">
+        <div class="erp-table-scroll flex-grow-1" style="overflow-y: auto; overflow-x: auto; min-height:0;">
+            <table class="table table-bordered mb-0 erp-data-table">
+                <thead class="erp-table-header">
+                    <tr>
+                        <th style="width:18%">
+                            <a href="?sort={% if current_sort == 'voucher_number' %}-voucher_number{% else %}voucher_number{% endif %}&{{ query_string }}" class="text-decoration-none text-white d-flex align-items-center justify-content-center">
+                                Voucher No {% if current_sort == 'voucher_number' %}<i class="bi bi-sort-account_master-down ms-1"></i>{% elif current_sort == '-voucher_number' %}<i class="bi bi-sort-account_master-up ms-1"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th style="width:18%">
+                            <a href="?sort={% if current_sort == '-voucher_date' %}date{% else %}-date{% endif %}&{{ query_string }}" class="text-decoration-none text-white d-flex align-items-center justify-content-center">
+                                Voucher Date {% if current_sort == 'date' %}<i class="bi bi-sort-numeric-down ms-1"></i>{% elif current_sort == '-date' %}<i class="bi bi-sort-numeric-up ms-1"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th style="width:18%" class="text-white">Remarks</th>
+                        <th style="width:18%">
+                            <a href="?sort={% if current_sort == '-amount' %}amount{% else %}-amount{% endif %}&{{ query_string }}" class="text-decoration-none text-white d-flex justify-content-center align-items-center">
+                                Amount {% if current_sort == 'amount' %}<i class="bi bi-sort-numeric-down ms-1"></i>{% elif current_sort == '-amount' %}<i class="bi bi-sort-numeric-up ms-1"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th style="width:18%" class="text-white text-center">Status</th>
+                        <th style="width:10%" class="text-white text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="erp-table-body custom-scrollbar">
+                    {% for voucher in vouchers %}
+                    <tr class="align-middle {% if not voucher.is_active %}table-danger text-muted{% endif %}" data-row-id="{{ voucher.voucher_number }}">
+                        <td class="ps-3 fw-bold text-primary text-start" style="font-size:0.85rem; width: 18%;">{{ voucher.voucher_number }}</td>
+                        <td class="text-start" style="font-size:0.85rem; width: 18%;">{{ voucher.voucher_date|date:"M d, Y" }}</td>
+                        <td class="text-start" style="font-size:0.85rem; width: 18%;"><span class="text-truncate d-inline-block" style="max-width: 200px;">{{ voucher.remarks|default:"-" }}</span></td>
+                        <td class="fw-semibold text-end pe-3 text-dark" style="font-size:0.85rem; width: 18%;">{{ voucher.total_amount|default:"0.00" }}</td>
+                        <td class="text-center" style="width: 18%; vertical-align: middle;">
+                            {% if voucher.is_active %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center" style="width: 10%; vertical-align: middle;">
+                            <div class="dropdown action-dropdown d-flex justify-content-center align-items-center" style="margin: 0; padding: 0;">
+                                <button class="btn btn-light btn-sm hide-caret d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; padding: 0; border: 1px solid #e5e7eb; background: #fff; color: #374151; border-radius: 4px; margin: 0 auto !important;" type="button" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical" style="font-size: 14px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size: 13px; min-width: 160px; z-index: 1050; margin-top: 2px;">
+                                    <li>
+                                        <a class="dropdown-item py-1" href="{% url 'dashboard:voucher_edit' voucher.pk %}?mode=view">
+                                            <i class="bi bi-eye me-2 text-secondary"></i> View
+                                        </a>
+                                    </li>
+                                    {% if voucher.is_active %}
+                                    <li>
+                                        <a class="dropdown-item py-1" href="{% url 'dashboard:voucher_edit' voucher.pk %}">
+                                            <i class="bi bi-pencil-square me-2 text-primary"></i> Edit
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    <li>
+                                        <form action="{% url 'dashboard:voucher_toggle' voucher.pk %}" method="post" class="m-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item py-1 text-warning">
+                                                {% if voucher.is_active %}
+                                                    <i class="bi bi-x-circle me-2"></i> Mark Deleted
+                                                {% else %}
+                                                    <i class="bi bi-arrow-counterclockwise me-2"></i> Restore
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {% if not voucher.is_active %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{% url 'dashboard:voucher_delete' voucher.pk %}" method="post" class="m-0" onsubmit="return confirm('Are you sure you want to PERMANENTLY delete this voucher? This cannot be undone.');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item py-1 text-danger">
+                                                <i class="bi bi-trash3 me-2"></i> Delete
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 bg-white border-0">
+                            <div class="empty-state py-5 fade-in-up" style="animation-delay: 0.2s;">
+                                <div class="p-4 bg-light rounded-circle d-inline-block mb-4 shadow-sm">
+                                    <i class="bi bi-mailbox2 display-3 text-primary" style="opacity: 0.8;"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark">No vouchers found</h3>
+                                <p class="text-muted mb-4 fs-5">You have not created any vouchers yet, or no vouchers match your search criteria.</p>
+                                <a href="{% url 'dashboard:voucher_create' %}" class="btn btn-primary btn-lg shadow-sm hover-lift px-5 rounded-pill">
+                                    <i class="bi bi-plus-lg me-2"></i>Create New Voucher
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="spacer-row">
+                        <td colspan="6" class="border-0 p-0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination Footer -->
+    {% if is_paginated %}
+    <div class="erp-pagination-container d-flex justify-content-between align-items-center px-3 py-2 bg-white border-top flex-shrink-0 list-footer" style="border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; z-index: 10;">
+        <div class="erp-pagination-info text-muted" style="font-size: 0.8rem;">
+            Showing <span class="fw-semibold text-dark">{{ page_obj.start_index }}</span> to <span class="fw-semibold text-dark">{{ page_obj.end_index }}</span> of <span class="fw-semibold text-dark">{{ page_obj.paginator.count }}</span> entries
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0" id="paginationControls" style="gap: 4px;">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm mt-1 mb-1 me-1 erp-page-btn" href="?page={{ page_obj.previous_page_number }}&{{ query_string }}">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link shadow-sm mt-1 mb-1">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm mt-1 mb-1 ms-1 erp-page-btn" href="?page={{ page_obj.next_page_number }}&{{ query_string }}">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    </div>
+</div>
+
+<!-- ── Total Amount Footer ─────────────────────────────────────────────────── -->
+<div class="erp-list-footer-fixed" id="erpListFooter">
+    <div class="erp-list-footer-inner" style="display: flex; width: 100%; padding: 0; gap: 0; justify-content: start;">
+        <!-- Spacer matching columns before Amount (54% width) -->
+        <div style="width: 54%; flex-shrink: 0;"></div>
+        
+        <!-- Total Amount Column matching Amount column (18% width) -->
+        <div class="d-flex align-items-center justify-content-end text-end" style="width: 18%; padding-right: 16px; gap: 16px; box-sizing: border-box; flex-shrink: 0;">
+            <span class="erp-list-footer-label" style="margin: 0;">TOTAL AMOUNT</span>
+            <span id="totalAmountDisplay" class="erp-list-footer-amount">{{ total_amount|floatformat:2|intcomma }}</span>
+        </div>
+        
+        <!-- Spacer matching columns after Amount (28% width) -->
+        <div style="width: 28%; flex-shrink: 0;"></div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{% url 'dashboard:voucher_import' %}" method="post" enctype="multipart/form-data" class="modal-content shadow border-0" id="importForm">
+            {% csrf_token %}
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold text-dark">
+                    <i class="bi bi-upload text-primary me-2"></i>Import Vouchers
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light m-2 rounded p-4">
+                <p class="small text-muted mb-3">Please upload a valid Excel file (.xlsx) containing your voucher data. Expected columns: <code>voucher_no</code>, <code>voucher_date</code>, <code>remarks</code>, <code>type</code>, <code>account_master</code>, <code>amount</code>.</p>
+                
+                <div class="mb-3">
+                    <label for="import_file" class="form-label fw-bold">Select Excel file <span class="text-danger">*</span></label>
+                    <input class="form-control form-control-lg border-primary shadow-sm" type="file" id="import_file" name="import_file" accept=".xlsx" required>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-white">
+                <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" id="importSubmitBtn">
+                    <i class="bi bi-cloud-upload me-2"></i>Start Import
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const importForm = document.getElementById('importForm');
+    if(importForm) {
+        importForm.addEventListener('submit', function() {
+            const btn = document.getElementById('importSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading...';
+        });
+    }
+
+    // ── Actions Dropdown Handler for Vouchers ──
+    const actionsMenu = document.getElementById('actionsMenu');
+    const actionsDropdownBtn = document.getElementById('actionsDropdownBtn');
+    const statusFilterInput = document.getElementById('statusFilter');
+    const filterForm = document.getElementById('filterForm');
+
+    if (actionsMenu && actionsDropdownBtn && statusFilterInput) {
+        actionsMenu.addEventListener('click', function(e) {
+            const item = e.target.closest('.dropdown-item');
+            if (item) {
+                e.preventDefault();
+                const value = item.getAttribute('data-value');
+                statusFilterInput.value = value;
+                
+                // Update dropdown button label
+                const labelSpan = actionsDropdownBtn.querySelector('#actionsLabel') || actionsDropdownBtn;
+                if (labelSpan) {
+                    labelSpan.textContent = item.textContent.trim();
+                }
+                
+                // Auto submit form on dropdown change
+                if (filterForm) {
+                    filterForm.submit();
+                }
+            }
+        });
+    }
+
+    // ── Detached Dropdown & Row Click Delegators (Prevents Event Conflicts & Clipping) ──
+    const tableBody = document.querySelector('.erp-table-body');
+    if (tableBody) {
+        tableBody.addEventListener('click', function(e) {
+            const btn = e.target.closest('.action-dropdown button');
+            const row = e.target.closest('.formset-row, tr');
+            const actionDropdown = e.target.closest('.action-dropdown');
+            const detachedDropdown = e.target.closest('.erp-detached-dropdown');
+
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                let menu;
+                if (btn.dataset.menuId) {
+                    menu = document.getElementById(btn.dataset.menuId);
+                } else {
+                    menu = btn.nextElementSibling;
+                    if (!menu || !menu.classList.contains('dropdown-menu')) return;
+                    
+                    const menuId = 'erp-voucher-dropdown-' + Math.random().toString(36).substr(2, 9);
+                    btn.dataset.menuId = menuId;
+                    menu.id = menuId;
+                    menu.classList.add('erp-detached-dropdown');
+                    document.body.appendChild(menu);
+                }
+                
+                if (!menu) return;
+                
+                // Toggle current
+                if (menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Close all other detached dropdowns
+                    document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                        m.classList.remove('show');
+                    });
+                    
+                    // Temporarily show with hidden visibility to measure its height
+                    menu.style.position = 'fixed';
+                    menu.style.visibility = 'hidden';
+                    menu.classList.add('show');
+                    const menuHeight = menu.offsetHeight;
+                    menu.style.visibility = '';
+                    
+                    // Calculate position relative to viewport
+                    const rect = btn.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                    
+                    // Check if it fits below the button
+                    const fitsBelow = (rect.bottom + 4 + menuHeight) <= viewportHeight;
+                    
+                    if (fitsBelow) {
+                        menu.style.top = (rect.bottom + 4) + 'px';
+                        menu.style.bottom = 'auto';
+                    } else {
+                        menu.style.top = 'auto';
+                        menu.style.bottom = (viewportHeight - rect.top + 4) + 'px';
+                    }
+                    
+                    // Align to right edge of button
+                    menu.style.left = 'auto';
+                    menu.style.right = (document.documentElement.clientWidth - rect.right) + 'px';
+                    menu.style.zIndex = '9999';
+                    
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            }
+        });
+    }
+
+    // Close detached dropdowns on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const openDropdowns = document.querySelectorAll('.erp-detached-dropdown.show');
+            if (openDropdowns.length > 0) {
+                openDropdowns.forEach(m => {
+                    m.classList.remove('show');
+                });
+                e.stopPropagation();
+            }
+        }
+    }, true);
+});
+</script>
+{% endblock %}

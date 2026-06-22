@@ -1,0 +1,842 @@
+/* ==========================================================================
+   Enterprise UI CSS - Voucher Form High Density System
+   Perfect Spacing, Sizing, Heights, Spacing, Alignments matching Subsection B
+   ========================================================================== */
+
+/* Layout & Cards */
+.erp-card {
+    border-radius: 4px !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.erp-card:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* ==========================================================================
+   Viewport-Aware and Flex-Driven Transaction Layout Styles (Subsection B)
+   ========================================================================== */
+.erp-container-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 112px) !important;
+    min-height: calc(100vh - 112px) !important;
+    max-height: calc(100vh - 112px) !important;
+    padding-bottom: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.erp-header-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding: 0 !important;
+    margin-bottom: 4px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.erp-header-bar .erp-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    line-height: normal !important;
+}
+
+.erp-header-bar .erp-btn-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+    font-size: 12px;
+    font-weight: 600;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.erp-header-bar .erp-btn-back:hover {
+    background-color: #1d4ed8 !important;
+}
+
+.erp-form-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+}
+
+.erp-card-header-flex {
+    flex: 0 0 auto !important;
+}
+
+/* Specific card body padding override to bypass global utilities.css !important constraint */
+.erp-card-header-flex .card-body {
+    padding: 4px 16px !important;
+}
+
+/* Location: dashboard/static/css/pages/voucher-form.css */
+/* Used in: dashboard/templates/dashboard/voucher_form.html (Table outer card container) */
+.erp-card-table-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Location: dashboard/static/css/pages/voucher-form.css */
+/* Used in: dashboard/templates/dashboard/voucher_form.html (Table responsive container wrapper) */
+.erp-table-wrapper {
+    position: relative;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    background-color: #ffffff;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    height: 100% !important;
+    max-height: none !important;
+}
+
+/* Scrollbar to match standard high density layout */
+#formsetContainer::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+#formsetContainer::-webkit-scrollbar-track {
+    background: #f1f5f9 !important;
+}
+
+#formsetContainer::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 3px !important;
+}
+
+#formsetContainer::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
+}
+
+/* ==========================================================================
+   ERP Floating Label System (Material Design Style)
+   ========================================================================== */
+.erp-floating-group {
+    position: relative;
+    width: 100%;
+}
+
+.erp-floating-label {
+    position: absolute !important;
+    left: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: #ffffff !important;
+    padding: 0 4px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    pointer-events: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 !important;
+    z-index: 5 !important;
+}
+
+.erp-floating-input:focus~.erp-floating-label,
+.erp-floating-input:not(:placeholder-shown)~.erp-floating-label,
+.erp-field.is-filled .erp-floating-label {
+    top: 0px !important;
+    transform: translateY(-50%) !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: #475569 !important;
+    z-index: 10 !important;
+    line-height: 1 !important;
+}
+
+.erp-field {
+    position: relative;
+    width: 100%;
+    margin-top: 6px !important;
+}
+
+.erp-input,
+.form-select.erp-input {
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    line-height: 34px !important;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+    background: #fff;
+    box-sizing: border-box !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+}
+
+.erp-input:focus,
+.form-select.erp-input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    outline: none !important;
+    background: #fff !important;
+}
+
+/* ==========================================================================
+   Flexbox Table Architecture matching Subsection B
+   ========================================================================== */
+/* Location: dashboard/static/css/pages/voucher-form.css */
+/* Used in: dashboard/templates/dashboard/voucher_form.html (Table element with flexbox layout) */
+#dynamicTable {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-collapse: collapse !important;
+}
+
+#dynamicTable thead {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    z-index: 12 !important;
+}
+
+#dynamicTable tbody#formsetContainer {
+    display: block !important;
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+#dynamicTable tfoot {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    margin-top: auto !important;
+    z-index: 10 !important;
+    box-shadow: 0 -1px 0 #475569;
+}
+
+#dynamicTable tr {
+    display: flex !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#dynamicTable th,
+#dynamicTable td {
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Table Header Sizing matching Subsection B */
+/* Location: dashboard/static/css/pages/voucher-form.css */
+/* Used in: dashboard/templates/dashboard/voucher_form.html (Table header th elements) */
+.erp-table-header th {
+    background-color: #64748b !important;
+    color: #ffffff !important;
+    height: 26px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border-color: #475569 !important;
+    border-top: none !important;
+    justify-content: center !important;
+    text-align: center;
+}
+
+/* Compact Table Row Cell Padding */
+.accounting-grid tbody td {
+    border: none !important;
+    border-bottom: 1px solid #e9edf3 !important;
+    border-right: 1px solid #e9edf3 !important;
+    vertical-align: middle !important;
+    padding: 0 !important; /* COMPACT CELL PADDING */
+    transition: background-color 0.15s ease;
+}
+
+.accounting-grid tbody td:last-child {
+    border-right: none !important;
+}
+
+.accounting-grid tbody tr:nth-child(even) td {
+    background-color: #fafbfd !important;
+}
+
+.accounting-grid tbody tr:hover td {
+    background-color: #f1f5f9 !important;
+}
+
+/* ==========================================================================
+   Pixel-Perfect Column Width Syncing (Voucher - 5 columns)
+   ========================================================================== */
+.erp-voucher-table-wrapper #dynamicTable th:nth-child(1),
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(1) {
+    width: 9% !important;
+    flex: 0 0 9% !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable th:nth-child(2),
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(2) {
+    width: 29% !important;
+    flex: 0 0 29% !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable th:nth-child(3),
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(3) {
+    width: 24% !important;
+    flex: 0 0 24% !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable th:nth-child(4),
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(4) {
+    width: 24% !important;
+    flex: 0 0 24% !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable th:nth-child(5),
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(5) {
+    width: 14% !important;
+    flex: 0 0 14% !important;
+}
+
+/* Footer widths matching columns exactly */
+.erp-voucher-table-wrapper #dynamicTable tfoot td:nth-child(1) {
+    width: 9% !important;
+    flex: 0 0 9% !important;
+    background-color: #64748b !important;
+    border-color: #475569 !important;
+    height: 38px !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable tfoot td:nth-child(2) {
+    width: 29% !important;
+    flex: 0 0 29% !important;
+    background-color: #64748b !important;
+    border-color: #475569 !important;
+    height: 38px !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable tfoot td:nth-child(3) {
+    width: 24% !important;
+    flex: 0 0 24% !important;
+    background-color: #64748b !important;
+    border-color: #475569 !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable tfoot td:nth-child(4) {
+    width: 24% !important;
+    flex: 0 0 24% !important;
+    background-color: #64748b !important;
+    border-color: #475569 !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.erp-voucher-table-wrapper #dynamicTable tfoot td:nth-child(5) {
+    width: 14% !important;
+    flex: 0 0 14% !important;
+    background-color: #64748b !important;
+    border-color: #475569 !important;
+    height: 38px !important;
+    justify-content: flex-end !important;
+}
+
+/* ==========================================================================
+   Uniform Compact Input Alignment & Height - PERFECT ERP GRID
+   ========================================================================== */
+.erp-table-control {
+    height: 28px !important;
+    min-height: 28px !important;
+    line-height: 28px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    font-size: 11.5px !important;
+    padding: 0 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background-color: #fff;
+    color: #0f172a;
+    transition: all 0.2s ease;
+}
+
+.erp-table-control:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+}
+
+.erp-table-control:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+/* ==========================================================================
+   Select2 — Top Form (header card) — 34px height for floating label inputs
+   Scoped to card/field context only, does NOT touch table rows
+   ========================================================================== */
+.erp-card .select2-container--bootstrap-5 .select2-selection--single,
+.erp-field .select2-container--bootstrap-5 .select2-selection--single {
+    height: 34px !important;
+    min-height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 34px 0 8px !important; /* right: 34px reserves space for clear × + arrow */
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+}
+
+.erp-card .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered,
+.erp-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    line-height: 34px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #0f172a !important;
+    font-size: 12px !important;
+    width: 100%;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.erp-card .select2-container--bootstrap-5 .select2-selection__indicator,
+.erp-card .select2-container--bootstrap-5 .select2-selection__arrow,
+.erp-field .select2-container--bootstrap-5 .select2-selection__indicator,
+.erp-field .select2-container--bootstrap-5 .select2-selection__arrow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    width: 24px !important;
+}
+
+
+
+/* Disable Number Spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* ==========================================================================
+   Modern ERP Action Buttons (Square-rounded 28x28px)
+   ========================================================================== */
+.erp-action-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0 !important;
+    cursor: pointer;
+}
+
+.erp-action-btn.d-none {
+    display: none !important;
+}
+
+.erp-btn-add {
+    background-color: #eff6ff !important;
+    color: #3b82f6 !important;
+}
+
+.erp-btn-add:hover {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.erp-btn-delete {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+
+.erp-btn-delete:hover {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Save Button in Footer */
+.erp-btn-save {
+    height: 30px !important;
+    line-height: 30px !important;
+    padding: 0 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    border-radius: 4px !important;
+    background-color: #10b981 !important;
+    border: 1px solid #059669 !important;
+    color: #ffffff !important;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+}
+
+.erp-btn-save:hover {
+    background-color: #059669 !important;
+    border-color: #047857 !important;
+}
+
+.erp-btn-save:disabled {
+    background-color: #a7f3d0 !important;
+    border-color: #a7f3d0 !important;
+    cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Validation styles */
+.is-invalid-erp {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+    background-color: #fef2f2 !important;
+}
+
+.select2-container--bootstrap-5.is-invalid-erp .select2-selection {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+    background-color: #fef2f2 !important;
+}
+
+.bg-disabled {
+    background-color: #e5e7eb !important;
+    cursor: not-allowed;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+
+.amount-a-input,
+.amount-b-input {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Select2 Width Stability & Visual Normalization — Voucher Table
+   Mirrors the identical pattern and visual quality used in Subsection B.
+   Root cause: Select2 resets its own container width to an intrinsic/inline
+   value when the "×" clear icon is clicked. Without a CSS override, the
+   container collapses inside the flex table cell, breaking alignment.
+   Fix: Force width:100% on the Select2 container element itself, scoped
+   strictly to the Voucher table wrapper so it cannot leak to other pages.
+   ========================================================================== */
+
+/* 1. Force Select2 container to always fill the table cell (100% width) */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5 {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+}
+
+/* 2. Prevent the <td> flex cell from over-expanding when Select2 resets */
+.erp-voucher-table-wrapper #dynamicTable td:nth-child(2) {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+/* 3. Ensure the selection box itself always fills the container and matches compact 28px height */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5 .select2-selection {
+    width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    background-color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. Hover and Focus States */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5:hover .select2-selection {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+    background-color: #f8fafc !important;
+}
+
+.erp-voucher-table-wrapper .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.erp-voucher-table-wrapper .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+/* 5. Centered Rendered selection text and right-padding to avoid clear × overlap */
+#dynamicTable .select2-container .select2-selection--single .select2-selection__rendered {
+    font-size: 11.5px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 36px !important; /* reserves space for BOTH clear 'x' and arrow */
+    color: #0f172a !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    line-height: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Placeholder styling inside grid select box */
+#dynamicTable .select2-container .select2-selection--single .select2-selection__placeholder {
+    color: #94a3b8 !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+}
+
+/* 6. Dynamic Clear "×" Icon - Balanced alignment & micro-interaction */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+    position: absolute !important;
+    right: 20px !important; /* perfectly placed between text and arrow */
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    height: 16px !important;
+    width: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    color: #94a3b8 !important;
+    cursor: pointer !important;
+    transition: color 0.15s ease !important;
+}
+
+.erp-voucher-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear:hover {
+    color: #ef4444 !important;
+}
+
+/* 7. Dropdown Arrow - Balanced alignment */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+    height: 26px !important;
+    right: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 12px !important;
+}
+
+/* 8. Locked / Disabled view-mode override styles */
+.erp-voucher-table-wrapper .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+    background-color: #f3f4f6 !important; /* light gray erp style */
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   Visual Normalization Overrides - Voucher Table Row Alignment (Subsection B baseline)
+   ========================================================================== */
+
+/* 1. Lock Table Row Cells to identical Subsection B Height & Spacing */
+.erp-voucher-table-wrapper #dynamicTable tbody td {
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important; /* Horizontally center contents */
+}
+
+/* 2. Vertically center cell items individually */
+.erp-voucher-table-wrapper #dynamicTable tbody td > * {
+    margin: 0 !important;
+    margin-top: -3px !important; /* Center vertically and completely clear bottom touching */
+}
+
+/* 3. Normalize Table Header Height to match Subsection B exactly */
+/* Location: dashboard/static/css/pages/voucher-form.css */
+/* Used in: dashboard/templates/dashboard/voucher_form.html (Table header th overrides under voucher table wrapper) */
+.erp-voucher-table-wrapper .erp-table-header th {
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    line-height: 28px !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+    border-top: none !important;
+}
+
+/* 4. Normalize Standard Table Inputs & Selects Vertical Padding & Text Baselines */
+.erp-voucher-table-wrapper .erp-table-control {
+    height: 28px !important;
+    min-height: 28px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    line-height: 26px !important; /* perfectly centers text vertically inside 28px container */
+    box-sizing: border-box !important;
+}
+
+/* 5. Custom alignment for standard Type select dropdown */
+.erp-voucher-table-wrapper select.erp-table-control.row-type-select {
+    padding-right: 20px !important; /* reserve space for standard arrow icon */
+    background-position: right 6px center !important;
+    background-size: 10px 8px !important;
+}
+
+/* 6. Fit Action Buttons precisely to Subsection B (26x26px, 4px border-radius) */
+.erp-voucher-table-wrapper .erp-action-btn {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 4px !important;
+    display: inline-flex;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.erp-voucher-table-wrapper .erp-action-btn.d-none {
+    display: none !important;
+}
+
+/* Ensure font-family matches and is clean inside grid inputs */
+.erp-voucher-table-wrapper .amount-a-input,
+.erp-voucher-table-wrapper .amount-b-input {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-align: right !important;
+}
+
+/* ==========================================================================
+   9. Bulletproof Pointer-Events Block for View Mode
+   ========================================================================== */
+.erp-container-flex.is-view-mode select,
+.erp-container-flex.is-view-mode input,
+.erp-container-flex.is-view-mode textarea,
+.erp-container-flex.is-view-mode button,
+.erp-container-flex.is-view-mode .select2-container {
+    pointer-events: none !important;
+    user-select: none !important;
+    cursor: not-allowed !important;
+}
+
+/* Allow Back button and navigation links to be clickable */
+.erp-container-flex.is-view-mode .erp-btn-back,
+.erp-container-flex.is-view-mode a {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* ==========================================================================
+   10. Visual Normalization Overrides for View Mode
+   Forces white backgrounds and standard text colors for active read-only fields
+   ========================================================================== */
+.erp-container-flex.is-view-mode input,
+.erp-container-flex.is-view-mode select,
+.erp-container-flex.is-view-mode textarea,
+.erp-container-flex.is-view-mode .form-control,
+.erp-container-flex.is-view-mode .form-select,
+.erp-container-flex.is-view-mode .erp-input,
+.erp-container-flex.is-view-mode .erp-table-control {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #d1d5db !important;
+    opacity: 1 !important;
+}
+
+/* Inactive fields (e.g. Amount B for a Type A row) must remain greyed out to match edit mode styling */
+.erp-container-flex.is-view-mode input.bg-disabled,
+.erp-container-flex.is-view-mode .form-control.bg-disabled,
+.erp-container-flex.is-view-mode .erp-input.bg-disabled,
+.erp-container-flex.is-view-mode .erp-table-control.bg-disabled {
+    background-color: #e5e7eb !important;
+    color: #64748b !important;
+    border-color: #d1d5db !important;
+    opacity: 1 !important;
+}
+
+/* Ensure Select2 components in View Mode look visually active but locked */
+.erp-container-flex.is-view-mode .select2-container--bootstrap-5 .select2-selection,
+.erp-container-flex.is-view-mode .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #d1d5db !important;
+    opacity: 1 !important;
+}
+
+.erp-container-flex.is-view-mode .select2-container--bootstrap-5 .select2-selection .select2-selection__rendered,
+.erp-container-flex.is-view-mode .select2-container--bootstrap-5.select2-container--disabled .select2-selection .select2-selection__rendered {
+    color: #0f172a !important;
+}
+
+
+

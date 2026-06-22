@@ -1,0 +1,426 @@
+/* ==========================================================================
+   ERP DATA TABLE SYSTEM
+   Reusable enterprise table architecture for all modules:
+   Banking, Sales, Purchase, Inventory, Ledger, Transaction pages.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------
+   1. TABLE WRAPPER
+   Outer container card — border, right+bottom shadow, overflow clip.
+   Usage: <div class="erp-table-wrapper"> ... </div>
+   ------------------------------------------------------------------ */
+.erp-table-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;                       /* light-dark border */
+    box-shadow:
+        4px 4px 10px -2px rgba(15, 23, 42, 0.10),   /* right+bottom depth */
+        0   1px 2px  0px rgba(15, 23, 42, 0.04);    /* hairline base lift */
+    overflow: hidden;
+    padding: 0;
+}
+
+/* ------------------------------------------------------------------
+   2. SHADOW UTILITY  (right + bottom only, no top/left)
+   Can be composed onto any element independently.
+   ------------------------------------------------------------------ */
+.erp-shadow-right-bottom {
+    box-shadow:
+        4px 4px 10px -2px rgba(15, 23, 42, 0.10),
+        0   1px 2px  0px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* ------------------------------------------------------------------
+   3. BORDER UTILITY
+   ------------------------------------------------------------------ */
+.erp-border-light-dark {
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* ------------------------------------------------------------------
+   4. TABLE BASE
+   Always pair with Bootstrap .table for consistent resets.
+   ------------------------------------------------------------------ */
+.erp-data-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    margin-bottom: 0;
+    border: none !important;
+}
+
+.erp-data-table.table-bordered {
+    border: none !important;
+}
+
+.erp-data-table th,
+.erp-data-table td {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.erp-data-table th:last-child,
+.erp-data-table td:last-child {
+    border-right: none !important;
+}
+
+/* ------------------------------------------------------------------
+   5. HEADER  (.erp-table-header on <thead>)
+   ------------------------------------------------------------------ */
+.erp-table-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #4b5563;          /* professional mid-grey */
+}
+
+.table .erp-table-header th,
+.erp-table-header th {
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0 8px !important;
+    height: 34px;
+    line-height: 34px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: 1px solid #6b7280 !important;
+    border-bottom: 2px solid #374151 !important;
+}
+
+.erp-table-header th:last-child {
+    border-right: none !important;
+}
+
+/* Apply rounded corners to table headers */
+.erp-table-header th:first-child {
+    border-top-left-radius: 7px !important;
+}
+
+.erp-table-header th:last-child {
+    border-top-right-radius: 7px !important;
+}
+
+/* ------------------------------------------------------------------
+   6. FOOTER  (.erp-table-footer on <tfoot>)
+   Matches header — use for totals / summary rows.
+   ------------------------------------------------------------------ */
+.erp-table-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background-color: #4b5563;
+}
+
+.erp-table-footer td,
+.erp-table-footer th {
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    vertical-align: middle !important;
+    padding: 0 8px !important;
+    height: 34px;
+    border-left: none !important;
+    border-right: 1px solid #6b7280 !important;
+    border-top: 2px solid #374151 !important;
+    border-bottom: none !important;
+}
+
+.erp-table-footer td:last-child,
+.erp-table-footer th:last-child {
+    border-right: none !important;
+}
+
+/* ------------------------------------------------------------------
+   7. BODY ROW HEIGHTS  (.erp-table-row on <tr>)
+   Consistent compact height for data rows.
+   ------------------------------------------------------------------ */
+.erp-table-body tr,
+.erp-table-row {
+    height: 34px;
+    cursor: pointer; /* Pointer cursor for interactive listing rows */
+}
+
+.erp-table-body td {
+    font-size: 12px;
+    color: #374151;
+    padding: 4px 8px !important;
+    vertical-align: middle;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.erp-table-body tr:hover td {
+    background-color: #f8fafc !important;
+}
+
+/* Zebra striping */
+.erp-table-body tr:nth-child(even) td {
+    background-color: #fafbfc;
+}
+
+/* Focused / Highlighted row styling */
+.erp-table-body tr.focused-row,
+tr.focused-row,
+tr.active-row {
+    outline: none !important;
+}
+
+.erp-table-body tr.focused-row td,
+tr.focused-row td,
+tr.active-row td {
+    background-color: #eff6ff !important; /* Very light tint of primary blue */
+    border-top: 1px solid #bfdbfe !important;
+    border-bottom: 1px solid #bfdbfe !important;
+    outline: none !important;
+}
+
+.erp-table-body tr.focused-row:nth-child(even) td,
+tr.focused-row:nth-child(even) td,
+tr.active-row:nth-child(even) td {
+    background-color: #eff6ff !important;
+    border-top: 1px solid #bfdbfe !important;
+    border-bottom: 1px solid #bfdbfe !important;
+}
+
+.erp-table-body tr.focused-row:hover td,
+tr.focused-row:hover td,
+tr.active-row:hover td {
+    background-color: #dbeafe !important;
+}
+
+/* Elegant left border indicator on the first cell */
+.erp-table-body tr.focused-row td:first-child,
+tr.focused-row td:first-child,
+tr.active-row td:first-child {
+    border-left: 3px solid #2563eb !important;
+}
+
+/* Remove default browser focus outlines to prevent double borders */
+.erp-table-body tr:focus,
+.erp-table-body tr:focus-visible,
+.erp-table-body tr.focused-row:focus,
+.erp-table-body tr.focused-row:focus-visible,
+tr:focus,
+tr:focus-visible,
+tr.focused-row:focus,
+tr.focused-row:focus-visible,
+tr.active-row:focus,
+tr.active-row:focus-visible {
+    outline: none !important;
+    box-shadow: none;
+}
+
+/* Premium Continuous Visual Keyboard Focus Ring (Cursor) around the focused row cells */
+.erp-table-body tr:focus td,
+.erp-table-body tr:focus-visible td,
+.erp-table-body tr.focused-row:focus td,
+.erp-table-body tr.focused-row:focus-visible td,
+tr:focus td,
+tr:focus-visible td,
+tr.focused-row:focus td,
+tr.focused-row:focus-visible td,
+tr.active-row:focus td,
+tr.active-row:focus-visible td {
+    box-shadow: inset 0 2px 0 #2563eb, inset 0 -2px 0 #2563eb !important;
+}
+
+.erp-table-body tr:focus td:first-child,
+.erp-table-body tr:focus-visible td:first-child,
+.erp-table-body tr.focused-row:focus td:first-child,
+.erp-table-body tr.focused-row:focus-visible td:first-child,
+tr:focus td:first-child,
+tr:focus-visible td:first-child,
+tr.focused-row:focus td:first-child,
+tr.focused-row:focus-visible td:first-child,
+tr.active-row:focus td:first-child,
+tr.active-row:focus-visible td:first-child {
+    box-shadow: inset 3px 2px 0 #2563eb, inset 0 -2px 0 #2563eb !important;
+}
+
+.erp-table-body tr:focus td:last-child,
+.erp-table-body tr:focus-visible td:last-child,
+.erp-table-body tr.focused-row:focus td:last-child,
+.erp-table-body tr.focused-row:focus-visible td:last-child,
+tr:focus td:last-child,
+tr:focus-visible td:last-child,
+tr.focused-row:focus td:last-child,
+tr.focused-row:focus-visible td:last-child,
+tr.active-row:focus td:last-child,
+tr.active-row:focus-visible td:last-child {
+    box-shadow: inset -2px 2px 0 #2563eb, inset 0 -2px 0 #2563eb !important;
+}
+
+/* ------------------------------------------------------------------
+   8. EMPTY STATE ROW
+   Ensures table body never collapses when no data.
+   JS renders an empty-state row — this guarantees consistent height.
+   ------------------------------------------------------------------ */
+.erp-empty-row td {
+    height: 34px !important;
+    background: transparent !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.erp-empty-state td {
+    height: 240px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border-bottom: none !important;
+    background: #ffffff !important;
+}
+
+/* ------------------------------------------------------------------
+   9. SCROLLBAR  (table-responsive container)
+   ------------------------------------------------------------------ */
+.erp-table-scroll {
+    overflow-x: hidden;
+    width: 100%;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.erp-table-scroll:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.erp-table-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+.erp-table-scroll::-webkit-scrollbar-track { background: transparent; }
+.erp-table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.erp-table-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ------------------------------------------------------------------
+   10. RESPONSIVE WRAPPER
+   ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .erp-table-wrapper {
+        border-radius: 6px;
+    }
+    .erp-table-header th,
+    .erp-table-footer td,
+    .erp-table-footer th {
+        font-size: 9px !important;
+        padding: 0 4px !important;
+    }
+}
+
+/* ------------------------------------------------------------------
+   11. TRANSACTION ROW STYLING (Forms Only)
+   Provides professional breathing space and depth to input rows.
+   ------------------------------------------------------------------ */
+.erp-table tbody tr.transaction-row:first-child td {
+    border-top: 6px solid #f8fafc !important; /* Subtle spacing below header */
+}
+
+.erp-table tbody tr.transaction-row td {
+    padding: 4px 6px !important; /* Breathing space between fields */
+    vertical-align: middle;
+}
+
+.erp-table tbody tr.transaction-row {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important; /* Soft professional shadow */
+    position: relative;
+    z-index: 1;
+    background-color: #ffffff;
+}
+
+.erp-table tbody tr.transaction-row:hover {
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ==========================================================================
+   12. BORDER RADIUS STANDARDIZATION
+   Standardize table corners across all ERP modules (8px wrapper, 7px inner th/td)
+   ========================================================================== */
+
+/* Outer wrapper must remain overflow: visible to allow dropdown menus to display */
+.erp-table-wrapper {
+    border-radius: 8px !important;
+    overflow: visible !important;
+    position: relative;
+    background: #ffffff;
+}
+
+/* Scrollable container matches outer wrapper rounded corners */
+.erp-table-scroll {
+    border-radius: 8px !important;
+}
+
+/* Transparent headers and header rows prevent drawing sharp square shapes over cell corners */
+.erp-table-wrapper thead,
+.erp-table-wrapper thead tr,
+.erp-table-wrapper .erp-table-header,
+.erp-table-wrapper .erp-table-header tr,
+.erp-table-wrapper table thead,
+.erp-table-wrapper table thead tr {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* Top corner cell rounding for all standard table structures */
+.erp-table-wrapper table thead tr:first-child th:first-child,
+.erp-table-wrapper .erp-data-table thead tr:first-child th:first-child,
+.erp-table-wrapper .erp-mini-table thead tr:first-child th:first-child,
+.erp-table-wrapper .table thead tr:first-child th:first-child {
+    border-top-left-radius: 7px !important;
+}
+
+.erp-table-wrapper table thead tr:first-child th:last-child,
+.erp-table-wrapper .erp-data-table thead tr:first-child th:last-child,
+.erp-table-wrapper .erp-mini-table thead tr:first-child th:last-child,
+.erp-table-wrapper .table thead tr:first-child th:last-child {
+    border-top-right-radius: 7px !important;
+}
+
+/* Bottom corner cell rounding when the table scroll container is the last element (no pagination footer) */
+.erp-table-wrapper .erp-table-scroll:last-child table tbody tr:last-child td:first-child,
+.erp-table-wrapper .erp-table-scroll:last-child .erp-data-table tbody tr:last-child td:first-child,
+.erp-table-wrapper .erp-table-scroll:last-child .erp-mini-table tbody tr:last-child td:first-child,
+.erp-table-wrapper .erp-table-scroll:last-child .table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 7px !important;
+}
+
+.erp-table-wrapper .erp-table-scroll:last-child table tbody tr:last-child td:last-child,
+.erp-table-wrapper .erp-table-scroll:last-child .erp-data-table tbody tr:last-child td:last-child,
+.erp-table-wrapper .erp-table-scroll:last-child .erp-mini-table tbody tr:last-child td:last-child,
+.erp-table-wrapper .erp-table-scroll:last-child .table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 7px !important;
+}
+
+/* Bottom cell rounding for tables placed directly under wrapper (like Gate Entry) */
+.erp-table-wrapper > table tbody tr:last-child td:first-child,
+.erp-table-wrapper > .table tbody tr:last-child td:first-child,
+.erp-table-wrapper > .erp-mini-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 7px !important;
+}
+
+.erp-table-wrapper > table tbody tr:last-child td:last-child,
+.erp-table-wrapper > .table tbody tr:last-child td:last-child,
+.erp-table-wrapper > .erp-mini-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 7px !important;
+}
+
+/* Round pagination footers to fit beautifully within wrapper bottom corners */
+.erp-pagination-container {
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+}
+

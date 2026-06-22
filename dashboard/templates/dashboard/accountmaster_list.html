@@ -1,0 +1,1133 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/alpha-list.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="list-container d-flex flex-column" style="height: calc(100vh - 100px); overflow: hidden; margin-top: -20px;">
+    
+    <!-- Unified Header Match -->
+    <div class="list-header flex-shrink-0" style="margin-bottom: 8px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Account Master</h2>
+                <p class="text-muted mb-0">Manage accounting account_master groups and categories.</p>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="toolbar-group">
+                    <!-- Printer Icon -->
+                    <a href="#" class="btn btn-light" title="Print (Coming Soon)">
+                        <i class="bi bi-printer-fill fs-5"></i>
+                    </a>
+                    
+                    <!-- Cloud Icon -->
+                    <a href="#" class="btn btn-light" title="Upload/Cloud (Coming Soon)">
+                        <i class="bi bi-cloud-arrow-up-fill fs-5"></i>
+                    </a>
+                    
+                    <!-- Column Selections -->
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Column Selections">
+                            <i class="bi bi-grid-3x3-gap-fill fs-5"></i>
+                        </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-3" style="min-width: 200px;">
+                        <li><h6 class="dropdown-header fw-bold text-dark px-0 text-uppercase border-bottom pb-2 mb-2">Column Selections</h6></li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input col-toggle" type="checkbox" data-col="0" id="colCode" checked>
+                                <label class="form-check-label" for="colCode">Group ID</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input col-toggle" type="checkbox" data-col="1" id="colAccountMasterName" checked>
+                                <label class="form-check-label" for="colAccountMasterName">Account Name</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input col-toggle" type="checkbox" data-col="3" id="colCategory" checked>
+                                <label class="form-check-label" for="colCategory">Category</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input col-toggle" type="checkbox" data-col="2" id="colDisplayName" checked>
+                                <label class="form-check-label" for="colDisplayName">Display name</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input col-toggle" type="checkbox" data-col="4" id="colStatus" checked>
+                                <label class="form-check-label" for="colStatus">Status</label>
+                            </div>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                
+                <!-- New Account Button -->
+                <button type="button" class="btn btn-primary shadow-sm hover-lift" data-bs-toggle="modal" data-bs-target="#createAccountMasterModal" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; margin-top: 4px; margin-right: 7px;">
+                    <i class="bi bi-plus-lg me-2" style="font-size: 11px;"></i>New Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters/Search Card -->
+        <div class="card border-0 mb-1 shadow-sm" style="border-radius: 4px; background: #ffffff; border: 1px solid #e5e7eb !important; position: relative; z-index: 1050;">
+            <form method="get" id="filterForm" class="d-flex align-items-center m-0 w-100 filter-bar" style="gap: 6px; flex-wrap: nowrap; padding: 6px 6px;">
+                <!-- Search Input -->
+                <div style="flex: 25; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1;"></i>
+                        <input type="text" class="form-control bg-light text-dark w-100" id="searchInput" name="search" value="{{ search_query }}" placeholder="Search text..." style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <!-- Search By Dropdown -->
+                <div style="flex: 17; min-width: 0;">
+                    <select name="search_by" id="searchBy" class="form-select bg-light text-dark w-100" style="height: 32px !important; padding: 4px 24px 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                        <option value="Account_Name" {% if search_by == 'Account_Name' %}selected{% endif %}>Account Name</option>
+                        <option value="groupID" {% if search_by == 'groupID' %}selected{% endif %}>Group ID</option>
+                        <option value="display_name" {% if search_by == 'display_name' %}selected{% endif %}>Display Name</option>
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div style="flex: 18; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-funnel text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; pointer-events: none; z-index: 5;"></i>
+                        <select name="category" class="form-select bg-light text-dark w-100" id="catFilter" onchange="this.form.submit()" style="height: 32px !important; padding: 4px 24px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Status Filter -->
+                <div style="flex: 16; min-width: 0;">
+                    <input type="hidden" id="statusFilter" name="status" value="{{ status_filter }}">
+                    <div class="dropdown position-relative w-100">
+                        <button type="button" id="actionsDropdownBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="height: 32px !important; padding: 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 600; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                            <i class="bi bi-sliders" style="margin-right: 4px; font-size: 11px;"></i> 
+                            <span id="actionsLabel">
+                                {% if status_filter == 'active' %}Active
+                                {% elif status_filter == 'inactive' %}Inactive
+                                {% else %}Status{% endif %}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="actionsMenu" style="font-size: 12px; min-width: 120px;">
+                            <li><a class="dropdown-item py-1" href="#" data-value="active">Active</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="inactive">Inactive</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="all">All</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <a href="{% url 'dashboard:alpha_list' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box; text-decoration: none;">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div> <!-- END list-header -->
+
+    <!-- Table Component -->
+    <div class="erp-table-wrapper flex-grow-1 d-flex flex-column mb-0" style="overflow:hidden; min-height:0;">
+        <div class="erp-table-scroll flex-grow-1" style="overflow-y: auto; overflow-x: auto; min-height:0;">
+            <table class="table mb-0 erp-data-table table-hover align-middle">
+                <thead class="erp-table-header">
+                    <tr class="text-secondary tracking-wider">
+                        <th data-col="0" style="width: 15%;">Group ID</th>
+                        <th data-col="1" style="width: 25%;">Account Name</th>
+                        <th data-col="2" style="width: 25%;">Display Name</th>
+                        <th data-col="3" style="width: 15%;">Category</th>
+                        <th data-col="4" class="text-center" style="width: 10%;">Status</th>
+                        <th data-col="5" class="text-center" style="width: 10%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="erp-table-body custom-scrollbar">
+                    {% for account_master in account_masters %}
+                    <tr id="row-{{ account_master.pk }}" class="align-middle {% if not account_master.is_active %}text-muted{% endif %}" style="cursor: pointer;" data-modal-id="editAccountMasterModal{{ account_master.pk }}" data-is-active="{{ account_master.is_active|yesno:'true,false' }}" data-row-id="{{ account_master.pk }}">
+                        <td data-col="0" class="ps-4 fw-semibold text-start text-dark" style="font-size:0.85rem; width: 15%;">{{ account_master.groupID|default_if_none:"" }}</td>
+                        <td data-col="1" class="text-start text-dark fw-bold" style="font-size:0.85rem; width: 25%;">{{ account_master.Account_Name }}</td>
+                        <td data-col="2" class="text-start text-muted" style="font-size:0.85rem; width: 25%;">{{ account_master.display_name }}</td>
+                        <td data-col="3" class="text-start text-muted" style="font-size:0.85rem; width: 15%;">{{ account_master.category.categoryName }}</td>
+                        <td data-col="4" class="text-center" style="width: 10%; vertical-align: middle;">
+                            <span id="badge-{{ account_master.pk }}" class="badge {% if account_master.is_active %}bg-success-subtle{% else %}bg-danger-subtle{% endif %} rounded-pill px-3" style="font-size: 11px;">
+                                {% if account_master.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td data-col="5" class="text-center" style="width: 10%; vertical-align: middle;">
+                            <!-- Action Dropdown Match -->
+                            <div class="dropdown action-dropdown d-flex justify-content-center align-items-center" style="margin: 0; padding: 0;">
+                                <button class="btn btn-light btn-sm hide-caret d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; padding: 0; border: 1px solid #e5e7eb; background: #fff; color: #374151; border-radius: 4px; margin: 0 auto !important;" type="button" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical" style="font-size: 14px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size: 13px; min-width: 160px; z-index: 1050; margin-top: 2px;">
+                                    <li>
+                                        <!-- View Modal Trigger -->
+                                        <button type="button" class="dropdown-item py-1" onclick="openAccountMasterViewMode('{{ account_master.pk }}');">
+                                            <i class="bi bi-eye me-2 text-secondary"></i> View
+                                        </button>
+                                    </li>
+                                    <li id="edit-li-{{ account_master.pk }}" style="{% if not account_master.is_active %}display: none;{% endif %}">
+                                        <!-- Edit Modal Trigger -->
+                                        <button type="button" class="dropdown-item py-1" onclick="bootstrap.Modal.getOrCreateInstance(document.getElementById('editAccountMasterModal{{ account_master.pk }}')).show();">
+                                            <i class="bi bi-pencil-square me-2 text-primary"></i> Edit
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <!-- Mark Inactive Status Trigger -->
+                                        <button type="button" class="dropdown-item py-1 text-warning" id="toggle-btn-{{ account_master.pk }}" onclick="bootstrap.Modal.getOrCreateInstance(document.getElementById('statusModal{{ account_master.pk }}')).show();">
+                                            {% if account_master.is_active %}
+                                                <i class="bi bi-x-circle me-2"></i> Mark Inactive
+                                            {% else %}
+                                                <i class="bi bi-arrow-counterclockwise me-2"></i> Activate
+                                            {% endif %}
+                                        </button>
+                                    </li>
+                                    <li id="delete-divider-{{ account_master.pk }}" style="{% if account_master.is_active %}display: none;{% endif %}"><hr class="dropdown-divider"></li>
+                                    <li id="delete-li-{{ account_master.pk }}" style="{% if account_master.is_active %}display: none;{% endif %}">
+                                        <!-- Delete Status Trigger -->
+                                        <button type="button" class="dropdown-item py-1 text-danger fw-bold" onclick="bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteAccountMasterModal{{ account_master.pk }}')).show();">
+                                            <i class="bi bi-trash3 me-2"></i> Delete
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <!-- Empty State UI -->
+                    <tr>
+                        <td colspan="6" class="text-center py-5 bg-white border-0">
+                            <div class="empty-state py-4 text-muted">
+                                <h5>No AccountMaster Records Found</h5>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Spacer Row -->
+                    <tr>
+                        <td colspan="6" class="border-0 p-0">
+                            <div class="end-of-records">--- End of Records ---</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination Component -->
+        {% if is_paginated %}
+        <div class="erp-pagination-container d-flex justify-content-between align-items-center px-3 py-2 bg-white border-top flex-shrink-0" style="z-index: 10;">
+            <div class="erp-pagination-info text-muted" style="font-size: 0.8rem;">
+                Showing <span class="fw-semibold text-dark">{{ page_obj.start_index }}</span> to <span class="fw-semibold text-dark">{{ page_obj.end_index }}</span> of <span class="fw-semibold text-dark">{{ page_obj.paginator.count }}</span> entries
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationControls" style="gap: 4px;">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm mt-1 mb-1 me-1 erp-page-btn" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link shadow-sm mt-1 mb-1 erp-page-btn">{{ page_obj.number }}</span></li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm mt-1 mb-1 ms-1 erp-page-btn" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- ── Total Records Footer ── -->
+    <div class="erp-list-footer-fixed" id="erpListFooter">
+        <div class="erp-list-footer-inner" style="display: flex; width: 100%; padding: 0; gap: 0; justify-content: start;">
+            <!-- Spacer matching columns before Status (75% width) -->
+            <div style="width: 75%; flex-shrink: 0;"></div>
+            
+            <!-- Total Records Column matching Status column (15% width) -->
+            <div class="d-flex align-items-center justify-content-end text-end" style="width: 15%; padding-right: 16px; gap: 16px; box-sizing: border-box; flex-shrink: 0;">
+                <span class="erp-list-footer-label" style="margin: 0;">TOTAL RECORDS</span>
+                <span id="totalAmountDisplay" class="erp-list-footer-amount">
+                    {% if is_paginated %}{{ page_obj.paginator.count }}{% else %}{{ account_masters|length }}{% endif %}
+                </span>
+            </div>
+            
+            <!-- Spacer matching columns after Status (10% width) -->
+            <div style="width: 10%; flex-shrink: 0;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CREATE GROUP MODAL -->
+<div class="modal fade" id="createAccountMasterModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+        <form method="post" action="{% url 'dashboard:alpha_create' %}" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 8px; overflow: hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.05rem;">Create Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 20px; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-5 py-4">
+                {% csrf_token %}
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Group ID</label>
+                    <div class="col-sm-8">
+                        <input type="number" name="groupID" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;">
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Account Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="Account_Name" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Display Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="display_name" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Opening Balance</label>
+                    <div class="col-sm-8">
+                        <input type="number" step="0.01" name="cl_bal" value="0.00" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Category</label>
+                    <div class="col-sm-8">
+                        <select name="category" class="form-select" style="border-radius: 4px; padding-top: 6px; padding-bottom: 6px; padding-left: 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-2 justify-content-center">
+                <button type="submit" class="btn btn-primary bg-gradient text-white fw-bold shadow-sm" style="border-radius: 4px; width: 180px; height: 38px; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 6px -1px rgba(37, 99, 235, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 .125rem .25rem rgba(0,0,0,.075)'">Save Group</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for account_master in account_masters %}
+<!-- EDIT GROUP MODALS -->
+<div class="modal fade" id="editAccountMasterModal{{ account_master.pk }}" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+        <form method="post" action="{% url 'dashboard:alpha_edit' account_master.pk %}" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 8px; overflow: hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.05rem;">Edit Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 20px; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-5 py-4">
+                {% csrf_token %}
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Group ID</label>
+                    <div class="col-sm-8">
+                        <input type="number" name="groupID" value="{{ account_master.groupID|default_if_none:"" }}" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;">
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Account Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="Account_Name" value="{{ account_master.Account_Name }}" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Display Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="display_name" value="{{ account_master.display_name }}" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Opening Balance</label>
+                    <div class="col-sm-8">
+                        <input type="number" step="0.01" name="cl_bal" value="{{ account_master.cl_bal }}" class="form-control" style="border-radius: 4px; padding: 6px 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size: 13px;">Category</label>
+                    <div class="col-sm-8">
+                        <select name="category" class="form-select" style="border-radius: 4px; padding-top: 6px; padding-bottom: 6px; padding-left: 10px; font-size: 13px; height: 36px; border-color: #cbd5e1;" required>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if account_master.category_id == cat.id %}selected{% endif %}>{{ cat.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-2 justify-content-center">
+                <button type="submit" class="btn btn-primary bg-gradient text-white fw-bold shadow-sm" style="border-radius: 4px; width: 180px; height: 38px; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 6px -1px rgba(37, 99, 235, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 .125rem .25rem rgba(0,0,0,.075)'">Update Group</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MARK INACTIVE MODAL -->
+<div class="modal fade" id="statusModal{{ account_master.pk }}" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <form method="post" action="{% url 'dashboard:alpha_toggle' account_master.pk %}" class="modal-content shadow-lg border-0 bg-white toggle-status-form" data-pk="{{ account_master.pk }}" style="border-radius: 8px; overflow: hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" id="statusModalTitle-{{ account_master.pk }}" style="font-size: 1.05rem;">{% if account_master.is_active %}Mark Inactive{% else %}Activate{% endif %}</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 20px; opacity: 0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-4 text-center">
+                {% csrf_token %}
+                <p class="mb-0 fw-medium text-dark" style="font-size: 14px;">Are you sure you want to <span id="statusModalActionText-{{ account_master.pk }}">{% if account_master.is_active %}mark{% else %}activate{% endif %}</span><br><span id="statusModalName-{{ account_master.pk }}" class="fw-bold {% if account_master.is_active %}text-danger{% else %}text-success{% endif %}" style="font-size: 15px;">{{ account_master.Account_Name }}</span><span id="statusModalSuffix-{{ account_master.pk }}">{% if account_master.is_active %} inactive{% endif %}</span>?</p>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-0 justify-content-center gap-2">
+                <button type="submit" class="btn {% if account_master.is_active %}btn-danger{% else %}btn-success{% endif %} bg-gradient text-white fw-bold shadow-sm" id="statusModalBtn-{{ account_master.pk }}" style="border-radius: 4px; width: 140px; height: 38px;">Confirm</button>
+                <button type="button" class="btn btn-light border fw-semibold text-dark shadow-sm" data-bs-dismiss="modal" style="border-radius: 4px; width: 100px; height: 38px;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteAccountMasterModal{{ account_master.pk }}" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <form method="post" action="{% url 'dashboard:alpha_delete' account_master.pk %}" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 8px; overflow: hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-danger w-100 text-center m-0" style="font-size: 1.05rem;">Hard Delete Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 20px; opacity: 0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-4 text-center">
+                {% csrf_token %}
+                <p class="mb-0 fw-medium text-dark" style="font-size: 14px;">Are you absolutely sure you want to permanently delete<br><span class="text-danger fw-bold fs-5">{{ account_master.Account_Name }}</span>?<br><br>This database action cannot be undone!</p>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-0 justify-content-center gap-2">
+                <button type="submit" class="btn btn-danger bg-gradient text-white fw-bold shadow-sm" style="border-radius: 4px; width: 180px; height: 38px;">PERMANENTLY DELETE</button>
+                <button type="button" class="btn btn-light border fw-semibold text-dark shadow-sm" data-bs-dismiss="modal" style="border-radius: 4px; width: 100px; height: 38px;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+    /* Styling to match the precise colors of the Create Group Modal in the mockups */
+    .form-control.border-success, .form-select.border-success {
+        border-color: #8cba82 !important;
+    }
+
+    /* ZIGZAG UI FIX */
+    .custom-table tr { vertical-align: middle; }
+    .custom-table td { white-space: nowrap; }
+    
+    /* DROPDOWN FIX */
+    .dropdown-menu { z-index: 1055 !important; }
+    
+    /* Column Selections Dropdown Form Check Styling */
+    .dropdown-menu .form-check {
+        display: flex !important;
+        align-items: center !important;
+        padding-left: 8px !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        padding-right: 8px !important;
+        margin: 2px 0 !important;
+        border-radius: 4px;
+        transition: background-color 0.15s ease;
+        cursor: pointer;
+    }
+    .dropdown-menu .form-check:hover {
+        background-color: #f1f5f9 !important;
+    }
+    .dropdown-menu .form-check-input {
+        float: none !important;
+        margin: 0 10px 0 0 !important;
+        width: 15px !important;
+        height: 15px !important;
+        padding: 0 !important;
+        cursor: pointer;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 3px !important;
+    }
+    .dropdown-menu .form-check-input:checked {
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
+    }
+    .dropdown-menu .form-check-label {
+        margin: 0 !important;
+        cursor: pointer;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+        user-select: none;
+        width: 100%;
+        line-height: 1 !important;
+    }
+    
+    /* STATUS BADGE UI IMPROVEMENT */
+    .badge { transition: all 0.2s ease; }
+    .bg-success-subtle { background-color: #d1e7dd !important; color: #0f5132 !important; }
+    .bg-danger-subtle { background-color: #f8d7da !important; color: #842029 !important; }
+    .text-success { color: #198754 !important; }
+    .text-danger { color: #dc3545 !important; }
+
+    /* SAAS ACTIONS BUTTON */
+    .btn-saas-action {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 500;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        height: 26px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-saas-action:hover, .btn-saas-action:focus, .dropdown.show .btn-saas-action {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transform: translateY(-0.5px);
+        color: #0f172a;
+        outline: none;
+    }
+
+    .btn-saas-action i {
+        font-size: 12px;
+        color: #64748b;
+        margin-left: -2px;
+    }
+
+    .btn-saas-action::after {
+        display: none !important;
+    }
+    
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    .table thead th {
+        box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
+        border-bottom: none !important;
+        background-color: #f8fafc !important;
+    }
+    
+    /* --- Table Layout Fix ---
+       The .erp-table-scroll div handles scrolling (overflow-y: auto).
+       The table uses normal layout so its height grows with content.
+       This ensures tbody.scrollHeight > clientHeight is never falsely equal
+       and allows .erp-table-scroll to be the real scroll container.
+    */
+    .table {
+        margin-bottom: 0 !important;
+        background: #fff;
+        width: 100%;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+
+    /* thead stays visually consistent */
+    .table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #f8fafc !important;
+    }
+
+    .table thead th:first-child {
+        border-top-left-radius: 7px !important;
+    }
+    .table thead th:last-child {
+        border-top-right-radius: 7px !important;
+    }
+
+    .erp-table-body tr:last-child td:first-child {
+        border-bottom-left-radius: 7px !important;
+    }
+    .erp-table-body tr:last-child td:last-child {
+        border-bottom-right-radius: 7px !important;
+    }
+
+    .table .spacer-row {
+        background: transparent !important;
+    }
+    .table .spacer-row:hover {
+        background: transparent !important;
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Prevent double-click action timer
+    let rowClickTimeout = null;
+
+    // Dynamic footer count update
+    function updateTotalRecords() {
+        const tableBody = document.querySelector('.erp-table-body');
+        if (!tableBody) return;
+        const visibleRows = Array.from(tableBody.querySelectorAll('tr[id^="row-"]')).filter(row => {
+            return window.getComputedStyle(row).display !== 'none';
+        });
+        const footerCountSpan = document.getElementById('totalAmountDisplay');
+        if (footerCountSpan) {
+            footerCountSpan.textContent = visibleRows.length;
+        }
+    }
+    
+    // Run on initial load
+    updateTotalRecords();
+
+    // ── Actions Dropdown Handler for AccountMaster Groups ──
+    const actionsMenu = document.getElementById('actionsMenu');
+    const actionsDropdownBtn = document.getElementById('actionsDropdownBtn');
+    const statusFilterInput = document.getElementById('statusFilter');
+    const filterForm = document.getElementById('filterForm');
+
+    if (actionsMenu && actionsDropdownBtn && statusFilterInput) {
+        actionsMenu.addEventListener('click', function(e) {
+            const item = e.target.closest('.dropdown-item');
+            if (item) {
+                e.preventDefault();
+                const value = item.getAttribute('data-value');
+                statusFilterInput.value = value;
+                
+                // Update dropdown button label
+                const labelSpan = actionsDropdownBtn.querySelector('#actionsLabel') || actionsDropdownBtn;
+                if (labelSpan) {
+                    labelSpan.textContent = item.textContent.trim();
+                }
+                
+                // Auto submit form on dropdown change
+                if (filterForm) {
+                    filterForm.submit();
+                }
+            }
+        });
+    }
+
+    // Stop dropdown menu from closing when clicking inside the form-check row (including labels/checkboxes)
+    document.querySelectorAll('.dropdown-menu .form-check').forEach(container => {
+        container.addEventListener('click', (e) => e.stopPropagation());
+    });
+
+    // Handle column toggling
+    document.querySelectorAll('.col-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const colIndex = this.getAttribute('data-col');
+            const isChecked = this.checked;
+            
+            // Toggle header
+            const header = document.querySelector(`th[data-col="${colIndex}"]`);
+            if (header) header.style.display = isChecked ? '' : 'none';
+            
+            // Toggle all cells in this column
+            document.querySelectorAll(`td[data-col="${colIndex}"]`).forEach(cell => {
+                cell.style.display = isChecked ? '' : 'none';
+            });
+        });
+    });
+
+    // Handle AJAX Status Toggling
+    document.querySelectorAll('.toggle-status-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pk = this.getAttribute('data-pk');
+            const url = this.action;
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById(`statusModalBtn-${pk}`);
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+            
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                if (data.success) {
+                    // Update Row and Badge
+                    const badge = document.getElementById(`badge-${pk}`);
+                    const row = document.getElementById(`row-${pk}`);
+                    const toggleBtn = document.getElementById(`toggle-btn-${pk}`);
+                    
+                    const actionSpan = document.getElementById(`statusModalActionText-${pk}`);
+                    const nameSpan = document.getElementById(`statusModalName-${pk}`);
+                    const suffixSpan = document.getElementById(`statusModalSuffix-${pk}`);
+                    
+                    if (data.is_active) {
+                        badge.className = 'badge bg-success-subtle text-success text-uppercase px-2 py-1';
+                        badge.textContent = 'Active';
+                        if (row) {
+                            row.classList.remove('text-muted');
+                            row.dataset.isActive = 'true';
+                        }
+                        
+                        document.getElementById(`statusModalTitle-${pk}`).textContent = 'Mark Inactive';
+                        submitBtn.className = 'btn btn-sm btn-danger w-100 bg-gradient text-white fw-bold';
+                        submitBtn.textContent = 'Confirm';
+                        
+                        if(toggleBtn) toggleBtn.textContent = 'Mark Inactive';
+                        
+                        actionSpan.textContent = 'mark';
+                        nameSpan.className = 'text-danger';
+                        suffixSpan.textContent = ' inactive';
+                    } else {
+                        badge.className = 'badge bg-danger-subtle text-danger text-uppercase px-2 py-1';
+                        badge.textContent = 'Inactive';
+                        if (row) {
+                            row.classList.add('text-muted');
+                            row.dataset.isActive = 'false';
+                        }
+                        
+                        document.getElementById(`statusModalTitle-${pk}`).textContent = 'Activate';
+                        submitBtn.className = 'btn btn-sm btn-success w-100 bg-gradient text-white fw-bold';
+                        submitBtn.textContent = 'Confirm';
+                        
+                        if(toggleBtn) toggleBtn.textContent = 'Activate';
+                        
+                        actionSpan.textContent = 'activate';
+                        nameSpan.className = 'text-success';
+                        suffixSpan.textContent = '';
+                    }
+
+                    // Update dropdown Edit and Delete list items visibility
+                    const editLi = document.getElementById(`edit-li-${pk}`);
+                    if (editLi) {
+                        editLi.style.display = data.is_active ? '' : 'none';
+                    }
+                    const deleteLi = document.getElementById(`delete-li-${pk}`);
+                    if (deleteLi) {
+                        deleteLi.style.display = data.is_active ? 'none' : '';
+                    }
+                    const deleteDivider = document.getElementById(`delete-divider-${pk}`);
+                    if (deleteDivider) {
+                        deleteDivider.style.display = data.is_active ? 'none' : '';
+                    }
+                    
+                    // Close Modal properly using getInstance (do not create multiple)
+                    const modalEl = document.getElementById(`statusModal${pk}`);
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                    
+                    // Update dynamic footer count
+                    updateTotalRecords();
+                    
+                    // Show Toast
+                    showToast(data.message, 'success');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm';
+                console.error('Error updating status:', error);
+                showToast('An error occurred. Please try again.', 'error');
+            });
+        });
+    });
+
+    // ── Detached Dropdown & Row Click Delegators (Prevents Event Conflicts & Clipping) ──
+    const tableBody = document.querySelector('.erp-table-body');
+    if (tableBody) {
+        tableBody.addEventListener('click', function(e) {
+            const btn = e.target.closest('.action-dropdown button');
+            const row = e.target.closest('tr');
+            const actionDropdown = e.target.closest('.action-dropdown');
+            const detachedDropdown = e.target.closest('.erp-detached-dropdown');
+
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                let menu;
+                if (btn.dataset.menuId) {
+                    menu = document.getElementById(btn.dataset.menuId);
+                } else {
+                    menu = btn.nextElementSibling;
+                    if (!menu || !menu.classList.contains('dropdown-menu')) return;
+                    
+                    const menuId = 'erp-account_master-dropdown-' + Math.random().toString(36).substr(2, 9);
+                    btn.dataset.menuId = menuId;
+                    menu.id = menuId;
+                    menu.classList.add('erp-detached-dropdown');
+                    document.body.appendChild(menu);
+                }
+                
+                if (!menu) return;
+                
+                // Toggle current
+                if (menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Close all other detached dropdowns
+                    document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                        m.classList.remove('show');
+                    });
+                    
+                    // Temporarily show with hidden visibility to measure its height
+                    menu.style.position = 'fixed';
+                    menu.style.visibility = 'hidden';
+                    menu.classList.add('show');
+                    const menuHeight = menu.offsetHeight;
+                    menu.style.visibility = '';
+                    
+                    // Calculate position relative to viewport
+                    const rect = btn.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                    
+                    // Check if it fits below the button
+                    const fitsBelow = (rect.bottom + 4 + menuHeight) <= viewportHeight;
+                    
+                    if (fitsBelow) {
+                        menu.style.top = (rect.bottom + 4) + 'px';
+                        menu.style.bottom = 'auto';
+                    } else {
+                        menu.style.top = 'auto';
+                        menu.style.bottom = (viewportHeight - rect.top + 4) + 'px';
+                    }
+                    
+                    // Align to right edge of button
+                    menu.style.left = 'auto';
+                    menu.style.right = (document.documentElement.clientWidth - rect.right) + 'px';
+                    menu.style.zIndex = '9999';
+                    
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            }
+        });
+    }
+
+    // Close detached dropdowns on outside click or item click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+        
+        const dropdownItem = e.target.closest('.erp-detached-dropdown .dropdown-item');
+        if (dropdownItem) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+    });
+
+    // ── VIEW-ONLY MODE IMPLEMENTATION ──
+    window.openAccountMasterViewMode = function(pk) {
+        const modalEl = document.getElementById('editAccountMasterModal' + pk);
+        if (!modalEl) return;
+        
+        // Mark as view-only
+        modalEl.dataset.isViewOnly = 'true';
+        
+        // Add subtle read-only informational banner
+        let banner = modalEl.querySelector('.erp-view-only-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.className = 'alert alert-info erp-view-only-banner py-2 px-3 mb-3 d-flex align-items-center';
+            banner.style.borderRadius = '4px';
+            banner.style.borderLeft = '4px solid #0ea5e9';
+            banner.style.fontSize = '13px';
+            banner.innerHTML = `
+                <i class="bi bi-info-circle-fill me-2 text-info fs-6"></i>
+                <span class="fw-semibold">View-Only Mode</span>: Viewing record in read-only mode.
+            `;
+            const modalBody = modalEl.querySelector('.modal-body');
+            modalBody.insertBefore(banner, modalBody.firstChild);
+        }
+        
+        // Disable all inputs and select fields
+        modalEl.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.disabled = true;
+        });
+        
+        // Hide update button
+        const saveBtn = modalEl.querySelector('.modal-footer button[type="submit"]');
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+        }
+        
+        // Show modal
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    };
+
+    // Intercept edit modal display to prevent stale modal states
+    document.addEventListener('show.bs.modal', function(e) {
+        const modalEl = e.target;
+        if (modalEl && modalEl.id && modalEl.id.startsWith('editAccountMasterModal')) {
+            const pk = modalEl.id.replace('editAccountMasterModal', '');
+            const row = document.getElementById(`row-${pk}`);
+            if (row && row.dataset.isActive === 'false') {
+                if (modalEl.dataset.isViewOnly !== 'true') {
+                    e.preventDefault(); // Stop editable modal from displaying
+                    
+                    // Asynchronously open in view-only mode instead
+                    setTimeout(() => {
+                        if (window.openAccountMasterViewMode) {
+                            window.openAccountMasterViewMode(pk);
+                        }
+                    }, 0);
+                }
+            }
+        }
+    });
+
+    // Reset view-only modals on hide
+    document.addEventListener('hidden.bs.modal', function(e) {
+        const modalEl = e.target;
+        if (modalEl.dataset.isViewOnly === 'true') {
+            modalEl.dataset.isViewOnly = 'false';
+            
+            const banner = modalEl.querySelector('.erp-view-only-banner');
+            if (banner) banner.remove();
+            
+            modalEl.querySelectorAll('.form-control, .form-select').forEach(input => {
+                input.disabled = false;
+            });
+            
+            const saveBtn = modalEl.querySelector('.modal-footer button[type="submit"]');
+            if (saveBtn) {
+                saveBtn.style.display = '';
+            }
+        }
+
+        // Restore row focus and highlighting for edit modal cancels, view modal closes, status changes, and delete cancellations
+        if (modalEl && modalEl.id && (modalEl.id.startsWith('editAccountMasterModal') || modalEl.id.startsWith('statusModal') || modalEl.id.startsWith('deleteAccountMasterModal'))) {
+            if (window.erpRowRestore && window.erpRowRestore.restore) {
+                setTimeout(() => {
+                    window.erpRowRestore.restore();
+                }, 50);
+            }
+        }
+    });
+
+    // ── UNSAVED CHANGES GUARD (DIRTY TRACKING) ──
+    let isModalDirty = false;
+
+    document.addEventListener('shown.bs.modal', function(e) {
+        isModalDirty = false;
+        const modalEl = e.target;
+        if (modalEl.dataset.isViewOnly !== 'true') {
+            modalEl.querySelectorAll('.form-control, .form-select').forEach(input => {
+                input.addEventListener('input', () => { isModalDirty = true; });
+                input.addEventListener('change', () => { isModalDirty = true; });
+            });
+        }
+    });
+
+    document.addEventListener('hidden.bs.modal', function(e) {
+        isModalDirty = false;
+    });
+
+    // Reset dirty flag on any successful form submit, with validation checks
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const modalEl = this.closest('.modal');
+            if (modalEl && modalEl.dataset.isViewOnly !== 'true') {
+                let isFormValid = true;
+                this.querySelectorAll('.form-control, .form-select').forEach(input => {
+                    validateField(input);
+                    if (input.classList.contains('is-invalid')) {
+                        isFormValid = false;
+                    }
+                });
+                
+                if (!isFormValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+            }
+            isModalDirty = false;
+        });
+    });
+
+    // Prevent tab/browser close or refresh on unsaved changes
+    const WARN_MSG = 'Changes are not saved. Are you sure you want to leave?';
+    window.addEventListener('beforeunload', function(e) {
+        if (isModalDirty) {
+            e.preventDefault();
+            e.returnValue = WARN_MSG;
+            return WARN_MSG;
+        }
+    });
+
+    // Accidental Modal Close Interceptor (clicks outside, Cancel button, [X] button)
+    document.addEventListener('hide.bs.modal', function(e) {
+        const modalEl = e.target;
+        const isStatusOrDelete = modalEl.id.startsWith('statusModal') || modalEl.id.startsWith('deleteAccountMasterModal');
+        if (modalEl.dataset.isViewOnly !== 'true' && !isStatusOrDelete && isModalDirty) {
+            if (!confirm(WARN_MSG)) {
+                e.preventDefault();
+            } else {
+                isModalDirty = false;
+            }
+        }
+    });
+
+    // Intercept sidebar / anchor click navigation
+    document.addEventListener('click', function(e) {
+        const anchor = e.target.closest('a');
+        if (anchor && isModalDirty) {
+            const href = anchor.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                e.preventDefault();
+                if (confirm(WARN_MSG)) {
+                    isModalDirty = false;
+                    window.location.href = href;
+                }
+            }
+        }
+    });
+
+    // Popstate back guard
+    history.pushState({ erpFormGuard: true }, '');
+    window.addEventListener('popstate', function (e) {
+        if (isModalDirty) {
+            history.pushState({ erpFormGuard: true }, '');
+            if (confirm(WARN_MSG)) {
+                isModalDirty = false;
+                history.go(-2);
+            }
+        }
+    });
+
+    // ── REAL-TIME VALIDATION UX IMPROVEMENTS ──
+    function validateField(input) {
+        if (input.required && !input.value.trim()) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            showErrorFeedback(input, 'This field is required.');
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            removeErrorFeedback(input);
+        }
+    }
+
+    function showErrorFeedback(input, message) {
+        let feedback = input.parentNode.querySelector('.invalid-feedback-erp') || input.parentNode.querySelector('.invalid-feedback');
+        if (!feedback) {
+            feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback-erp';
+            input.parentNode.appendChild(feedback);
+        }
+        feedback.textContent = message;
+    }
+
+    // Bind real-time validation on blur/input inside modals
+    document.addEventListener('shown.bs.modal', function(e) {
+        const modalEl = e.target;
+        if (modalEl.dataset.isViewOnly !== 'true') {
+            modalEl.querySelectorAll('.form-control, .form-select').forEach(input => {
+                input.addEventListener('blur', () => { validateField(input); });
+                input.addEventListener('input', () => { if (input.classList.contains('is-invalid')) validateField(input); });
+                input.addEventListener('change', () => { validateField(input); });
+            });
+        }
+    });
+
+    function removeErrorFeedback(input) {
+        const feedback = input.parentNode.querySelector('.invalid-feedback-erp') || input.parentNode.querySelector('.invalid-feedback');
+        if (feedback) {
+            feedback.remove();
+        }
+    }
+
+    // ── NUMERIC SCROLL/WHEEL PROTECTION ──
+    document.addEventListener('wheel', function(e) {
+        if (document.activeElement.type === 'number') {
+            e.preventDefault();
+            document.activeElement.blur();
+        }
+    }, { passive: false });
+
+    document.addEventListener('keydown', function(e) {
+        if (document.activeElement.type === 'number' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+            e.preventDefault();
+        }
+    });
+
+    // Helper to dynamically show proper toast
+    function showToast(message, type) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            container.style.zIndex = '1060';
+            document.body.appendChild(container);
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+        const iconClass = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0 mb-2 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <i class="bi ${iconClass} me-2 fs-5"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHTML);
+        const toastEl = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
+        toast.show();
+        
+        toastEl.addEventListener('hidden.bs.toast', () => {
+            toastEl.remove();
+        });
+    }
+});
+</script>
+{% endblock %}

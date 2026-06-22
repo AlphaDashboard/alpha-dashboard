@@ -1,0 +1,11 @@
+/* ==========================================================================
+   ENTERPRISE UI - MASTER STYLESHEET
+   ========================================================================== */
+
+/* 1. Core Common Styles */
+@import url('common/layout.css');
+@import url('common/forms.css?v=5');
+@import url('common/tables.css');
+@import url('common/buttons.css?v=2');
+@import url('common/utilities.css');
+@import url('common/erp-data-table.css?v=7');
