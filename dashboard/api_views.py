@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from .models.cashbank import CashBank, CashBankTran
 from .models.section_c import SectionC
-from .models.sal_pur_group import SalPurGroup
-from .serializers import CashBankSerializer, SectionCSerializer, SubsectionB2Serializer, SubsectionYSerializer, SalPurGroupSerializer
+from .models.sal_pur_group import TransactionType, SalPurGroup
+from .serializers import CashBankSerializer, SectionCSerializer, SubsectionB2Serializer, SubsectionYSerializer, SalPurGroupSerializer, TransactionTypeSerializer
 from django.db.models import Q, CharField, Value
 from django.db.models.functions import Cast, Concat
 
@@ -865,4 +865,23 @@ class UserMasterViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+class TransactionTypeViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for Transaction Type lookup table.
+    Supports list, retrieve, create, update.
+    Used by the Sales/Purchase Group form dropdown and 'Add New' modal.
+    """
+    queryset = TransactionType.objects.all().order_by('TransactionTypeName')
+    serializer_class = TransactionTypeSerializer
+    lookup_field = 'TransactionTypeID'
+    pagination_class = None  # Return full list for dropdown binding
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(TransactionTypeName__icontains=search) |
+                Q(TransactionType__icontains=search)
+            )
+        return queryset

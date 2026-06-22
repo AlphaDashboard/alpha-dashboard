@@ -646,7 +646,16 @@ class SubsectionYSerializer(serializers.ModelSerializer):
         return instance
 
 
-from dashboard.models.sal_pur_group import SalPurGroup, SalPurGroupTran
+from dashboard.models.sal_pur_group import TransactionType, SalPurGroup, SalPurGroupTran
+
+
+class TransactionTypeSerializer(serializers.ModelSerializer):
+    """Serializer for the TransactionType lookup table."""
+    class Meta:
+        model = TransactionType
+        fields = '__all__'
+        read_only_fields = ('TransactionTypeID',)
+
 
 class SalPurGroupTranSerializer(serializers.ModelSerializer):
     account_display = serializers.SerializerMethodField()
@@ -665,9 +674,11 @@ class SalPurGroupTranSerializer(serializers.ModelSerializer):
             return {'id': ba.pk, 'text': text}
         return None
 
+
 class SalPurGroupSerializer(serializers.ModelSerializer):
     transactions = SalPurGroupTranSerializer(many=True, required=False)
     account_display = serializers.SerializerMethodField()
+    transaction_type_display = serializers.SerializerMethodField()
 
     class Meta:
         model = SalPurGroup
@@ -683,33 +694,44 @@ class SalPurGroupSerializer(serializers.ModelSerializer):
             return {'id': ba.pk, 'text': text}
         return None
 
+    def get_transaction_type_display(self, obj):
+        if obj.TransactionTypeID:
+            tt = obj.TransactionTypeID
+            return {
+                'id': tt.TransactionTypeID,
+                'name': tt.TransactionTypeName,
+                'code': tt.TransactionType
+            }
+        return None
+
     def create(self, validated_data):
         transactions_data = validated_data.pop('transactions', [])
         group = SalPurGroup.objects.create(**validated_data)
-        
+
         for tx_data in transactions_data:
             SalPurGroupTran.objects.create(SalPurGroupID=group, **tx_data)
-            
+
         return group
 
     def update(self, instance, validated_data):
         transactions_data = validated_data.pop('transactions', [])
-        
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
+
         if transactions_data:
             instance.transactions.all().delete()
             for tx_data in transactions_data:
                 SalPurGroupTran.objects.create(SalPurGroupID=instance, **tx_data)
-                
+
         return instance
 
+
 from .models.user_master import UserMaster
+
 
 class UserMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMaster
         fields = '__all__'
-

@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isEditMode = !!groupId;
     let isViewMode = window.APP_CONFIG.isViewMode;
     const accountsData = window.APP_CONFIG.accountsData;
+    const transactionTypes = window.APP_CONFIG.transactionTypes || [];
 
     console.log("DOMContentLoaded: sal-pur-group-form.js loaded. groupId:", groupId, "isEditMode:", isEditMode, "isViewMode:", isViewMode);
 
@@ -53,6 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.btn-row-add, .btn-row-delete, .btn-footer-save').forEach(btn => {
                 btn.style.display = 'none';
             });
+            // Also hide the Transaction Type Add New button in view mode
+            const btnAddTxnType = document.getElementById('btnAddTransactionType');
+            if (btnAddTxnType) btnAddTxnType.style.display = 'none';
             form.querySelectorAll('.erp-toggle-btn').forEach(btn => {
                 btn.classList.add('disabled');
             });
@@ -182,10 +186,99 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-row-add, .btn-row-delete, .btn-footer-save').forEach(btn => {
             btn.style.display = 'none';
         });
+        // Also hide Transaction Type Add New button in view mode
+        const btnAddTxnType = document.getElementById('btnAddTransactionType');
+        if (btnAddTxnType) btnAddTxnType.style.display = 'none';
 
         // Disable all segmented toggle button labels
         form.querySelectorAll('.erp-toggle-btn').forEach(btn => {
             btn.classList.add('disabled');
+        });
+    }
+
+    // ── Transaction Type: Add New modal handler ──────────────────────────────
+    const btnAddTransactionType = document.getElementById('btnAddTransactionType');
+    const txnTypeModal = new bootstrap.Modal(document.getElementById('createTransactionTypeModal'));
+    const btnSaveTxnType = document.getElementById('btnSaveTxnType');
+    const txnTypeModalError = document.getElementById('txnTypeModalError');
+
+    if (btnAddTransactionType) {
+        btnAddTransactionType.addEventListener('click', () => {
+            // Clear modal fields
+            document.getElementById('newTxnTypeName').value = '';
+            document.getElementById('newTxnTypeCode').value = '';
+            if (txnTypeModalError) { txnTypeModalError.style.display = 'none'; txnTypeModalError.textContent = ''; }
+            txnTypeModal.show();
+        });
+    }
+
+    if (btnSaveTxnType) {
+        btnSaveTxnType.addEventListener('click', () => {
+            const name = document.getElementById('newTxnTypeName').value.trim();
+            const code = document.getElementById('newTxnTypeCode').value.trim().toUpperCase();
+
+            // Client-side validation
+            if (!name) {
+                txnTypeModalError.textContent = 'Transaction Type Name is required.';
+                txnTypeModalError.style.display = 'block';
+                return;
+            }
+            if (!code || code.length > 4) {
+                txnTypeModalError.textContent = 'Transaction Type Code is required and must be max 4 characters.';
+                txnTypeModalError.style.display = 'block';
+                return;
+            }
+
+            // Disable save button while saving
+            btnSaveTxnType.disabled = true;
+            btnSaveTxnType.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+            if (txnTypeModalError) { txnTypeModalError.style.display = 'none'; txnTypeModalError.textContent = ''; }
+
+            fetch('/api/transaction-type/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    TransactionTypeName: name,
+                    TransactionType: code,
+                    UserCreated: 'system'
+                })
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(JSON.stringify(err));
+                }
+                return res.json();
+            })
+            .then(newType => {
+                // Add new option to the dropdown and select it
+                const txnSelect = document.getElementById('TransactionTypeID');
+                if (txnSelect) {
+                    const opt = new Option(
+                        `${newType.TransactionTypeName}`,
+                        newType.TransactionTypeID,
+                        true, true
+                    );
+                    opt.dataset.code = newType.TransactionType;
+                    txnSelect.add(opt);
+                    txnSelect.value = String(newType.TransactionTypeID);
+                }
+                txnTypeModal.hide();
+                // Mark form dirty
+                if (!isInitializing && !isViewMode) isFormDirty = true;
+            })
+            .catch(err => {
+                console.error('Failed to save Transaction Type:', err);
+                txnTypeModalError.textContent = 'Failed to save. Please check for duplicate code or try again.';
+                txnTypeModalError.style.display = 'block';
+            })
+            .finally(() => {
+                btnSaveTxnType.disabled = false;
+                btnSaveTxnType.innerHTML = '<i class="bi bi-check-lg me-2"></i> Save';
+            });
         });
     }
 
@@ -235,6 +328,16 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#GroupwiseAccountID').val(data.GroupwiseAccountID).trigger('change');
         } else {
             $('#GroupwiseAccountID').val(null).trigger('change');
+        }
+
+        // Restore Transaction Type selection
+        const txnTypeSelect = document.getElementById('TransactionTypeID');
+        if (txnTypeSelect) {
+            if (data.TransactionTypeID) {
+                txnTypeSelect.value = String(data.TransactionTypeID);
+            } else {
+                txnTypeSelect.value = '';
+            }
         }
 
         // Add transaction rows
@@ -397,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
             SalPurGroupName: document.getElementById('SalPurGroupName').value.trim(),
             GroupwiseAccounting: document.getElementById('GroupwiseAccounting').checked,
             GroupwiseAccountID: document.getElementById('GroupwiseAccountID').value || null,
+            TransactionTypeID: document.getElementById('TransactionTypeID')?.value || null,
             Interstate_Y_WithinState_N: document.getElementById('StateInterstate').checked,
             GST_Applicable_Y_N: document.getElementById('GSTApplicable').checked,
             IsGSTApplicableY1N0: document.getElementById('GSTApplicable').checked

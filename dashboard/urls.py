@@ -43,7 +43,8 @@ from .api_views import (
     PurchaseOrderViewSet,
     SubsectionYViewSet,
     SalPurGroupViewSet,
-    UserMasterViewSet
+    UserMasterViewSet,
+    TransactionTypeViewSet
 )
 
 router = DefaultRouter()
@@ -54,6 +55,7 @@ router.register(r'api/subsection-x', PurchaseOrderViewSet, basename='api_subsect
 router.register(r'api/subsection-y', SubsectionYViewSet, basename='api_subsection_y') # Aliased for cached clients
 router.register(r'api/sal-pur-group', SalPurGroupViewSet, basename='api_sal_pur_group')
 router.register(r'api/user-master', UserMasterViewSet, basename='api_user_master')
+router.register(r'api/transaction-type', TransactionTypeViewSet, basename='api_transaction_type')
 
 app_name = 'dashboard'
 

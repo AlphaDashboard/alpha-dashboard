@@ -6,7 +6,7 @@ from .gate_entry import Material, GateEntry
 from .purchase_order import PurchaseOrder, PurchaseOrderItem
 from .section_c import SectionC, SectionCTran
 from .subsection_b2 import SubsectionB2, SubsectionB2Tran
-from .sal_pur_group import SalPurGroup, SalPurGroupTran
+from .sal_pur_group import TransactionType, SalPurGroup, SalPurGroupTran
 from .pur_sales import PurSales, PurSalesTran
 from .user_master import UserMaster
 
@@ -29,6 +29,7 @@ __all__ = [
     'SectionCTran',
     'SubsectionB2',
     'SubsectionB2Tran',
+    'TransactionType',
     'SalPurGroup',
     'SalPurGroupTran',
     'PurSales',

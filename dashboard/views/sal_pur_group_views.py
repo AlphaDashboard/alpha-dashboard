@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 from dashboard.models import AccountMaster, Category
-from dashboard.models.sal_pur_group import SalPurGroup
+from dashboard.models.sal_pur_group import SalPurGroup, TransactionType
 
 class SalPurGroupListView(TemplateView):
     """Serves the Sales/Purchase Group list page."""
@@ -16,10 +16,13 @@ class SalPurGroupCreateView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['group_id'] = self.kwargs.get('pk', '')
         context['is_view_mode'] = (self.request.GET.get('mode') == 'view')
-        
+
         # Pass AccountMaster objects for dropdowns
         context['accounts'] = AccountMaster.objects.filter(is_active=True).order_by('Account_Name')
         context['categories'] = Category.objects.all()
+
+        # Pass Transaction Types for the Transaction Type dropdown
+        context['transaction_types'] = TransactionType.objects.all().order_by('TransactionTypeName')
 
         # Pagination for navigation
         pks = list(SalPurGroup.objects.all().order_by('-DateCreated').values_list('pk', flat=True))
