@@ -75,21 +75,21 @@ class Migration(migrations.Migration):
         ),
         migrations.SeparateDatabaseAndState(
             database_operations=[
-                migrations.RunSQL(
-                    sql="""
+                migrations.RunPython(
+                    code=lambda apps, schema_editor: schema_editor.connection.cursor().execute("""
                     ALTER TABLE "tblMaterial" ADD COLUMN IF NOT EXISTS "Auto1_Manual0_calc" boolean;
                     ALTER TABLE "tblMaterial" ADD COLUMN IF NOT EXISTS "IsRateInclGSTY1N0" boolean;
                     ALTER TABLE "tblMaterial" ADD COLUMN IF NOT EXISTS "PurchaseGST" numeric(5,2);
                     ALTER TABLE "tblMaterial" ADD COLUMN IF NOT EXISTS "SalesGST" numeric(6,2);
                     ALTER TABLE "tblMaterial" ADD COLUMN IF NOT EXISTS "unit_weight" numeric(18,3);
-                    """,
-                    reverse_sql="""
+                    """) if schema_editor.connection.vendor == 'postgresql' else None,
+                    reverse_code=lambda apps, schema_editor: schema_editor.connection.cursor().execute("""
                     ALTER TABLE "tblMaterial" DROP COLUMN IF EXISTS "Auto1_Manual0_calc";
                     ALTER TABLE "tblMaterial" DROP COLUMN IF EXISTS "IsRateInclGSTY1N0";
                     ALTER TABLE "tblMaterial" DROP COLUMN IF EXISTS "PurchaseGST";
                     ALTER TABLE "tblMaterial" DROP COLUMN IF EXISTS "SalesGST";
                     ALTER TABLE "tblMaterial" DROP COLUMN IF EXISTS "unit_weight";
-                    """
+                    """) if schema_editor.connection.vendor == 'postgresql' else None,
                 )
             ],
             state_operations=[

@@ -368,32 +368,33 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, db_column='accountmaster_id', null=True, on_delete=django.db.models.deletion.PROTECT, to='dashboard.accountmaster', verbose_name='Account Master'),
         ),
         # 5. Rename column on the unmanaged dashboard_voucherfact table in PostgreSQL
-        migrations.RunSQL(
-            sql="""
-            DO $$
-            BEGIN
-                IF EXISTS (
-                    SELECT 1 
-                    FROM information_schema.columns 
-                    WHERE table_name = 'dashboard_voucherfact' AND column_name = 'alpha_group_id'
-                ) THEN
-                    ALTER TABLE "dashboard_voucherfact" RENAME COLUMN "alpha_group_id" TO "accountmaster_id";
-                END IF;
-            END $$;
-            """,
-            reverse_sql="""
-            DO $$
-            BEGIN
-                IF EXISTS (
-                    SELECT 1 
-                    FROM information_schema.columns 
-                    WHERE table_name = 'dashboard_voucherfact' AND column_name = 'accountmaster_id'
-                ) THEN
-                    ALTER TABLE "dashboard_voucherfact" RENAME COLUMN "accountmaster_id" TO "alpha_group_id";
-                END IF;
-            END $$;
-            """
+        migrations.RunPython(
+            code=lambda apps, schema_editor: schema_editor.connection.cursor().execute("""
+                DO $$
+                BEGIN
+                    IF EXISTS (
+                        SELECT 1
+                        FROM information_schema.columns
+                        WHERE table_name = 'dashboard_voucherfact' AND column_name = 'alpha_group_id'
+                    ) THEN
+                        ALTER TABLE "dashboard_voucherfact" RENAME COLUMN "alpha_group_id" TO "accountmaster_id";
+                    END IF;
+                END $$;
+            """) if schema_editor.connection.vendor == 'postgresql' else None,
+            reverse_code=lambda apps, schema_editor: schema_editor.connection.cursor().execute("""
+                DO $$
+                BEGIN
+                    IF EXISTS (
+                        SELECT 1
+                        FROM information_schema.columns
+                        WHERE table_name = 'dashboard_voucherfact' AND column_name = 'accountmaster_id'
+                    ) THEN
+                        ALTER TABLE "dashboard_voucherfact" RENAME COLUMN "accountmaster_id" TO "alpha_group_id";
+                    END IF;
+                END $$;
+            """) if schema_editor.connection.vendor == 'postgresql' else None,
         ),
         # 6. Recreate stored procedures
         migrations.RunPython(create_renamed_sps, drop_renamed_sps),
     ]
+

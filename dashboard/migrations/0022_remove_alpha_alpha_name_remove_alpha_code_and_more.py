@@ -11,14 +11,18 @@ class Migration(migrations.Migration):
 
     operations = [
         # 0. Drop PostgreSQL varchar_pattern_ops index on code column if exists
-        migrations.RunSQL(
-            sql='DROP INDEX IF EXISTS "tblAlphagroup_code_a7dc41d1_like";',
-            reverse_sql=migrations.RunSQL.noop,
+        migrations.RunPython(
+            code=lambda apps, schema_editor: schema_editor.connection.cursor().execute(
+                'DROP INDEX IF EXISTS "tblAlphagroup_code_a7dc41d1_like";'
+            ) if schema_editor.connection.vendor == 'postgresql' else None,
+            reverse_code=migrations.RunPython.noop,
         ),
         # 1. Update code to unique numeric string to satisfy constraints and allow bigint casting
-        migrations.RunSQL(
-            sql='UPDATE "tblAlphagroup" SET "code" = CAST("id" as varchar);',
-            reverse_sql=migrations.RunSQL.noop,
+        migrations.RunPython(
+            code=lambda apps, schema_editor: schema_editor.connection.cursor().execute(
+                'UPDATE "tblAlphagroup" SET "code" = CAST("id" as varchar);'
+            ) if schema_editor.connection.vendor == 'postgresql' else None,
+            reverse_code=migrations.RunPython.noop,
         ),
         # 2. Rename alpha_name to Account_Name
         migrations.RenameField(

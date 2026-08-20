@@ -51,9 +51,12 @@ class Migration(migrations.Migration):
                 'managed': True,
             },
         ),
-        migrations.RunSQL(
-            sql='ALTER TABLE "tblPurchaseOrder" DROP CONSTRAINT IF EXISTS "tblPurchaseOrder_broker_id_afdaf2ce_fk_tblAlphagroup_id", DROP CONSTRAINT IF EXISTS "tblPurchaseOrder_supplier_id_0312ed54_fk_tblAlphagroup_id";',
-            reverse_sql=migrations.RunSQL.noop
+        migrations.RunPython(
+            # PostgreSQL-only: drop old foreign key constraints before re-linking to new tables
+            code=lambda apps, schema_editor: schema_editor.connection.cursor().execute(
+                'ALTER TABLE "tblPurchaseOrder" DROP CONSTRAINT IF EXISTS "tblPurchaseOrder_broker_id_afdaf2ce_fk_tblAlphagroup_id", DROP CONSTRAINT IF EXISTS "tblPurchaseOrder_supplier_id_0312ed54_fk_tblAlphagroup_id";'
+            ) if schema_editor.connection.vendor == 'postgresql' else None,
+            reverse_code=migrations.RunPython.noop,
         ),
         migrations.AlterField(
             model_name='purchaseorder',
