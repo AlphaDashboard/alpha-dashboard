@@ -45,22 +45,48 @@ class LoginView(View):
             {'user_id': 'checker', 'user_name': 'Checker User', 'role': 'Checker', 'empid': 'EMP-CHECKER'},
             {'user_id': 'admin', 'user_name': 'Admin User', 'role': 'Admin', 'empid': 'EMP-ADMIN'},
         ]
-        for u_info in default_users:
-            if not UserMaster.objects.filter(user_id=u_info['user_id']).exists():
-                UserMaster.objects.create(
-                    user_id=u_info['user_id'],
-                    user_name=u_info['user_name'],
-                    role=u_info['role'],
-                    empid=u_info['empid'],
-                    is_active=True,
-                    user_created='system'
-                )
+        try:
+            for u_info in default_users:
+                if not UserMaster.objects.filter(user_id=u_info['user_id']).exists():
+                    UserMaster.objects.create(
+                        user_id=u_info['user_id'],
+                        user_name=u_info['user_name'],
+                        role=u_info['role'],
+                        empid=u_info['empid'],
+                        is_active=True,
+                        user_created='system'
+                    )
+        except Exception:
+            from django.db import connection
+            if connection.vendor == 'sqlite':
+                with connection.cursor() as cursor:
+                    cursor.executescript("""
+                        CREATE TABLE IF NOT EXISTS tblUserMaster (
+                            user_id VARCHAR(50) PRIMARY KEY,
+                            user_name VARCHAR(150) NOT NULL,
+                            role VARCHAR(20) DEFAULT 'User',
+                            empid VARCHAR(50) UNIQUE,
+                            is_active BOOLEAN DEFAULT 1,
+                            user_created VARCHAR(50),
+                            date_created DATETIME,
+                            user_modified VARCHAR(50),
+                            date_modified DATETIME
+                        );
+                        INSERT OR IGNORE INTO tblUserMaster (user_id, user_name, role, empid, is_active, user_created)
+                        VALUES 
+                        ('maker', 'Maker User', 'Maker', 'EMP-MAKER', 1, 'system'),
+                        ('checker', 'Checker User', 'Checker', 'EMP-CHECKER', 1, 'system'),
+                        ('admin', 'Admin User', 'Admin', 'EMP-ADMIN', 1, 'system');
+                    """)
 
         # Clear any existing session before logging in
         if 'user_id' in request.session:
             request.session.flush()
 
-        users = UserMaster.objects.filter(is_active=True).order_by('role', 'user_name')
+        try:
+            users = UserMaster.objects.filter(is_active=True).order_by('role', 'user_name')
+        except Exception:
+            users = []
         return render(request, 'dashboard/login.html', {'users': users})
 
     def post(self, request):

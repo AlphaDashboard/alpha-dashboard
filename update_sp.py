@@ -8,7 +8,76 @@ django.setup()
 
 from django.db import connection
 
-sql_migration_and_sp = """
+# SQL for SQLite table creation fallback
+sqlite_tables_sql = """
+CREATE TABLE IF NOT EXISTS tblUserMaster (
+    user_id VARCHAR(50) PRIMARY KEY,
+    user_name VARCHAR(150) NOT NULL,
+    role VARCHAR(20) DEFAULT 'User',
+    empid VARCHAR(50) UNIQUE,
+    is_active BOOLEAN DEFAULT 1,
+    user_created VARCHAR(50),
+    date_created DATETIME,
+    user_modified VARCHAR(50),
+    date_modified DATETIME
+);
+
+INSERT OR IGNORE INTO tblUserMaster (user_id, user_name, role, empid, is_active, user_created)
+VALUES 
+('maker', 'Maker User', 'Maker', 'EMP-MAKER', 1, 'system'),
+('checker', 'Checker User', 'Checker', 'EMP-CHECKER', 1, 'system'),
+('admin', 'Admin User', 'Admin', 'EMP-ADMIN', 1, 'system');
+
+CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans (
+    ChallanNo VARCHAR(50) PRIMARY KEY,
+    ChallanDate DATE,
+    TranType VARCHAR(20) DEFAULT 'RMPCH',
+    GPNo INTEGER,
+    StatusId INTEGER DEFAULT 1,
+    PONO VARCHAR(50),
+    PODate DATE,
+    GatePassDate DATE,
+    VehicleNo VARCHAR(50),
+    DriverName VARCHAR(100),
+    WeighmentSlipNo VARCHAR(50),
+    WeighmentDate DATE,
+    Bags NUMERIC(18,2) DEFAULT 0,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    TareWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0,
+    draftedby VARCHAR(100),
+    DraftedDate DATETIME,
+    submittedby VARCHAR(100),
+    SubmissionDate DATETIME,
+    approvedby VARCHAR(100),
+    ApprovalDate DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans_Tran (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    ChallanNo VARCHAR(50),
+    MaterialID INTEGER,
+    Bags NUMERIC(18,2) DEFAULT 0,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0,
+    Remarks VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS tblGatePass (
+    GatePassNo INTEGER PRIMARY KEY,
+    GatePassdate DATE,
+    VehicleNo VARCHAR(50),
+    DriverName VARCHAR(100),
+    WeighmentNo VARCHAR(50),
+    WeighmentDate DATE,
+    Bags NUMERIC(18,2) DEFAULT 0,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    TareWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0
+);
+"""
+
+postgresql_sql = """
 -- 1. Add GrossWeight column to tblsalepurchasechallans_tran if not exists
 DO $$ 
 BEGIN
@@ -43,7 +112,6 @@ DECLARE
     v_seq           INTEGER;
     v_today         TEXT;
     
-    -- Local variables for gate pass info lookup
     v_gp_date       DATE         := NULL;
     v_veh_no        VARCHAR(50)  := NULL;
     v_dr_name       VARCHAR(100) := NULL;
@@ -56,7 +124,6 @@ DECLARE
 BEGIN
     v_items := p_tran_items::JSONB;
 
-    -- Lookup gate pass info if GPNo is provided
     IF p_gp_no IS NOT NULL THEN
         SELECT "GatePassdate", "VehicleNo", "DriverName", "WeighmentNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight"
           INTO v_gp_date, v_veh_no, v_dr_name, v_weigh_no, v_weigh_date, v_bags, v_gross, v_tare, v_net
@@ -64,10 +131,7 @@ BEGIN
          WHERE "GatePassNo" = p_gp_no;
     END IF;
 
-    -- ── INSERT ──────────────────────────────────────────────────────────────
     IF p_operation = 'INSERT' THEN
-
-        -- Auto-generate ChallanNo if blank: PC-YYYYMMDD-NNNN
         IF p_challan_no IS NULL OR p_challan_no = '' THEN
             v_today := TO_CHAR(CURRENT_DATE, 'YYYYMMDD');
             SELECT COALESCE(MAX(CAST(SPLIT_PART("ChallanNo", '-', 3) AS INTEGER)), 0) + 1
@@ -91,7 +155,6 @@ BEGIN
             p_username, NOW()
         );
 
-        -- Insert material rows
         FOR v_item IN SELECT * FROM JSONB_ARRAY_ELEMENTS(v_items)
         LOOP
             INSERT INTO public.tblSalePurchaseChallans_Tran (
@@ -108,7 +171,6 @@ BEGIN
 
         RETURN v_challan_no;
 
-    -- ── UPDATE ──────────────────────────────────────────────────────────────
     ELSIF p_operation = 'UPDATE' THEN
         v_challan_no := p_challan_no;
 
@@ -134,7 +196,6 @@ BEGIN
             "ApprovalDate"    = CASE WHEN p_status_id = 4 THEN NOW() ELSE "ApprovalDate" END
         WHERE "ChallanNo" = v_challan_no;
 
-        -- Replace all tran rows
         DELETE FROM public.tblSalePurchaseChallans_Tran WHERE "ChallanNo" = v_challan_no;
 
         FOR v_item IN SELECT * FROM JSONB_ARRAY_ELEMENTS(v_items)
@@ -153,7 +214,6 @@ BEGIN
 
         RETURN v_challan_no;
 
-    -- ── DELETE ──────────────────────────────────────────────────────────────
     ELSIF p_operation = 'DELETE' THEN
         v_challan_no := p_challan_no;
         DELETE FROM public.tblSalePurchaseChallans_Tran WHERE "ChallanNo" = v_challan_no;
@@ -167,11 +227,12 @@ $function$;
 """
 
 if __name__ == '__main__':
-    if connection.vendor != 'postgresql':
-        print(f"INFO: Database vendor is '{connection.vendor}'. Skipping PostgreSQL Stored Procedure setup.")
-        print("Note: sp_manage_purchase_challan will run automatically when connected to a PostgreSQL database.")
-    else:
-        print("Executing Stored Procedure and Schema update on PostgreSQL database...")
-        with connection.cursor() as cursor:
-            cursor.execute(sql_migration_and_sp)
-        print("SUCCESS: Stored Procedure sp_manage_purchase_challan and GrossWeight column successfully updated on PostgreSQL!")
+    with connection.cursor() as cursor:
+        if connection.vendor == 'sqlite':
+            print("SQLite database detected. Creating local fallback tables...")
+            cursor.executescript(sqlite_tables_sql)
+            print("SUCCESS: SQLite tables and default prototype users initialized!")
+        elif connection.vendor == 'postgresql':
+            print("PostgreSQL database detected. Executing Stored Procedure and Schema update...")
+            cursor.execute(postgresql_sql)
+            print("SUCCESS: Stored Procedure sp_manage_purchase_challan and GrossWeight column updated on PostgreSQL!")
