@@ -167,7 +167,11 @@ $function$;
 """
 
 if __name__ == '__main__':
-    print("Executing Stored Procedure and Schema update on database...")
-    with connection.cursor() as cursor:
-        cursor.execute(sql_migration_and_sp)
-    print("SUCCESS: Stored Procedure sp_manage_purchase_challan and GrossWeight column successfully updated on the database!")
+    if connection.vendor != 'postgresql':
+        print(f"INFO: Database vendor is '{connection.vendor}'. Skipping PostgreSQL Stored Procedure setup.")
+        print("Note: sp_manage_purchase_challan will run automatically when connected to a PostgreSQL database.")
+    else:
+        print("Executing Stored Procedure and Schema update on PostgreSQL database...")
+        with connection.cursor() as cursor:
+            cursor.execute(sql_migration_and_sp)
+        print("SUCCESS: Stored Procedure sp_manage_purchase_challan and GrossWeight column successfully updated on PostgreSQL!")
