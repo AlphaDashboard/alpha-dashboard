@@ -43,5 +43,13 @@ export const notifications = {
     
     showSuccess(message) {
         this.showToast(message, 'success');
+    },
+
+    error(message) {
+        this.showError(message);
+    },
+
+    success(message) {
+        this.showSuccess(message);
     }
 };

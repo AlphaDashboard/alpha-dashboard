@@ -39,32 +39,22 @@ class LoginView(View):
     Seeds default Maker, Checker, and Admin users if table is empty.
     """
     def get(self, request):
-        # Auto-seed default users if no users exist
-        if UserMaster.objects.count() == 0:
-            UserMaster.objects.create(
-                user_id='maker',
-                user_name='Maker User',
-                role='Maker',
-                empid='EMP-MAKER',
-                is_active=True,
-                user_created='system'
-            )
-            UserMaster.objects.create(
-                user_id='checker',
-                user_name='Checker User',
-                role='Checker',
-                empid='EMP-CHECKER',
-                is_active=True,
-                user_created='system'
-            )
-            UserMaster.objects.create(
-                user_id='admin',
-                user_name='Admin User',
-                role='Admin',
-                empid='EMP-ADMIN',
-                is_active=True,
-                user_created='system'
-            )
+        # Ensure default prototype users always exist
+        default_users = [
+            {'user_id': 'maker', 'user_name': 'Maker User', 'role': 'Maker', 'empid': 'EMP-MAKER'},
+            {'user_id': 'checker', 'user_name': 'Checker User', 'role': 'Checker', 'empid': 'EMP-CHECKER'},
+            {'user_id': 'admin', 'user_name': 'Admin User', 'role': 'Admin', 'empid': 'EMP-ADMIN'},
+        ]
+        for u_info in default_users:
+            if not UserMaster.objects.filter(user_id=u_info['user_id']).exists():
+                UserMaster.objects.create(
+                    user_id=u_info['user_id'],
+                    user_name=u_info['user_name'],
+                    role=u_info['role'],
+                    empid=u_info['empid'],
+                    is_active=True,
+                    user_created='system'
+                )
 
         # Clear any existing session before logging in
         if 'user_id' in request.session:

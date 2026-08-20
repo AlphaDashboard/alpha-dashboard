@@ -105,7 +105,7 @@ class SalPurGroup(models.Model):
     )
 
     class Meta:
-        db_table = 'tblSalPurGroup'
+        db_table = 'vw_sal_pur_group'
         managed = False
         verbose_name = _('Sales/Purchase Group')
         verbose_name_plural = _('Sales/Purchase Groups')

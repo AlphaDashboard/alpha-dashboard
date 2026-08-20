@@ -1,0 +1,633 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_view_mode %}View{% elif grn_no %}Edit{% else %}Create{% endif %} GRN - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
+<style>
+    body { background-color: #f4f6f9; color: #334155; overflow: hidden !important; }
+    .erp-container-flex {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 75px);
+        overflow: hidden;
+        gap: 6px;
+        padding-bottom: 6px !important;
+    }
+    .erp-form-flex {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0%;
+        min-height: 0;
+        overflow: hidden;
+        gap: 6px;
+    }
+    /* The flex tab-card fills remaining space after the header and progress bar */
+    .erp-card-table-flex {
+        flex: 1 1 0%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        margin-bottom: 0 !important;
+    }
+    /* Propagate flex height down through Bootstrap card-body, tab-content, and tab pane */
+    .erp-card-table-flex > .card-header { flex-shrink: 0; }
+    .erp-card-table-flex > .card-body {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+    }
+    .erp-card-table-flex .tab-content {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Only the visible (active) tab pane should grow and scroll */
+    .erp-card-table-flex .tab-pane.show.active {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex !important;
+        flex-direction: column;
+    }
+    /* Table wrapper scrolls internally — no max-height needed when inside flex */
+    .erp-card-table-flex .erp-table-wrapper {
+        flex: 1 1 0%;
+        min-height: 120px;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+        max-height: none !important;
+    }
+    .page-title { font-size: 1.15rem; font-weight: 700; color: #000000 !important; margin-bottom: 0.15rem; }
+    .card { border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); background-color: #ffffff; padding: 12px 16px !important; margin-bottom: 0 !important; }
+
+    .section-title { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; border: none; padding-bottom: 0; }
+
+    /* Labels */
+    .form-label { font-size: 11px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+
+    /* Floating Labels */
+    .form-group { position: relative; }
+    .form-group label.floating-label {
+        position: absolute; left: 8px; top: 9px; color: #888; font-size: 12px;
+        pointer-events: none; transition: 0.2s ease all; background: #ffffff; padding: 0 4px; line-height: 1;
+    }
+    .form-group input:focus + label.floating-label,
+    .form-group input:not(:placeholder-shown) + label.floating-label,
+    .form-group select + label.floating-label,
+    .form-group input[readonly] + label.floating-label,
+    .form-group textarea:focus + label.floating-label,
+    .form-group textarea:not(:placeholder-shown) + label.floating-label,
+    .form-group.is-focused label.floating-label,
+    .form-group.has-value label.floating-label {
+        top: -6px !important; left: 6px !important; font-size: 10px !important;
+        color: #333 !important; font-weight: 600 !important; z-index: 10 !important;
+    }
+
+    .form-control, .form-select {
+        height: 32px !important; font-size: 12px !important; border-radius: 4px !important;
+        border: 1px solid #cbd5e1 !important; color: #1e293b !important;
+        background-color: #ffffff !important; padding: 4px 8px !important;
+    }
+    textarea.form-control { height: auto !important; min-height: 60px !important; }
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59,130,246,0.1) !important; outline: none !important;
+    }
+    .form-control::placeholder { color: #94a3b8 !important; font-size: 12px !important; }
+
+    /* Table */
+    .erp-data-table { border-collapse: collapse; width: 100%; border-radius: 4px; border: 1px solid #cbd5e1 !important; }
+    .erp-data-table thead th {
+        background-color: #536479 !important; color: #ffffff !important; font-size: 11px;
+        font-weight: 600; padding: 8px !important; text-transform: uppercase;
+        border: 1px solid #cbd5e1 !important; letter-spacing: 0.5px; vertical-align: middle !important;
+    }
+    .erp-data-table tbody td {
+        padding: 4px 6px !important; vertical-align: middle;
+        border: 1px solid #cbd5e1 !important; background-color: #ffffff;
+    }
+    .erp-data-table .form-control, .erp-data-table .form-select {
+        height: 28px !important; padding: 2px 6px !important; font-size: 12px !important; border-radius: 3px !important;
+    }
+    .erp-table-footer-row { background-color: #536479; color: #ffffff; }
+    .erp-table-footer-row td {
+        background-color: #536479 !important; color: #ffffff !important;
+        font-weight: bold; font-size: 11px !important; border-color: #cbd5e1 !important;
+        padding: 8px !important; vertical-align: middle !important;
+    }
+
+    /* Default .erp-table-wrapper (outside flex context) keeps a max-height cap */
+    .erp-table-wrapper { max-height: 260px; overflow-y: auto !important; overflow-x: auto !important; }
+    .erp-data-table thead th { position: sticky !important; top: 0 !important; z-index: 10 !important; box-shadow: inset 0 -1px 0 #cbd5e1; }
+    .erp-data-table tfoot td { position: sticky !important; bottom: 0 !important; z-index: 10 !important; }
+
+    /* Row action buttons */
+    .btn-row-action { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 0; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .btn-row-add { background-color: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; }
+    .btn-row-add:hover { background-color: #dbeafe; }
+    .btn-row-delete { background-color: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .btn-row-delete:hover { background-color: #fee2e2; }
+
+    /* Footer save */
+    .btn-footer-save { background-color: #10b981; border: none; color: #ffffff; font-weight: 600; font-size: 11px; padding: 0 10px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: background-color 0.2s; height: 24px !important; }
+    .btn-footer-save:hover { background-color: #059669; }
+
+    /* Action Buttons */
+    .btn-action { height: 32px; padding: 0 14px; font-size: 12px; font-weight: 500; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-save { background-color: #2563eb; color: white; border: none; }
+    .btn-save:hover { background-color: #1d4ed8; color: white; }
+    .btn-cancel { background-color: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+    .btn-cancel:hover { background-color: #f1f5f9; color: #1e293b; }
+
+    /* Status badge in header */
+    .grn-status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+
+    /* Audit info strip */
+    .audit-strip { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px 12px; font-size: 11px; color: #64748b; }
+    .audit-strip span { margin-right: 20px; }
+    .audit-strip strong { color: #334155; }
+
+    /* Tab Styling exactly like second UI */
+    .nav-tabs {
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+    .nav-tabs .nav-link {
+        border: none !important;
+        color: #4b5563 !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        letter-spacing: 0.5px;
+        padding: 12px 16px !important;
+        background: transparent !important;
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd !important;
+        border-bottom: 2px solid #0d6efd !important;
+        background: transparent !important;
+    }
+    .nav-tabs .nav-link i {
+        font-size: 14px;
+        margin-right: 4px;
+    }
+
+    .inline-action-bar {
+        background-color: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        border-radius: 0 0 10px 10px;
+        padding: 8px 16px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 14px;
+    }
+
+    /* Progress Bar exact like Subsection X */
+    .progress-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 0;
+        position: relative;
+    }
+    .progress-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    .progress-step::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ccc;
+        z-index: 2;
+    }
+    .progress-step.active::before { background: #004080; }
+    .progress-step span {
+        display: block;
+        margin-top: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .progress-line {
+        position: absolute;
+        top: 10px;
+        left: 12.5%;
+        width: 75%;
+        height: 4px;
+        background: #ccc;
+        z-index: 1;
+    }
+    .progress-line-fill {
+        height: 100%;
+        width: 0%;
+        background: #004080;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 erp-container-flex" style="max-width: 100% !important; margin: 0 auto; margin-top: -18px !important;">
+
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1 class="page-title" id="pageTitle">
+                {% if is_view_mode %}View GRN{% elif grn_no %}Edit GRN{% else %}Create GRN{% endif %}
+            </h1>
+            <p class="text-muted small mb-0">Goods Receipt Note — Material & Test details</p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <!-- Prev / Next navigation -->
+            {% if prev_pk %}
+                <a href="{% url 'dashboard:grn_edit' prev_pk %}{% if is_view_mode %}?mode=view{% endif %}" class="btn btn-outline-secondary btn-action erp-btn-prev" title="Previous Record"><i class="bi bi-chevron-left"></i></a>
+            {% else %}
+                <button class="btn btn-outline-secondary btn-action erp-btn-prev" disabled><i class="bi bi-chevron-left"></i></button>
+            {% endif %}
+            {% if next_pk %}
+                <a href="{% url 'dashboard:grn_edit' next_pk %}{% if is_view_mode %}?mode=view{% endif %}" class="btn btn-outline-secondary btn-action erp-btn-next" title="Next Record"><i class="bi bi-chevron-right"></i></a>
+            {% else %}
+                <button class="btn btn-outline-secondary btn-action erp-btn-next" disabled><i class="bi bi-chevron-right"></i></button>
+            {% endif %}
+
+            {% if is_view_mode and grn_no %}
+                <a href="{% url 'dashboard:grn_edit' grn_no %}" class="btn btn-action erp-btn-edit-mode" style="background-color:#10b981; border-color:#10b981; color:white;">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard:grn_list' %}" class="erp-btn-back">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <form id="grnForm" class="erp-form-flex">
+
+
+        <!-- ── SECTION 1: GRN Header ──────────────────────────────────────── -->
+        <div class="card">
+            <h5 class="section-title">GRN Header Details</h5>
+            
+            <!-- Row 1: GRN Details, Gate Pass Details, Vehicle & Driver -->
+            <div class="row align-items-end g-2 mb-2">
+                <!-- GRN No -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="GrnNo" name="GrnNo" class="form-control" placeholder=" " {% if grn_no %}readonly{% endif %}>
+                        <label for="GrnNo" class="floating-label">GRN No <span class="text-danger">*</span></label>
+                    </div>
+                </div>
+
+                <!-- GRN Date -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="GrnDate" name="GrnDate" class="form-control flatpickr-input" placeholder=" ">
+                        <label for="GrnDate" class="floating-label">GRN Date <span class="text-danger">*</span></label>
+                    </div>
+                </div>
+
+                <!-- Gate Pass No (Multi-Column Searchable Dropdown) -->
+                <div class="col-md-2" style="position:relative;">
+                    <div class="form-group mb-0" id="gpDropdownGroup">
+                        <!-- Hidden field stores the actual selected GP No value -->
+                        <input type="hidden" id="GatepassNo" name="GatepassNo">
+                        <!-- Visible input acts as trigger and search field -->
+                        <input type="text" id="GatepassNoDisplay" class="form-control" placeholder=" " autocomplete="off" readonly
+                               style="cursor:pointer; background:#fff;">
+                        <label for="GatepassNoDisplay" class="floating-label">Gate Pass No <span class="text-danger">*</span></label>
+                        <!-- Dropdown panel — shown on click, hidden by default -->
+                        <div id="gpDropdownPanel" style="
+                            display:none; position:fixed; z-index:9999;
+                            background:#fff; border:1px solid #cbd5e1; border-radius:6px;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.15); min-width:640px; max-height:300px;
+                            overflow:hidden; flex-direction:column;">
+                            <!-- Search box inside panel -->
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="gpSearchInput" placeholder="Search Gate Pass..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <!-- Column headers inside panel -->
+                            <div style="display:grid; grid-template-columns:90px 100px 120px 130px 130px;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>GP No</span>
+                                <span>GP Date</span>
+                                <span>Driver</span>
+                                <span>Vehicle</span>
+                                <span>Weighment No</span>
+                            </div>
+                            <!-- Scrollable rows list -->
+                            <div id="gpDropdownList" style="overflow-y:auto; max-height:200px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gate Pass Date -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="GatepassDate" class="form-control flatpickr-input" placeholder=" ">
+                        <label for="GatepassDate" class="floating-label">Gate Pass Date</label>
+                    </div>
+                </div>
+
+                <!-- Vehicle -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="VehicleNo" class="form-control" placeholder=" ">
+                        <label for="VehicleNo" class="floating-label">Vehicle</label>
+                    </div>
+                </div>
+
+                <!-- Driver -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="DriverName" class="form-control" placeholder=" ">
+                        <label for="DriverName" class="floating-label">Driver</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Weighment Details, Status & Weights -->
+            <div class="row align-items-end g-2 mb-2">
+                <!-- Weighment Slip No. -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="WeighmentNo" class="form-control" placeholder=" ">
+                        <label for="WeighmentNo" class="floating-label">Weighment Slip No.</label>
+                    </div>
+                </div>
+
+                <!-- Weighment Date -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="text" id="WeighmentDate" class="form-control flatpickr-input" placeholder=" ">
+                        <label for="WeighmentDate" class="floating-label">Weighment Date</label>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <select id="status" name="status" class="form-select">
+                            <option value="">-- Status --</option>
+                            <option value="1">Draft</option>
+                            <option value="2">Submitted for approval</option>
+                            <option value="3">Referred Back</option>
+                            <option value="4">Approved</option>
+                            <option value="5">Released</option>
+                        </select>
+                        <label for="status" class="floating-label">Status</label>
+                    </div>
+                </div>
+
+                <!-- Net Weight -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="number" step="0.01" id="Netweight" name="Netweight" class="form-control" placeholder=" ">
+                        <label for="Netweight" class="floating-label">Net Weight</label>
+                    </div>
+                </div>
+
+                <!-- Deducted Weight -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="number" step="0.01" id="DeductedWeight" name="DeductedWeight" class="form-control" placeholder=" ">
+                        <label for="DeductedWeight" class="floating-label">Deducted Wt</label>
+                    </div>
+                </div>
+
+                <!-- Approved Weight -->
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <input type="number" step="0.01" id="Approvedweight" name="Approvedweight" class="form-control" placeholder=" ">
+                        <label for="Approvedweight" class="floating-label">Approved Weight</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internal Notes -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-0">
+                        <input type="text" id="internalnotes" name="internalnotes" class="form-control" placeholder=" ">
+                        <label for="internalnotes" class="floating-label">Internal Notes</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Workflow Progress Bar -->
+        <div class="position-relative mb-2 px-4 py-0 bg-white card shadow-sm">
+            <div class="progress-container">
+                <div class="progress-line" style="left: 10%; width: 80%;">
+                    <div class="progress-line-fill" id="progressLineFill"></div>
+                </div>
+                <div class="progress-step" id="step-Draft">
+                    <span>Draft</span>
+                    <!-- step-details: hidden by default, shown by JS when audit log has a row for this step -->
+                    <div class="step-details d-none" style="font-size: 10px; color: #6b7280; margin-top: 4px; line-height: 1.3; text-align:center;">
+                        <div class="step-user" style="font-weight:600;"></div>
+                        <div class="step-date" style="font-size: 9px; color:#9ca3af;"></div>
+                    </div>
+                </div>
+                <div class="progress-step" id="step-Submitted">
+                    <span>Submitted for approval</span>
+                    <div class="step-details d-none" style="font-size: 10px; color: #6b7280; margin-top: 4px; line-height: 1.3; text-align:center;">
+                        <div class="step-user" style="font-weight:600;"></div>
+                        <div class="step-date" style="font-size: 9px; color:#9ca3af;"></div>
+                    </div>
+                </div>
+                <div class="progress-step" id="step-RefBack">
+                    <span>Referred Back</span>
+                    <div class="step-details d-none" style="font-size: 10px; color: #6b7280; margin-top: 4px; line-height: 1.3; text-align:center;">
+                        <div class="step-user" style="font-weight:600;"></div>
+                        <div class="step-date" style="font-size: 9px; color:#9ca3af;"></div>
+                    </div>
+                </div>
+                <div class="progress-step" id="step-Approved">
+                    <span>Approved</span>
+                    <div class="step-details d-none" style="font-size: 10px; color: #6b7280; margin-top: 4px; line-height: 1.3; text-align:center;">
+                        <div class="step-user" style="font-weight:600;"></div>
+                        <div class="step-date" style="font-size: 9px; color:#9ca3af;"></div>
+                    </div>
+                </div>
+                <div class="progress-step" id="step-Released">
+                    <span>Released</span>
+                    <div class="step-details d-none" style="font-size: 10px; color: #6b7280; margin-top: 4px; line-height: 1.3; text-align:center;">
+                        <div class="step-user" style="font-weight:600;"></div>
+                        <div class="step-date" style="font-size: 9px; color:#9ca3af;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ── SECTION 2: Details Tabs ────────────────────────────────────── -->
+        <div class="card erp-card-table-flex">
+            <div class="card-header bg-white border-bottom p-0">
+                <ul class="nav nav-tabs border-0 px-3" id="grnTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-3 fw-bold text-uppercase" style="font-size:11px; letter-spacing:0.5px;" id="materials-tab" data-bs-toggle="tab" data-bs-target="#materials-pane" type="button" role="tab" aria-controls="materials-pane" aria-selected="true">
+                            <i class="bi bi-box-seam me-1"></i> Material Details
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-3 fw-bold text-uppercase" style="font-size:11px; letter-spacing:0.5px;" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests-pane" type="button" role="tab" aria-controls="tests-pane" aria-selected="false">
+                            <i class="bi bi-shield-check me-1"></i> Test Details
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+
+                <div class="tab-content" id="grnTabsContent">
+
+                    
+                    <!-- TAB 1: MATERIAL DETAILS -->
+                    <div class="tab-pane fade show active" id="materials-pane" role="tabpanel" aria-labelledby="materials-tab" tabindex="0">
+                        <div class="erp-table-wrapper">
+                            <table class="table table-bordered erp-data-table mb-0" id="matTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;" class="text-center">#</th>
+                                        <th style="width:20%;">Material</th>
+                                        <th style="width:12%;" class="text-end">Bags</th>
+                                        <th style="width:14%;" class="text-end">Gross Weight</th>
+                                        <th style="width:14%;" class="text-end">Net Weight</th>
+                                        <th style="width:27%;">Remarks</th>
+                                        <th style="width:10%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="matTableBody">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="erp-table-footer-row">
+                                        <td colspan="2" class="text-end pe-2">TOTAL</td>
+                                        <td class="text-end" id="matTotalBags">0.00</td>
+                                        <td class="text-end" id="matTotalGross">0.00</td>
+                                        <td class="text-end" id="matTotalNet">0.00</td>
+                                        <td colspan="2" class="border-start-0"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: TEST DETAILS -->
+                    <div class="tab-pane fade" id="tests-pane" role="tabpanel" aria-labelledby="tests-tab" tabindex="0">
+                        <div class="erp-table-wrapper">
+                            <table class="table table-bordered erp-data-table mb-0" id="testTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;" class="text-center">#</th>
+                                        <th style="width:18%;">Test Name</th>
+                                        <th style="width:18%;">Test Method</th>
+                                        <th style="width:14%;" class="text-end">Test Result</th>
+                                        <th style="width:14%;" class="text-end">Deducted Wt</th>
+                                        <th style="width:23%;">Remarks</th>
+                                        <th style="width:10%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="testTableBody">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="erp-table-footer-row">
+                                        <td colspan="3" class="text-end pe-2">TOTAL DEDUCTED</td>
+                                        <td class="text-end" id="testTotalResult">0.00</td>
+                                        <td class="text-end" id="testTotalDeducted">0.00</td>
+                                        <td colspan="2" class="border-start-0"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Inline Action Bar — attached below item tabs -->
+            <div class="inline-action-bar">
+                {% if not is_view_mode %}
+                <button type="submit" id="saveGRNBtn" class="btn btn-success fw-semibold d-flex align-items-center gap-1" style="height: 32px; font-size:12px; border-radius:5px; padding: 0 14px; background-color: #198754; border-color: #198754; color: white;">
+                    <i class="bi bi-floppy" style="font-size:12px;"></i> Save Record
+                </button>
+                {% else %}
+                    {% if grn_no %}
+                    <a href="{% url 'dashboard:grn_edit' grn_no %}" class="btn btn-primary fw-semibold d-flex align-items-center gap-1 erp-btn-edit-mode" style="height: 32px; font-size:12px; border-radius:5px; padding: 0 14px; text-decoration: none; background-color: #2563eb; border-color: #2563eb; color: white;">
+                        <i class="bi bi-pencil-square" style="font-size:12px;"></i> Edit Mode
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+
+<!-- Modal for creating new material -->
+<div class="modal fade" id="createMaterialModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <style>
+        .erp-modal-input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        }
+    </style>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <form id="createMaterialForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            {% csrf_token %}
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Add New Item</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Name <span class="text-danger">*</span></label>
+                    <input type="text" name="material_name" id="newMaterialName" class="form-control erp-modal-input" placeholder="Enter Item Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Code <span class="text-secondary">(Optional)</span></label>
+                    <input type="text" name="material_code" id="newMaterialCode" class="form-control erp-modal-input" placeholder="Auto-generated if empty"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                </div>
+                <div id="materialModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveMaterialBtn" class="btn btn-primary fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    window.GRN_CONFIG = {
+        grnNo: "{{ grn_no|escapejs }}",
+        voucherNo: "{{ grn_no|escapejs }}",   /* required by base.html navigateSeamlessly() regex */
+        isEditMode: "{{ grn_no|yesno:'true,false' }}" === 'true',
+        isViewMode: "{{ is_view_mode|yesno:'true,false' }}" === 'true',
+        materialsList: [
+            {% for item in materials %}
+                { id: {{ item.id }}, name: "{{ item.material_name|escapejs }}" },
+            {% endfor %}
+        ]
+    };
+</script>
+<script type="module" src="{% static 'js/modules/pages/grn-form.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

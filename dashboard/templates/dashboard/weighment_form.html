@@ -1,0 +1,577 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_view_mode %}View{% elif slip_no %}Edit{% else %}Create{% endif %} Weighment - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
+<style>
+    body { background-color: #f4f6f9; color: #334155; overflow: hidden !important; }
+
+    /* ── Flex container for the full page below the topbar ── */
+    .erp-container-flex {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 75px);
+        overflow: hidden;
+        gap: 5px;
+        padding-bottom: 5px !important;
+    }
+
+    /* ── Middle section: header-card + table-card stacked ── */
+    .erp-form-flex {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0%;
+        min-height: 0;
+        overflow: hidden;
+        gap: 5px;
+    }
+
+    /* ── Table card grows to fill remaining space ── */
+    .erp-card-table-flex {
+        flex: 1 1 0%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        margin-bottom: 0 !important;
+        padding: 0 !important;   /* override .card global padding — removes double-card look */
+    }
+    .erp-card-table-flex > .card-header { flex-shrink: 0; }
+    .erp-card-table-flex > .card-body {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+    }
+    .erp-card-table-flex .tab-content {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .erp-card-table-flex .tab-pane.show.active {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex !important;
+        flex-direction: column;
+    }
+    .erp-card-table-flex .erp-table-wrapper {
+        flex: 1 1 0%;
+        min-height: 100px;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+        max-height: 360px !important;   /* header + 5 rows + footer */
+    }
+
+    /* ── Typography ── */
+    .page-title { font-size: 1.05rem; font-weight: 700; color: #000000 !important; margin-bottom: 0; }
+
+    /* ── Cards ── */
+    .card {
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        background-color: #ffffff;
+        padding: 10px 14px !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* ── Floating labels ── */
+    .form-group { position: relative; }
+    .form-group label.floating-label {
+        position: absolute; left: 8px; top: 9px;
+        color: #888; font-size: 11px; pointer-events: none;
+        transition: 0.2s ease all; background: #ffffff !important; padding: 0 3px; line-height: 1;
+        z-index: 12 !important;
+    }
+    .form-group input:focus + label.floating-label,
+    .form-group input:not(:placeholder-shown) + label.floating-label,
+    .form-group select + label.floating-label,
+    .form-group input[readonly] + label.floating-label,
+    .form-group textarea:focus + label.floating-label,
+    .form-group textarea:not(:placeholder-shown) + label.floating-label,
+    .form-group.is-focused label.floating-label,
+    .form-group.has-value label.floating-label {
+        top: -6px !important; left: 6px !important;
+        font-size: 9.5px !important; color: #333 !important;
+        font-weight: 600 !important; z-index: 12 !important;
+    }
+
+    /* ── Form controls ── */
+    .form-control, .form-select {
+        height: 30px !important; font-size: 11.5px !important;
+        border-radius: 4px !important; border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important; background-color: #ffffff !important;
+        padding: 3px 7px !important;
+    }
+    textarea.form-control { height: auto !important; min-height: 30px !important; resize: none; overflow: hidden; }
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.1) !important;
+        outline: none !important;
+    }
+    .form-control::placeholder { color: #94a3b8 !important; font-size: 11px !important; }
+    input[type="datetime-local"].form-control { padding: 2px 5px !important; font-size: 10.5px !important; }
+
+    /* ── ERP Data Table ── */
+    .erp-data-table { border-collapse: collapse; width: 100%; border-radius: 4px; border: 1px solid #cbd5e1 !important; }
+    .erp-data-table thead th {
+        background-color: #536479 !important; color: #ffffff !important; font-size: 11px;
+        font-weight: 600; padding: 8px !important; text-transform: uppercase;
+        border: 1px solid #cbd5e1 !important; letter-spacing: 0.5px; vertical-align: middle !important;
+    }
+    .erp-data-table tbody td {
+        padding: 4px 6px !important; vertical-align: middle;
+        border: 1px solid #cbd5e1 !important; background-color: #ffffff;
+    }
+    .erp-data-table .form-control, .erp-data-table .form-select {
+        height: 28px !important; padding: 2px 6px !important; font-size: 12px !important; border-radius: 3px !important;
+    }
+    .erp-table-footer-row { background-color: #536479; color: #ffffff; }
+    .erp-table-footer-row td {
+        background-color: #536479 !important; color: #ffffff !important;
+        font-weight: bold; font-size: 11px !important; border-color: #cbd5e1 !important;
+        padding: 8px !important; vertical-align: middle !important;
+    }
+
+    /* ── Icon buttons ── */
+    .btn-icon-sm {
+        width: 22px; height: 22px; padding: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 3px; font-size: 12px;
+    }
+
+    /* ── Auto/Manual toggle ── */
+    .am-toggle {
+        display: inline-flex; border-radius: 4px; overflow: hidden;
+        border: 1px solid #cbd5e1; height: 30px;
+    }
+    .am-toggle .t-btn {
+        padding: 0 10px; font-size: 10.5px; font-weight: 700;
+        cursor: pointer; background: #f1f5f9; color: #64748b;
+        border: none; line-height: 30px;
+        transition: background 0.15s, color 0.15s;
+    }
+    .am-toggle .t-btn.active { background: #2563eb; color: #fff; }
+
+    /* ── Camera box ── */
+    .camera-box {
+        border: 2px dashed #cbd5e1; border-radius: 6px; background: #f8fafc;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; min-height: 90px; color: #94a3b8;
+        font-size: 11px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .camera-box:hover { border-color: #3b82f6; color: #3b82f6; }
+    .camera-box i { font-size: 24px; margin-bottom: 4px; }
+
+    /* ── Row gutter ── */
+    .row.g-2 > [class*="col-"] { padding: 3px 4px; }
+
+    /* ── GRN-style action buttons (per row + / delete) ── */
+    .erp-action-btn {
+        width: 26px; height: 26px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 4px; padding: 0; cursor: pointer;
+        border: 1px solid transparent; transition: all 0.15s;
+        background: none;
+    }
+    .erp-btn-add  { background-color: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    .erp-btn-add:hover  { background-color: #dbeafe; }
+    .erp-btn-delete { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .erp-btn-delete:hover { background-color: #fee2e2; }
+
+    /* ── Sticky thead / tfoot ── */
+    .erp-data-table thead th { position: sticky !important; top: 0 !important; z-index: 10 !important; box-shadow: inset 0 -1px 0 #cbd5e1; }
+    .erp-data-table tfoot td { position: sticky !important; bottom: 0 !important; z-index: 10 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="erp-container-flex">
+
+    <!-- ══════════════════════════════════════════════════
+         PAGE HEADER
+    ══════════════════════════════════════════════════ -->
+    <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 40px;">
+        <div>
+            <h1 class="page-title">
+                {% if is_view_mode %}View{% elif slip_no %}Edit{% else %}Create{% endif %} Weighment Slip
+            </h1>
+            <p class="text-muted mb-0" style="font-size: 10.5px; margin-top: 1px;">
+                {% if slip_no %}Slip No: <strong>{{ slip_no }}</strong>{% else %}New Weighment Entry{% endif %}
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            {% if prev_pk %}
+            <a href="{% url 'dashboard:weighment_edit' prev_pk %}{% if is_view_mode %}?mode=view{% endif %}"
+               class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 8px;" title="Previous">
+               <i class="bi bi-chevron-left"></i>
+            </a>
+            {% endif %}
+            {% if next_pk %}
+            <a href="{% url 'dashboard:weighment_edit' next_pk %}{% if is_view_mode %}?mode=view{% endif %}"
+               class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 8px;" title="Next">
+               <i class="bi bi-chevron-right"></i>
+            </a>
+            {% endif %}
+            <a href="{% url 'dashboard:weighment_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </a>
+            {% if not is_view_mode %}
+            <button id="saveBtn" class="btn btn-primary btn-sm" style="height:28px; font-size:11px; padding:2px 14px; font-weight:600;">
+                <i class="bi bi-floppy me-1"></i>Save
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="erp-form-flex">
+
+        <!-- ══════════════════════════════════════════════════
+             HEADER CARD  (3 rows of fields)
+        ══════════════════════════════════════════════════ -->
+        <div class="card flex-shrink-0">
+
+            <!-- ─── ROW 1: Slip No | Gate Pass No | Gate Pass Date | Vehicle No | Driver Name | Vehicle Type ─── -->
+            <div class="row g-2">
+                <!-- Weighment Slip No -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="WeighmentSlipNo" type="text" class="form-control" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %} autocomplete="off">
+                        <label class="floating-label">Weighment Slip No</label>
+                    </div>
+                </div>
+
+                <!-- Gate Pass No (Multi-Column Dropdown matching GRN) -->
+                <div class="col-md-2" style="position:relative;">
+                    <div class="form-group mb-0" id="gpDropdownGroup">
+                        <input type="hidden" id="GatePassNo" name="GatePassNo">
+                        <input type="text" id="GatePassNoDisplay" class="form-control" placeholder=" " autocomplete="off" readonly
+                               style="cursor:pointer; background:#fff !important;" {% if is_view_mode %}disabled{% endif %}>
+                        <label for="GatePassNoDisplay" class="floating-label">Gate Pass No</label>
+                        
+                        <div id="gpDropdownPanel" style="
+                            display:none; position:fixed; z-index:9999;
+                            background:#fff; border:1px solid #cbd5e1; border-radius:6px;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.15); min-width:640px; max-height:300px;
+                            overflow:hidden; flex-direction:column;">
+                            <!-- Search box inside panel -->
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="gpSearchInput" placeholder="Search Gate Pass..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <!-- Column headers inside panel -->
+                            <div style="display:grid; grid-template-columns:90px 100px 120px 130px 130px;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>GP No</span>
+                                <span>GP Date</span>
+                                <span>Driver</span>
+                                <span>Vehicle</span>
+                                <span>Weighment No</span>
+                            </div>
+                            <!-- Scrollable rows list -->
+                            <div id="gpDropdownList" style="overflow-y:auto; max-height:200px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gate Pass Date (read-only, auto-filled) -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="GatePassDate" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Gate Pass Date</label>
+                    </div>
+                </div>
+
+                <!-- Vehicle No (auto-filled) -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="VehicleNo" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Vehicle No</label>
+                    </div>
+                </div>
+
+                <!-- Driver Name (auto-filled) -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="DriverName" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Driver Name</label>
+                    </div>
+                </div>
+
+                <!-- Vehicle Type -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <select id="VehicleType" class="form-select"
+                                {% if is_view_mode %}disabled{% endif %}>
+                            <option value="">— Select —</option>
+                            <option value="Turbo 8-Wheeler">Turbo 8-Wheeler</option>
+                            <option value="Truck 10 Wheel">Truck 10 Wheel</option>
+                            <option value="Tata 407">Tata 407</option>
+                            <option value="Jeep">Jeep</option>
+                        </select>
+                        <label class="floating-label">Vehicle Type</label>
+                    </div>
+                </div>
+            </div><!-- /ROW 1 -->
+
+            <!-- ─── ROW 2: Gross Wt | Gross DT | Tare Wt | Tare DT | Net Wt | Status ─── -->
+            <div class="row g-2" style="margin-top: 2px;">
+                <!-- Gross Weight -->
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <input id="GrossWeight" type="number" step="0.01" class="form-control"
+                               placeholder=" " {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Gross Weight</label>
+                    </div>
+                </div>
+
+                <!-- Gross Date & Time -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="GrossDateTime" type="text" class="form-control"
+                               {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Gross Date &amp; Time</label>
+                    </div>
+                </div>
+
+                <!-- Tare Weight -->
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <input id="TareWeight" type="number" step="0.01" class="form-control"
+                               placeholder=" " {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Tare Weight</label>
+                    </div>
+                </div>
+
+                <!-- Tare Date & Time -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="TareDateTime" type="text" class="form-control"
+                               {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Tare Date &amp; Time</label>
+                    </div>
+                </div>
+
+                <!-- Net Weight (auto-calc, green, read-only) -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <input id="NetWeight" type="number" step="0.01" class="form-control"
+                               placeholder=" " readonly
+                               style="background:#f0fdf4 !important; font-weight:700; color:#16a34a !important;">
+                        <label class="floating-label" style="color:#16a34a;">Net Weight</label>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-2">
+                    <div class="form-group has-value">
+                        <select id="status" class="form-select"
+                                {% if is_view_mode %}disabled{% endif %}>
+                            <option value="1">Draft</option>
+                            <option value="2">Submitted</option>
+                            <option value="4">Approved</option>
+                            <option value="5">Released</option>
+                        </select>
+                        <label class="floating-label">Status</label>
+                    </div>
+                </div>
+            </div><!-- /ROW 2 -->
+
+            <!-- ─── ROW 3: Auto/Manual Toggle ─── -->
+            <div class="row g-2 align-items-center" style="margin-top: 2px;">
+                <div class="col-auto" style="margin-bottom: 12px;">
+                    <div class="d-flex align-items-center gap-1">
+                        <div class="am-toggle" style="flex-shrink:0;">
+                            <button type="button" class="t-btn active" id="toggleAuto" data-value="Auto" style="min-width:60px;">Auto</button>
+                            <button type="button" class="t-btn" id="toggleManual" data-value="Manual" style="min-width:65px;">Manual</button>
+                        </div>
+                        <input type="hidden" id="AutoManual" value="Auto">
+                    </div>
+                </div>
+            </div><!-- /ROW 3 -->
+
+
+        </div><!-- /HEADER CARD -->
+
+
+        <!-- ══════════════════════════════════════════════════
+             TABS: Weighment + Camera Image
+        ══════════════════════════════════════════════════ -->
+        <div class="card erp-card-table-flex">
+            <!-- Tab nav -->
+            <div class="card-header p-0 border-bottom" style="background:#fff; flex-shrink:0;">
+                <ul class="nav nav-tabs border-0" id="weighmentTabs" role="tablist" style="padding: 0 10px;">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="tab-weighment"
+                                data-bs-toggle="tab" data-bs-target="#panel-weighment"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-list-ul me-1"></i>Weighment
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-camera"
+                                data-bs-toggle="tab" data-bs-target="#panel-camera"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-camera me-1"></i>Camera Image
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content h-100" id="weighmentTabContent">
+
+                    <!-- ── Weighment Tab ── -->
+                    <div class="tab-pane fade show active h-100" id="panel-weighment" role="tabpanel">
+                        <div class="erp-table-wrapper">
+                            <table class="table table-bordered mb-0 erp-data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;" class="text-center">#</th>
+                                        <th style="width:20%;">Material</th>
+                                        <th style="width:12%;" class="text-end">Bags</th>
+                                        <th style="width:14%;" class="text-end">Gross Weight</th>
+                                        <th style="width:14%;" class="text-end">Net Weight</th>
+                                        <th style="width:27%;">Remarks</th>
+                                        <th style="width:10%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="matTableBody">
+                                    <!-- Rows injected by weighment-form.js -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="erp-table-footer-row">
+                                        <td colspan="2" class="text-end pe-2">TOTALS</td>
+                                        <td class="text-end" id="totalBags">0.00</td>
+                                        <td class="text-end" id="totalGrossWt">0.00</td>
+                                        <td class="text-end" id="totalNetWt">0.00</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Purchaser, Seller, Remarks & Weight Capture Button -->
+                        <div class="bg-white" 
+                             style="padding: 10px 15px; margin: 0; border-radius: 0 0 6px 6px; border-top: 1px solid #e2e8f0 !important; background-color: #ffffff !important; flex-shrink: 0;">
+                            
+                            <!-- Row 1: Purchaser & Seller -->
+                            <div class="row g-2">
+                                <!-- Purchaser -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-1">
+                                        <input id="Purchaser" type="text" class="form-control" placeholder=" "
+                                               {% if is_view_mode %}readonly{% endif %}>
+                                        <label class="floating-label">Purchaser</label>
+                                    </div>
+                                </div>
+
+                                <!-- Seller -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-1">
+                                        <input id="Seller" type="text" class="form-control" placeholder=" "
+                                               {% if is_view_mode %}readonly{% endif %}>
+                                        <label class="floating-label">Seller</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Remarks & Weight Capture Button -->
+                            <div class="row g-2 align-items-center mt-0">
+                                <!-- Remarks -->
+                                <div class="col-md-5">
+                                    <div class="form-group mb-0">
+                                        <input id="Remarks" type="text" class="form-control" placeholder=" "
+                                               {% if is_view_mode %}readonly{% endif %}>
+                                        <label class="floating-label">Remarks</label>
+                                    </div>
+                                </div>
+
+                                <!-- Weight Capture Button (Port) -->
+                                <div class="col-md-2">
+                                    <button id="captureWeightBtn" type="button"
+                                            class="btn btn-primary w-100"
+                                            style="height:30px; font-size:11px; font-weight:600; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:5px;"
+                                            {% if is_view_mode %}disabled{% endif %}
+                                            title="Capture weight from weighbridge port">
+                                        <i class="bi bi-broadcast"></i>Capture Weight
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /Weighment Tab -->
+
+
+                    <!-- ── Camera Tab ── -->
+                    <div class="tab-pane fade" id="panel-camera" role="tabpanel">
+                        <div class="p-3">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div style="font-size:10.5px; font-weight:700; color:#475569; margin-bottom:5px; text-transform:uppercase;">Camera 1 — Weighment Image</div>
+                                    <div class="camera-box" id="cameraBox1">
+                                        <i class="bi bi-camera2"></i>
+                                        <span>Click to Capture</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 w-100"
+                                            style="font-size:11px;" {% if is_view_mode %}disabled{% endif %}>
+                                        <i class="bi bi-camera me-1"></i>Capture Camera 1
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="font-size:10.5px; font-weight:700; color:#475569; margin-bottom:5px; text-transform:uppercase;">Camera 2</div>
+                                    <div class="camera-box" id="cameraBox2">
+                                        <i class="bi bi-camera2"></i>
+                                        <span>Click to Capture</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 w-100"
+                                            style="font-size:11px;" {% if is_view_mode %}disabled{% endif %}>
+                                        <i class="bi bi-camera me-1"></i>Capture Camera 2
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="font-size:10.5px; font-weight:700; color:#475569; margin-bottom:5px; text-transform:uppercase;">Camera 3</div>
+                                    <div class="camera-box" id="cameraBox3">
+                                        <i class="bi bi-camera2"></i>
+                                        <span>Click to Capture</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 w-100"
+                                            style="font-size:11px;" {% if is_view_mode %}disabled{% endif %}>
+                                        <i class="bi bi-camera me-1"></i>Capture Camera 3
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-2 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                <span style="font-size:11px; color:#64748b;">Camera capture requires hardware integration with the weighbridge port. Image slots are ready for future implementation.</span>
+                            </div>
+                        </div>
+                    </div><!-- /Camera Tab -->
+
+                </div>
+            </div>
+        </div><!-- /TABLE CARD -->
+
+    </div><!-- /erp-form-flex -->
+</div><!-- /erp-container-flex -->
+
+<!-- ── Hidden context data for JS ── -->
+<script>
+    window.WEIGHMENT_SLIP_NO = "{{ slip_no|default:'' }}";
+    window.IS_VIEW_MODE = {% if is_view_mode %}true{% else %}false{% endif %};
+    window.MATERIALS_LIST = [
+        {% for item in materials %}
+            { id: "{{ item.id }}", name: "{{ item.material_name }}" },
+        {% endfor %}
+    ];
+</script>
+
+<!-- matRowTemplate removed — rows are now generated by renderMatTable() in weighment-form.js -->
+
+<script type="module" src="{% static 'js/modules/pages/weighment-form.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

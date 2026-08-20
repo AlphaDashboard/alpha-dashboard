@@ -143,3 +143,100 @@ class GateEntry(models.Model):
 
     def __str__(self):
         return f"{self.gate_pass_id} - {self.vehicle_number} ({self.driver_name})"
+
+
+class GatePass(models.Model):
+    """
+    Model representing Gate Pass Header (tblGatePass).
+    """
+    GatePassNo = models.IntegerField(
+        primary_key=True,
+        db_column='GatePassNo'
+    )
+    GatePassdate = models.DateField(
+        null=True, blank=True,
+        db_column='GatePassdate'
+    )
+    VehicleNo = models.CharField(
+        max_length=50, null=True, blank=True,
+        db_column='VehicleNo'
+    )
+    DriverName = models.CharField(
+        max_length=100, null=True, blank=True,
+        db_column='DriverName'
+    )
+    WeighmentNo = models.CharField(
+        max_length=50, null=True, blank=True,
+        db_column='WeighmentNo'
+    )
+    WeighmentDate = models.DateField(
+        null=True, blank=True,
+        db_column='WeighmentDate'
+    )
+    Bags = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='Bags'
+    )
+    GrossWeight = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='GrossWeight'
+    )
+    TareWeight = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='TareWeight'
+    )
+    NetWeight = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='NetWeight'
+    )
+
+    class Meta:
+        db_table = 'tblGatePass'
+        managed = False
+        verbose_name = _('Gate Pass')
+        verbose_name_plural = _('Gate Passes')
+
+    def __str__(self):
+        return f"GP-{self.GatePassNo} - {self.VehicleNo} ({self.DriverName})"
+
+
+class GatePassTran(models.Model):
+    """
+    Model representing Gate Pass Transaction lines (tblGatePass_Tran).
+    """
+    ID = models.AutoField(
+        primary_key=True,
+        db_column='ID'
+    )
+    GatePassNo = models.ForeignKey(
+        GatePass,
+        on_delete=models.CASCADE,
+        db_column='GatePassNo',
+        related_name='items'
+    )
+    GatePassDate = models.DateField(
+        null=True, blank=True,
+        db_column='GatePassDate'
+    )
+    MaterialID = models.IntegerField(
+        null=True, blank=True,
+        db_column='MaterialID'
+    )
+    Bags = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='Bags'
+    )
+    GrossWeight = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='GrossWeight'
+    )
+    NetWeight = models.DecimalField(
+        max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column='NetWeight'
+    )
+
+    class Meta:
+        db_table = 'tblGatePass_Tran'
+        managed = False
+        verbose_name = _('Gate Pass Detail')
+        verbose_name_plural = _('Gate Pass Details')

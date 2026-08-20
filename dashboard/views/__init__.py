@@ -58,11 +58,20 @@ __all__ = [
     'UserMasterListView',
     'UserMasterCreateView',
     'LoginView',
-    'LogoutView'
+    'LogoutView',
+    'GRNListView',
+    'GRNCreateView',
+    'WeighmentListView',
+    'WeighmentCreateView',
+    'PurchaseChallanListView',
+    'PurchaseChallanCreateView',
 ]
 from .section_c_views import SectionCListView, SectionCCreateView
 from .subsection_x_views import SubSectionXListView, SubSectionXCreateView, MaterialCreateAPIView, BrokerCreateAPIView, VendorSupplierCreateAPIView
 from .subsection_y_views import SubSectionYListView, SubSectionYCreateView
 from .sal_pur_group_views import SalPurGroupListView, SalPurGroupCreateView
 from .user_master_views import UserMasterListView, UserMasterCreateView, LoginView, LogoutView
+from .grn_views import GRNListView, GRNCreateView
+from .weighment_views import WeighmentListView, WeighmentCreateView
+from .purchase_challan_views import PurchaseChallanListView, PurchaseChallanCreateView
 

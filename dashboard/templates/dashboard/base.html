@@ -573,22 +573,27 @@
                         updateNavButtonInline('.erp-btn-next', doc.querySelector('.erp-btn-next'));
                         updateNavButtonInline('.erp-btn-edit-mode', doc.querySelector('.erp-btn-edit-mode'));
 
-                        // 6. Extract the new voucher ID from APP_CONFIG of loaded page HTML
+                        // 6. Extract the new voucher ID from APP_CONFIG or GRN_CONFIG of loaded page HTML
                         let newVoucherNo = '';
                         const scripts = doc.querySelectorAll('script');
                         scripts.forEach(s => {
-                            if (s.textContent.includes('window.APP_CONFIG')) {
-                                const match = s.textContent.match(/(?:voucherNo|groupId):\s*["']([^"']+)["']/);
+                            if (s.textContent.includes('window.APP_CONFIG') || s.textContent.includes('window.GRN_CONFIG')) {
+                                // Match voucherNo, groupId, or grnNo keys from any ERP config block
+                                const match = s.textContent.match(/(?:voucherNo|groupId|grnNo):\s*["']([^"']+)["']/);
                                 if (match) {
                                     newVoucherNo = match[1];
                                 }
                             }
                         });
 
-                        // 7. Update window.APP_CONFIG on the current page to keep it consistent
+                        // 7. Update window.APP_CONFIG and/or window.GRN_CONFIG to keep them consistent
                         if (window.APP_CONFIG) {
                             window.APP_CONFIG.voucherNo = newVoucherNo;
                             window.APP_CONFIG.groupId = newVoucherNo;
+                        }
+                        if (window.GRN_CONFIG) {
+                            window.GRN_CONFIG.grnNo    = newVoucherNo;
+                            window.GRN_CONFIG.voucherNo = newVoucherNo;
                         }
 
                         if (newVoucherNo && window.currentFormInstance) {
@@ -620,14 +625,16 @@
                 const btn = e.target.closest('.erp-btn-prev, .erp-btn-next, #prevRecordBtn, #nextRecordBtn');
                 console.log("BASE CLICK btn:", btn);
                 if (btn && btn.tagName === 'A') {
-                    // Check if we are on view page of Voucher, Bank Transaction, Section C, SalPurGroup, or SubSectionY
+                    // Check if we are on view page of Voucher, Bank Transaction, Section C, SalPurGroup, SubSectionY, or GRN
                     const isVoucherView = window.location.pathname.includes('/voucher/') && window.location.pathname.includes('/edit/');
                     const isBankTransactionView = window.location.pathname.includes('/bank-transaction/') && window.location.pathname.includes('/edit/');
                     const isSectionCView = window.location.pathname.includes('/section-c/') && window.location.pathname.includes('/edit/');
                     const isSalPurGroupView = window.location.pathname.includes('/sal-pur-group/') && window.location.pathname.includes('/edit/');
                     const isSubSectionYView = window.location.pathname.includes('/subsection-y/') && window.location.pathname.includes('/edit/');
+                    const isSubSectionB2View = window.location.pathname.includes('/subsection-b2/') && window.location.pathname.includes('/edit/');
+                    const isGRNView = window.location.pathname.includes('/grn/') && window.location.pathname.includes('/edit/');
                     
-                    if (isVoucherView || isBankTransactionView || isSectionCView || isSalPurGroupView || isSubSectionYView) {
+                    if (isVoucherView || isBankTransactionView || isSectionCView || isSalPurGroupView || isSubSectionYView || isSubSectionB2View || isGRNView) {
                         const url = new URL(btn.href || window.location.href);
                         if (url.searchParams.get('mode') === 'view' || window.location.search.includes('mode=view')) {
                             e.preventDefault();

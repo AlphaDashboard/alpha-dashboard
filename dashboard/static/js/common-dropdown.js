@@ -24,7 +24,17 @@ export function initializeSearchableDropdown(selector, ajaxUrl, placeholder, opt
             },
             processResults: function (data, params) {
                 console.log("[common-dropdown] processResults called. Term:", params.term, "Data results length:", data.results ? data.results.length : 0);
-                var results = data.results || [];
+                var rawResults = Array.isArray(data) ? data : (data.results || []);
+                var results = rawResults.map(gp => {
+                    if (gp.GatePassNo !== undefined && gp.id === undefined) {
+                        return {
+                            ...gp,
+                            id: gp.GatePassNo,
+                            text: `GP-${gp.GatePassNo + 10000}`
+                        };
+                    }
+                    return gp;
+                });
                 var term = params.term || '';
 
                 if (options.enableAddNew) {
@@ -64,6 +74,22 @@ export function initializeSearchableDropdown(selector, ajaxUrl, placeholder, opt
                 );
             }
             
+            // Render gate pass option in dynamic 4-column layout
+            if (result.GatePassNo !== undefined) {
+                const gpNo = `GP-${parseInt(result.GatePassNo) + 10000}`;
+                const gpDate = result.GatePassdate || '';
+                const vehicle = result.VehicleNo || '';
+                const driver = result.DriverName || '';
+                return jQuery(
+                    '<div class="select2-table-row d-flex align-items-center w-100 py-2" style="font-size: 12px; font-family: \'Inter\', sans-serif; padding: 0 16px; box-sizing: border-box;">' +
+                    '  <div style="width: 25%; text-align: left; font-weight: 600; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + gpNo + '</div>' +
+                    '  <div style="width: 25%; text-align: left; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px;">' + gpDate + '</div>' +
+                    '  <div style="width: 25%; text-align: left; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px;">' + vehicle + '</div>' +
+                    '  <div style="width: 25%; text-align: left; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + driver + '</div>' +
+                    '</div>'
+                );
+            }
+            
             // If it is a structured database option, render it in a clean 4-column table row format
             if (result.account_name !== undefined) {
                 let balStr = '0.00';
@@ -91,6 +117,9 @@ export function initializeSearchableDropdown(selector, ajaxUrl, placeholder, opt
             return result.text;
         },
         templateSelection: function (selection) {
+            if (selection && selection.GatePassNo !== undefined) {
+                return `GP-${parseInt(selection.GatePassNo) + 10000}`;
+            }
             if (selection && selection.text) {
                 const balIndex = selection.text.indexOf(' [Bal:');
                 if (balIndex !== -1) {
@@ -110,14 +139,26 @@ export function initializeSearchableDropdown(selector, ajaxUrl, placeholder, opt
         setTimeout(() => {
             const dropdown = jQuery('.select2-dropdown');
             if (dropdown.length && !dropdown.find('.select2-table-header').length) {
-                const headerHtml = `
-                    <div class="select2-table-header d-flex text-muted fw-bold border-bottom py-1" style="font-size: 11px; background: #f8fafc; font-family: 'Inter', sans-serif; letter-spacing: 0.05em; padding: 0 22px 0 16px; height: 28px; align-items: center; box-sizing: border-box;">
-                        <div style="width: 6%; min-width: 50px; text-align: left;">Code</div>
-                        <div style="width: 49%; text-align: left;">Account Name</div>
-                        <div style="width: 30%; text-align: left;">Display Name</div>
-                        <div style="width: 15%; text-align: right;">Current Balance</div>
-                    </div>
-                `;
+                let headerHtml = '';
+                if (selector === '#GatepassNo' || (typeof selector === 'string' && selector.includes('GatepassNo'))) {
+                    headerHtml = `
+                        <div class="select2-table-header d-flex text-muted fw-bold border-bottom py-1" style="font-size: 11px; background: #f8fafc; font-family: 'Inter', sans-serif; letter-spacing: 0.05em; padding: 0 22px 0 16px; height: 28px; align-items: center; box-sizing: border-box;">
+                            <div style="width: 25%; text-align: left;">Gate Pass No</div>
+                            <div style="width: 25%; text-align: left;">Gate Pass Date</div>
+                            <div style="width: 25%; text-align: left;">Vehicle</div>
+                            <div style="width: 25%; text-align: left;">Driver</div>
+                        </div>
+                    `;
+                } else {
+                    headerHtml = `
+                        <div class="select2-table-header d-flex text-muted fw-bold border-bottom py-1" style="font-size: 11px; background: #f8fafc; font-family: 'Inter', sans-serif; letter-spacing: 0.05em; padding: 0 22px 0 16px; height: 28px; align-items: center; box-sizing: border-box;">
+                            <div style="width: 6%; min-width: 50px; text-align: left;">Code</div>
+                            <div style="width: 49%; text-align: left;">Account Name</div>
+                            <div style="width: 30%; text-align: left;">Display Name</div>
+                            <div style="width: 15%; text-align: right;">Current Balance</div>
+                        </div>
+                    `;
+                }
                 dropdown.find('.select2-results').prepend(headerHtml);
             }
 

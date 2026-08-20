@@ -40,6 +40,11 @@
                         <option value="po_no">PO No.</option>
                         <option value="date">PO Date</option>
                         <option value="bank_name">Supplier Name</option>
+                        <option value="po_status">PO Status</option>
+                        <option value="zone_name">Zone Name</option>
+                        <option value="broker">Broker</option>
+                        <option value="supplier_contact">Contact No.</option>
+                        <option value="gst_number">GST No.</option>
                         <option value="narration">Special Instructions</option>
                         <option value="amount">Amount</option>
                     </select>
@@ -157,6 +162,12 @@
         <div style="width: 12%; flex-shrink: 0;"></div>
     </div>
 </div>
+
+<script>
+    window.APP_CONFIG = {
+        userRole: "{{ request.session.role }}"
+    };
+</script>
 
 <!-- ── JS Module ──────────────────────────────────────────────────────────── -->
 <script type="module" src="{% static 'js/modules/pages/subsection-x-list.js' %}?v={% now 'U' %}"></script>

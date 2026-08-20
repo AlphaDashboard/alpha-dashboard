@@ -532,8 +532,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                 Q(supplier__VendorSupplierName__icontains=search) |
                 Q(broker__BrokerName__icontains=search)
             )
-        
-        # UI filters mapping
+             # UI filters mapping
         po_no_q = self.request.query_params.get('voucher_no') or self.request.query_params.get('po_no')
         bank_name_q = self.request.query_params.get('bank_name') or self.request.query_params.get('supplier_name')
         narration_q = self.request.query_params.get('narration')
@@ -541,6 +540,12 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         date_after = self.request.query_params.get('date_after', None)
         date_before = self.request.query_params.get('date_before', None)
         status_filter = self.request.query_params.get('status', None)
+
+        po_status_q = self.request.query_params.get('po_status')
+        zone_name_q = self.request.query_params.get('zone_name')
+        broker_q = self.request.query_params.get('broker')
+        supplier_contact_q = self.request.query_params.get('supplier_contact')
+        gst_number_q = self.request.query_params.get('gst_number')
  
         if po_no_q:
             queryset = queryset.filter(po_no__icontains=po_no_q)
@@ -556,6 +561,16 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         if amount_q:
             amount_str = amount_q.replace(',', '').strip()
             queryset = queryset.filter(grand_total__icontains=amount_str)
+        if po_status_q:
+            queryset = queryset.filter(po_status__icontains=po_status_q)
+        if zone_name_q:
+            queryset = queryset.filter(zone_name__icontains=zone_name_q)
+        if broker_q:
+            queryset = queryset.filter(broker__BrokerName__icontains=broker_q)
+        if supplier_contact_q:
+            queryset = queryset.filter(supplier_contact__icontains=supplier_contact_q)
+        if gst_number_q:
+            queryset = queryset.filter(gst_number__icontains=gst_number_q)
         if date_after:
             queryset = queryset.filter(po_date__date__gte=date_after)
         if date_before:
@@ -592,19 +607,21 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     # | Draft     | Yes       | Yes               |
     # | Submitted | No        | No                |
     # | RefBack   | Yes       | Yes               |
-    # | Approved  | No        | Yes (soft only)   |
+    # | Approved  | No        | No                |
     # -------------------------------------------------------------------------
     LOCKED_STATUSES       = ('Submitted', 'Approved')  # cannot edit
-    NO_DELETE_STATUSES    = ('Submitted',)              # cannot mark deleted
+    NO_DELETE_STATUSES    = ('Submitted', 'Approved')  # cannot mark deleted
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.po_status in self.LOCKED_STATUSES:
-            status_label = instance.get_po_status_display()
-            return Response(
-                {'detail': f'This Purchase Order is in "{status_label}" state and cannot be edited.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        user_role = request.session.get('role')
+        if user_role not in ('Checker', 'Admin'):
+            if instance.po_status in self.LOCKED_STATUSES:
+                status_label = instance.get_po_status_display()
+                return Response(
+                    {'detail': f'This Purchase Order is in "{status_label}" state and cannot be edited.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
         return super().update(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
@@ -640,8 +657,8 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     def toggle_status(self, request, po_no=None):
         instance = self.get_object()
 
-        # Block toggling (mark deleted) if PO is in a protected status
-        if instance.po_status in self.NO_DELETE_STATUSES:
+        # Block toggling (mark deleted) if PO is in a protected status and currently active
+        if instance.status and instance.po_status in self.NO_DELETE_STATUSES:
             status_label = instance.get_po_status_display()
             return Response(
                 {'detail': f'This Purchase Order is in "{status_label}" state and cannot be marked as deleted.'},
@@ -728,9 +745,29 @@ class SalPurGroupViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def toggle_status(self, request, SalPurGroupID=None):
         instance = self.get_object()
-        instance.is_active = not instance.is_active
-        instance.save()
-        return Response({'status': instance.is_active})
+        new_active = not instance.is_active
+        
+        header_data = {
+            'group_id': instance.SalPurGroupID,
+            'SalPurGroupName': instance.SalPurGroupName,
+            'GroupwiseAccounting': instance.GroupwiseAccounting,
+            'GroupwiseAccountID': instance.GroupwiseAccountID_id,
+            'TransactionTypeID': instance.TransactionTypeID_id,
+            'Interstate_Y_WithinState_N': instance.Interstate_Y_WithinState_N,
+            'GST_Applicable_Y_N': instance.GST_Applicable_Y_N,
+            'IsGSTApplicableY1N0': instance.IsGSTApplicableY1N0,
+            'IGST1_CGST0': instance.IGST1_CGST0,
+            'is_active': new_active,
+        }
+        
+        from .serializers import SalPurGroupTranSerializer
+        items_data = SalPurGroupTranSerializer(instance.transactions.all(), many=True).data
+        
+        username = request.user.username if (request.user and request.user.username) else 'system'
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        execute_sp_sal_pur_group('UPDATE', header_data, items_data, username)
+        
+        return Response({'status': new_active})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -739,7 +776,10 @@ class SalPurGroupViewSet(viewsets.ModelViewSet):
                 {"detail": f"Cannot delete group '{instance.SalPurGroupName}' because it is currently Active. Please Mark Inactive first."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        self.perform_destroy(instance)
+        
+        username = request.user.username if (request.user and request.user.username) else 'system'
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        execute_sp_sal_pur_group('DELETE', {'group_id': instance.SalPurGroupID}, [], username)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
@@ -748,7 +788,11 @@ class SalPurGroupViewSet(viewsets.ModelViewSet):
         # Generic search
         search = self.request.query_params.get('search', None)
         if search:
-            q_cond = Q(SalPurGroupName__icontains=search) | Q(GroupwiseAccountID__Account_Name__icontains=search)
+            q_cond = (
+                Q(SalPurGroupName__icontains=search) | 
+                Q(GroupwiseAccountID__Account_Name__icontains=search) |
+                Q(TransactionTypeID__TransactionTypeName__icontains=search)
+            )
             try:
                 val = int(search)
                 q_cond |= Q(SalPurGroupID=val)
@@ -760,6 +804,7 @@ class SalPurGroupViewSet(viewsets.ModelViewSet):
         group_id = self.request.query_params.get('group_id', None)
         group_name = self.request.query_params.get('group_name', None)
         account_name = self.request.query_params.get('account_name', None)
+        transaction_type = self.request.query_params.get('transaction_type', None)
         date_after = self.request.query_params.get('date_after', None)
         date_before = self.request.query_params.get('date_before', None)
         status_filter = self.request.query_params.get('status', None)
@@ -776,6 +821,8 @@ class SalPurGroupViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(SalPurGroupName__icontains=group_name)
         if account_name:
             queryset = queryset.filter(GroupwiseAccountID__Account_Name__icontains=account_name)
+        if transaction_type:
+            queryset = queryset.filter(TransactionTypeID__TransactionTypeName__icontains=transaction_type)
         if date_after:
             queryset = queryset.filter(DateCreated__date__gte=date_after)
         if date_before:
@@ -885,3 +932,288 @@ class TransactionTypeViewSet(viewsets.ModelViewSet):
                 Q(TransactionType__icontains=search)
             )
         return queryset
+
+
+# =============================================================================
+# GRN (GOODS RECEIPT NOTE) VIEWSET  — Subsection X0
+# All write operations go through sp_manage_grn stored procedure.
+# =============================================================================
+
+from .models.grn import GRN
+from .serializers import GRNSerializer
+
+
+class GRNViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for GRN (Goods Receipt Note).
+    List/Detail reads from tblGRN view.
+    Create / Update / Delete call sp_manage_grn via grn_sp_helper.
+
+    NOTE: get_queryset is wrapped in try/except so the list page loads
+    safely even when tblGRN does not yet exist in the database.
+    Once the DBA creates the table/stored procedure, everything works automatically.
+    """
+    queryset = GRN.objects.none()          # safe fallback
+    serializer_class = GRNSerializer
+    lookup_field = 'GrnNo'
+    lookup_value_regex = '[^/]+'
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        try:
+            queryset = GRN.objects.all().order_by('-GrnDate', '-GrnNo')
+
+            # Generic search across key fields
+            search = self.request.query_params.get('search', None)
+            if search:
+                queryset = queryset.filter(
+                    Q(GrnNo__icontains=search) |
+                    Q(GatepassNo__icontains=search) |
+                    Q(internalnotes__icontains=search)
+                )
+
+            # Field-specific filters
+            grn_no_filter  = self.request.query_params.get('grn_no', None)
+            gatepass_filter = self.request.query_params.get('gatepass_no', None)
+            status_filter  = self.request.query_params.get('status', None)
+            date_after     = self.request.query_params.get('date_after', None)
+            date_before    = self.request.query_params.get('date_before', None)
+
+            if grn_no_filter:
+                queryset = queryset.filter(GrnNo__icontains=grn_no_filter)
+            if gatepass_filter:
+                queryset = queryset.filter(GatepassNo__icontains=gatepass_filter)
+            if status_filter is not None and status_filter != '':
+                try:
+                    queryset = queryset.filter(status=int(status_filter))
+                except ValueError:
+                    pass
+            if date_after:
+                queryset = queryset.filter(GrnDate__date__gte=date_after)
+            if date_before:
+                queryset = queryset.filter(GrnDate__date__lte=date_before)
+
+            # Sorting
+            ordering = self.request.query_params.get('ordering', None)
+            if ordering:
+                queryset = queryset.order_by(ordering)
+
+            return queryset
+
+        except Exception:
+            # tblGRN does not exist yet in the database.
+            # Return empty queryset — list page shows "No GRN records found."
+            return GRN.objects.none()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+        from dashboard.services.grn_sp_helper import execute_sp_grn
+        execute_sp_grn('DELETE', {'GrnNo': instance.GrnNo}, [], [], username)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+from .models.gate_entry import GateEntry, GatePass
+from .serializers import GateEntrySerializer, GatePassSerializer
+
+class GateEntryViewSet(viewsets.ModelViewSet):
+    queryset = GateEntry.objects.all().order_by('-created_at')
+    serializer_class = GateEntrySerializer
+    pagination_class = None
+
+class GatePassViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for viewing, searching, and managing Gate Pass records.
+    Filters the gate passes dynamically by query string parameter 'q',
+    resolving formatting prefixes (e.g. 'GP-') to perform exact numeric searches,
+    or matches substrings on vehicle numbers and driver names.
+    """
+    serializer_class = GatePassSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = GatePass.objects.all().order_by('GatePassNo')
+        search_query = self.request.query_params.get('q', None)
+        if search_query:
+            from django.db.models import Q
+            cleaned_query = search_query.upper().replace('GP-', '')
+            try:
+                # Handle GP-10004 or similar
+                gp_no = int(cleaned_query) - 10000
+            except ValueError:
+                try:
+                    gp_no = int(cleaned_query)
+                except ValueError:
+                    gp_no = None
+
+            if gp_no is not None:
+                queryset = queryset.filter(
+                    Q(GatePassNo=gp_no) | 
+                    Q(VehicleNo__icontains=search_query) | 
+                    Q(DriverName__icontains=search_query)
+                )
+            else:
+                queryset = queryset.filter(
+                    Q(VehicleNo__icontains=search_query) | 
+                    Q(DriverName__icontains=search_query)
+                )
+        return queryset
+
+
+# ──────────────────────────────────────────────────────────────────
+# Weighment ViewSet
+# ──────────────────────────────────────────────────────────────────
+from .models.weighment import Weighment
+from .serializers import WeighmentSerializer
+
+
+class WeighmentViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for Weighment Slip.
+    Reads from tblWeighment.
+    Create / Update / Delete call sp_manage_weighment via weighment_sp_helper.
+    """
+    queryset = Weighment.objects.none()
+    serializer_class = WeighmentSerializer
+    lookup_field = 'WeighmentSlipNo'
+    lookup_value_regex = '[^/]+'
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        try:
+            queryset = Weighment.objects.all().order_by('-DraftedDate', '-WeighmentSlipNo')
+
+            # Generic search
+            search = self.request.query_params.get('search', None)
+            if search:
+                queryset = queryset.filter(
+                    Q(WeighmentSlipNo__icontains=search) |
+                    Q(GatePassNo__icontains=search) |
+                    Q(Purchaser__icontains=search) |
+                    Q(Seller__icontains=search)
+                )
+
+            # Field-specific filters
+            slip_filter    = self.request.query_params.get('slip_no', None)
+            gatepass_filter = self.request.query_params.get('gatepass_no', None)
+            status_filter  = self.request.query_params.get('status', None)
+            date_after     = self.request.query_params.get('date_after', None)
+            date_before    = self.request.query_params.get('date_before', None)
+
+            if slip_filter:
+                queryset = queryset.filter(WeighmentSlipNo__icontains=slip_filter)
+            if gatepass_filter:
+                queryset = queryset.filter(GatePassNo__icontains=gatepass_filter)
+            if status_filter is not None and status_filter != '':
+                try:
+                    queryset = queryset.filter(status=int(status_filter))
+                except ValueError:
+                    pass
+            if date_after:
+                queryset = queryset.filter(GrossDateTime__date__gte=date_after)
+            if date_before:
+                queryset = queryset.filter(GrossDateTime__date__lte=date_before)
+
+            # Sorting
+            ordering = self.request.query_params.get('ordering', None)
+            if ordering:
+                queryset = queryset.order_by(ordering)
+
+            return queryset
+
+        except Exception:
+            return Weighment.objects.none()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+        from dashboard.services.weighment_sp_helper import execute_sp_weighment
+        execute_sp_weighment('DELETE', {'WeighmentSlipNo': instance.WeighmentSlipNo}, [], username)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ──────────────────────────────────────────────────────────────────
+# Purchase Challan ViewSet
+# ──────────────────────────────────────────────────────────────────
+from .models.purchase_challan import PurchaseChallan, PurchaseChallanTran
+from .serializers import PurchaseChallanSerializer
+
+
+class PurchaseChallanViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for Purchase Challan (RMPCH).
+    Reads from tblSalePurchaseChallans.
+    Create / Update / Delete call sp_manage_purchase_challan via purchase_challan_sp_helper.
+    """
+    queryset = PurchaseChallan.objects.none()
+    serializer_class = PurchaseChallanSerializer
+    lookup_field = 'ChallanNo'
+    lookup_value_regex = '[^/]+'
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        try:
+            queryset = PurchaseChallan.objects.all().order_by('-ChallanDate', '-ChallanNo')
+
+            # Generic search
+            search = self.request.query_params.get('search', None)
+            if search:
+                queryset = queryset.filter(
+                    Q(ChallanNo__icontains=search) |
+                    Q(VehicleNo__icontains=search) |
+                    Q(WeighmentSlipNo__icontains=search)
+                )
+
+            # Field-specific filters
+            challan_filter  = self.request.query_params.get('challan_no', None)
+            gatepass_filter = self.request.query_params.get('gatepass_no', None)
+            status_filter   = self.request.query_params.get('status', None)
+            date_after      = self.request.query_params.get('date_after', None)
+            date_before     = self.request.query_params.get('date_before', None)
+
+            if challan_filter:
+                queryset = queryset.filter(ChallanNo__icontains=challan_filter)
+            if gatepass_filter:
+                queryset = queryset.filter(GPNo__icontains=gatepass_filter)
+            if status_filter is not None and status_filter != '':
+                try:
+                    queryset = queryset.filter(StatusId=int(status_filter))
+                except ValueError:
+                    pass
+            if date_after:
+                queryset = queryset.filter(ChallanDate__gte=date_after)
+            if date_before:
+                queryset = queryset.filter(ChallanDate__lte=date_before)
+
+            # Sorting
+            ordering = self.request.query_params.get('ordering', None)
+            if ordering:
+                queryset = queryset.order_by(ordering)
+
+            return queryset
+
+        except Exception:
+            return PurchaseChallan.objects.none()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+        from dashboard.services.purchase_challan_sp_helper import execute_sp_purchase_challan
+        execute_sp_purchase_challan('DELETE', {'ChallanNo': instance.ChallanNo}, [], username)
+        return Response(status=status.HTTP_204_NO_CONTENT)

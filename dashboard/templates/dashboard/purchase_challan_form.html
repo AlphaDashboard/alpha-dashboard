@@ -1,0 +1,537 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_view_mode %}View{% elif challan_no %}Edit{% else %}Create{% endif %} Purchase Challan - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
+<style>
+    body { background-color: #f4f6f9; color: #334155; overflow: hidden !important; }
+
+    /* ── Flex container for the full page below the topbar ── */
+    .erp-container-flex {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 75px);
+        overflow: hidden;
+        gap: 5px;
+        padding-bottom: 0px !important;
+    }
+
+    /* ── Middle section: header-card + table-card stacked ── */
+    .erp-form-flex {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0%;
+        min-height: 0;
+        overflow: hidden;
+        gap: 5px;
+    }
+
+    /* ── Table card grows to fill remaining space ── */
+    .erp-card-table-flex {
+        flex: 1 1 0%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+    }
+    .erp-card-table-flex > .card-header { flex-shrink: 0; }
+    .erp-card-table-flex > .card-body {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+    }
+    .erp-card-table-flex .tab-content {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .erp-card-table-flex .tab-pane.show.active {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex !important;
+        flex-direction: column;
+    }
+    .erp-card-table-flex .erp-table-wrapper {
+        flex: 1 1 0%;
+        min-height: 120px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    /* ── Typography ── */
+    .page-title { font-size: 1.05rem; font-weight: 700; color: #000000 !important; margin-bottom: 0; }
+
+    /* ── Cards ── */
+    .card {
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        background-color: #ffffff;
+        padding: 8px 12px !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* ── Floating labels ── */
+    .form-group { position: relative; margin-bottom: 1px !important; }
+    .form-group label.floating-label {
+        position: absolute; left: 8px; top: 9px;
+        color: #64748b; font-size: 11px; pointer-events: none;
+        transition: 0.2s ease all; background: #ffffff !important; padding: 0 3px; line-height: 1;
+        z-index: 12 !important;
+    }
+    .form-group input:focus + label.floating-label,
+    .form-group input:not(:placeholder-shown) + label.floating-label,
+    .form-group select + label.floating-label,
+    .form-group input[readonly] + label.floating-label,
+    .form-group textarea:focus + label.floating-label,
+    .form-group textarea:not(:placeholder-shown) + label.floating-label,
+    .form-group.is-focused label.floating-label,
+    .form-group.has-value label.floating-label {
+        top: -6px !important; left: 6px !important;
+        font-size: 9.5px !important; color: #334155 !important;
+        font-weight: 600 !important; z-index: 12 !important;
+    }
+    .form-group input[readonly] + label.floating-label {
+        background: #f8fafc !important;
+    }
+
+    /* ── Form controls ── */
+    .form-control, .form-select {
+        height: 30px !important; font-size: 11.5px !important;
+        border-radius: 4px !important; border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important; background-color: #ffffff !important;
+        padding: 3px 7px !important;
+    }
+    .form-control[readonly] {
+        background-color: #f8fafc !important;
+        color: #334155 !important;
+        cursor: default;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.1) !important;
+        outline: none !important;
+    }
+    .form-control::placeholder { color: #94a3b8 !important; font-size: 11px !important; }
+
+    /* ── ERP Data Table ── */
+    .erp-data-table { border-collapse: collapse; width: 100%; border-radius: 4px; border: 1px solid #cbd5e1 !important; }
+    .erp-data-table thead th {
+        background-color: #536479 !important; color: #ffffff !important; font-size: 11px;
+        font-weight: 600; padding: 8px !important; text-transform: uppercase;
+        border: 1px solid #cbd5e1 !important; letter-spacing: 0.5px; vertical-align: middle !important;
+    }
+    .erp-data-table tbody td {
+        padding: 4px 6px !important; vertical-align: middle;
+        border: 1px solid #cbd5e1 !important; background-color: #ffffff;
+    }
+    .erp-data-table .form-control, .erp-data-table .form-select {
+        height: 28px !important; padding: 2px 6px !important; font-size: 12px !important; border-radius: 3px !important;
+    }
+    .erp-table-footer-row { background-color: #536479; color: #ffffff; }
+    .erp-table-footer-row td {
+        background-color: #536479 !important; color: #ffffff !important;
+        font-weight: bold; font-size: 11px !important; border-color: #cbd5e1 !important;
+        padding: 8px !important; vertical-align: middle !important;
+    }
+
+    /* ── Row gutter ── */
+    .row.g-2 > [class*="col-"] { padding: 1px 4px; }
+
+    /* ── Action buttons (per row + / delete) ── */
+    .erp-action-btn {
+        width: 26px; height: 26px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 4px; padding: 0; cursor: pointer;
+        border: 1px solid transparent; transition: all 0.15s;
+        background: none;
+    }
+    .erp-btn-add  { background-color: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    .erp-btn-add:hover  { background-color: #dbeafe; }
+    .erp-btn-delete { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .erp-btn-delete:hover { background-color: #fee2e2; }
+
+    /* ── Sticky thead / tfoot ── */
+    .erp-data-table thead th { position: sticky !important; top: 0 !important; z-index: 10 !important; box-shadow: inset 0 -1px 0 #cbd5e1; }
+    .erp-data-table tfoot td { position: sticky !important; bottom: 0 !important; z-index: 10 !important; }
+
+    /* Tab Styling */
+    .nav-tabs { border-bottom: 1px solid #e2e8f0; }
+    .nav-tabs .nav-link {
+        border: none; border-bottom: 2px solid transparent;
+        color: #64748b; font-size: 11.5px; font-weight: 600;
+        padding: 6px 14px; border-radius: 0;
+    }
+    .nav-tabs .nav-link.active {
+        color: #2563eb; border-bottom-color: #2563eb;
+        background: transparent;
+    }
+
+    /* ── Status Progress Bar Stepper ── */
+    .progress-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 0;
+        position: relative;
+    }
+    .progress-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+    .progress-step .step-badge {
+        width: 22px;
+        height: 22px;
+        line-height: 18px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        color: #475569;
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        border: 2px solid #ffffff;
+        transition: all 0.3s ease;
+    }
+    .progress-step.active .step-badge {
+        background: #2563eb;
+        color: #ffffff;
+    }
+    .progress-step .step-text {
+        display: block;
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .progress-step.active .step-text {
+        color: #1e293b;
+        font-weight: 700;
+    }
+    .progress-line {
+        position: absolute;
+        top: 11px;
+        left: 10%;
+        width: 80%;
+        height: 3px;
+        background: #e2e8f0;
+        z-index: 1;
+    }
+    .progress-line-fill {
+        height: 100%;
+        width: 0%;
+        background: #2563eb;
+        transition: width 0.3s ease;
+    }
+
+    .inline-action-bar {
+        background-color: #f8fafc !important;
+        border-top: 1px solid #e2e8f0 !important;
+        border-radius: 0 0 6px 6px !important;
+        padding: 6px 16px !important;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 14px;
+        height: 42px !important;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="erp-container-flex">
+
+    <!-- ══════════════════════════════════════════════════
+         PAGE HEADER
+    ══════════════════════════════════════════════════ -->
+    <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 36px;">
+        <div>
+            <h1 class="page-title">
+                {% if is_view_mode %}View{% elif challan_no %}Edit{% else %}Create{% endif %} Purchase Challan
+            </h1>
+            <p class="text-muted mb-0" style="font-size: 10.5px; margin-top: 1px;">
+                {% if challan_no %}Challan No: <strong>{{ challan_no }}</strong>{% else %}New Purchase Challan Entry{% endif %}
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            {% if prev_pk %}
+            <a href="{% url 'dashboard:purchase_challan_edit' prev_pk %}{% if is_view_mode %}?mode=view{% endif %}"
+               class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 8px;" title="Previous">
+               <i class="bi bi-chevron-left"></i>
+            </a>
+            {% endif %}
+            {% if next_pk %}
+            <a href="{% url 'dashboard:purchase_challan_edit' next_pk %}{% if is_view_mode %}?mode=view{% endif %}"
+               class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 8px;" title="Next">
+               <i class="bi bi-chevron-right"></i>
+            </a>
+            {% endif %}
+            <a href="{% url 'dashboard:purchase_challan_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </a>
+            {% if not is_view_mode %}
+            <button class="btn btn-primary btn-sm save-btn" style="height:28px; font-size:11px; padding:2px 14px; font-weight:600;">
+                <i class="bi bi-floppy me-1"></i>Save
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="erp-form-flex">
+
+        <!-- ══════════════════════════════════════════════════
+             HEADER CARD  (Balanced 4 Columns Layout)
+        ══════════════════════════════════════════════════ -->
+        <div class="card flex-shrink-0">
+
+            <!-- ─── ROW 1: Challan No | Challan Date | Gate Pass No | Gate Pass Date ─── -->
+            <div class="row g-2">
+                <!-- Challan No -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="ChallanNo" type="text" class="form-control" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %} autocomplete="off">
+                        <label class="floating-label">Challan No</label>
+                    </div>
+                </div>
+
+                <!-- Challan Date -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="ChallanDate" type="text" class="form-control flatpickr-date" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Challan Date</label>
+                    </div>
+                </div>
+
+                <!-- Gate Pass No (Multi-Column Dropdown) -->
+                <div class="col-md-3" style="position:relative;">
+                    <div class="form-group mb-0" id="gpDropdownGroup">
+                        <input type="hidden" id="GatePassNo" name="GatePassNo">
+                        <input type="text" id="GatePassNoDisplay" class="form-control" placeholder=" " autocomplete="off" readonly
+                               style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
+                        <label for="GatePassNoDisplay" class="floating-label">Gate Pass No</label>
+
+                        <div id="gpDropdownPanel" style="
+                            display:none; position:fixed; z-index:9999;
+                            background:#fff; border:1px solid #cbd5e1; border-radius:6px;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.15); max-width:95vw; max-height:300px;
+                            overflow:hidden; flex-direction:column;">
+                            <!-- Search box inside panel -->
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="gpSearchInput" placeholder="Search Gate Pass..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <!-- Column headers inside panel -->
+                            <div style="display:grid; grid-template-columns:90px 100px 120px 130px 130px;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>GP No</span>
+                                <span>GP Date</span>
+                                <span>Driver</span>
+                                <span>Vehicle</span>
+                                <span>Weighment No</span>
+                            </div>
+                            <!-- Scrollable rows list -->
+                            <div id="gpDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:220px;"></div>
+                            <!-- Panel Footer -->
+                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                                <span id="gpDropdownCount">Select Gate Pass</span>
+                                <button type="button" id="gpDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gate Pass Date (auto-filled) -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="GatePassDate" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Gate Pass Date</label>
+                    </div>
+                </div>
+            </div><!-- /ROW 1 -->
+
+            <!-- ─── ROW 2: Vehicle No | Driver Name | Weighment Slip No | Weighment Date ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <!-- Vehicle No -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="VehicleNo" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Vehicle No</label>
+                    </div>
+                </div>
+
+                <!-- Driver Name -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="DriverName" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Driver Name</label>
+                    </div>
+                </div>
+
+                <!-- Weighment Slip No -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="WeighmentSlipNo" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Weighment Slip No</label>
+                    </div>
+                </div>
+
+                <!-- Weighment Date -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="WeighmentDate" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Weighment Date</label>
+                    </div>
+                </div>
+            </div><!-- /ROW 2 -->
+
+            <!-- ─── ROW 3: PO No | PO Date | Status | Notes / Remarks ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <!-- PO No -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input id="PONO" type="text" class="form-control" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %} autocomplete="off">
+                        <label class="floating-label">PO No</label>
+                    </div>
+                </div>
+
+                <!-- PO Date -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input id="PODate" type="text" class="form-control flatpickr-date" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">PO Date</label>
+                    </div>
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="StatusId" class="form-select"
+                                {% if is_view_mode %}disabled{% endif %}>
+                            <option value="1">Draft</option>
+                            <option value="2">Submitted</option>
+                            <option value="3">Referred Back</option>
+                            <option value="4">Approved</option>
+                            <option value="5">Released</option>
+                        </select>
+                        <label class="floating-label">Status</label>
+                    </div>
+                </div>
+
+                <!-- Notes / Remarks -->
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <input id="Notes" type="text" class="form-control" placeholder=" "
+                               {% if is_view_mode %}readonly{% endif %}>
+                        <label class="floating-label">Notes / Remarks</label>
+                    </div>
+                </div>
+            </div><!-- /ROW 3 -->
+
+        </div><!-- /HEADER CARD -->
+
+        <!-- ─── STATUS WORKFLOW STEPPER ─── -->
+        <div class="card flex-shrink-0 border-0 p-2" style="background: #f8fafc; border: 1px solid #e2e8f0 !important;">
+            <div class="progress-container px-4 py-1">
+                <div class="progress-line"><div class="progress-line-fill" id="statusProgressFill"></div></div>
+                <div class="progress-step active" data-status="1"><span class="step-badge">1</span><span class="step-text">Draft</span></div>
+                <div class="progress-step" data-status="2"><span class="step-badge">2</span><span class="step-text">Submitted for approval</span></div>
+                <div class="progress-step" data-status="3"><span class="step-badge">3</span><span class="step-text">Referred Back</span></div>
+                <div class="progress-step" data-status="4"><span class="step-badge">4</span><span class="step-text">Approved</span></div>
+                <div class="progress-step" data-status="5"><span class="step-badge">5</span><span class="step-text">Released</span></div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             MATERIAL TABLE CARD
+        ══════════════════════════════════════════════════ -->
+        <div class="card erp-card-table-flex">
+            <!-- Tab nav -->
+            <div class="card-header p-0 border-bottom" style="background:#fff; flex-shrink:0;">
+                <ul class="nav nav-tabs border-0" id="challanTabs" role="tablist" style="padding: 0 10px;">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="tab-materials"
+                                data-bs-toggle="tab" data-bs-target="#panel-materials"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-list-ul me-1"></i>Materials
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content h-100" id="challanTabContent">
+
+                    <!-- ── Materials Tab ── -->
+                    <div class="tab-pane fade show active h-100" id="panel-materials" role="tabpanel">
+                        <div class="erp-table-wrapper">
+                            <table class="table table-bordered mb-0 erp-data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;" class="text-center">#</th>
+                                        <th style="width:25%;">Material</th>
+                                        <th style="width:12%;" class="text-end">Bags</th>
+                                        <th style="width:15%;" class="text-end">Gross Weight</th>
+                                        <th style="width:15%;" class="text-end">Net Weight</th>
+                                        <th style="width:20%;">Remarks</th>
+                                        <th style="width:8%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="matTableBody">
+                                    <!-- Rows injected by purchase-challan-form.js -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="erp-table-footer-row">
+                                        <td colspan="2" class="text-end pe-2">TOTALS</td>
+                                        <td class="text-end" id="totalBags">0.00</td>
+                                        <td class="text-end" id="totalGrossWt">0.00</td>
+                                        <td class="text-end" id="totalNetWt">0.00</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div><!-- /Materials Tab -->
+
+                </div>
+            </div>
+
+            <!-- Inline Action Bar — attached below item tabs -->
+            {% if not is_view_mode %}
+            <div class="inline-action-bar">
+                <button class="btn btn-primary btn-sm save-btn" style="height:28px; font-size:11px; padding:2px 16px; font-weight:600;">
+                    <i class="bi bi-floppy me-1"></i>Save Record
+                </button>
+            </div>
+            {% endif %}
+        </div><!-- /TABLE CARD -->
+
+    </div><!-- /erp-form-flex -->
+</div><!-- /erp-container-flex -->
+
+
+<!-- ── Hidden context data for JS ── -->
+<script>
+    window.CHALLAN_NO = "{{ challan_no|default:'' }}";
+    window.IS_VIEW_MODE = {% if is_view_mode %}true{% else %}false{% endif %};
+    window.MATERIALS_LIST = [
+        {% for item in materials %}
+            { id: "{{ item.id }}", name: "{{ item.material_name }}" },
+        {% endfor %}
+    ];
+</script>
+
+<script type="module" src="{% static 'js/modules/pages/purchase-challan-form.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

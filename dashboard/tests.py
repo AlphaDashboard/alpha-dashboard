@@ -1162,27 +1162,25 @@ class PurchaseOrderTests(APITestCase):
         from dashboard.models.purchase_order import PurchaseOrder
         
         po1 = PurchaseOrder.objects.create(
+            po_no='PO-TEST-111',
             po_date=timezone.now(),
+            po_status='Draft',
             broker=self.broker,
             supplier=self.supplier,
             zone_name='North Region',
-            delivery_location='Plant 1',
-            delivery_terms='Ex Works/Ex-Godown',
-            payment_terms='Advance',
-            freight_terms='Supplier Paid',
-            special_instructions='URGENT PO',
+            supplier_contact='123456',
+            gst_number='GST111',
             status=True
         )
         po2 = PurchaseOrder.objects.create(
+            po_no='PO-TEST-222',
             po_date=timezone.now() - timezone.timedelta(days=5),
+            po_status='Draft',
             broker=self.broker,
             supplier=self.supplier,
             zone_name='South Region',
-            delivery_location='Plant 2',
-            delivery_terms='EXW',
-            payment_terms='30 Days Credit',
-            freight_terms='Buyer Paid',
-            special_instructions='Normal PO',
+            supplier_contact='789012',
+            gst_number='GST222',
             status=False
         )
 
@@ -1194,11 +1192,39 @@ class PurchaseOrderTests(APITestCase):
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
 
-        # Search
+        # Search po_no
         response = self.client.get(url, {'search': po1.po_no})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
+
+        # Filter po_status
+        response = self.client.get(url, {'po_status': 'Draft'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2) # Both active and inactive POs matching 'Draft'
+        
+        # Filter zone_name
+        response = self.client.get(url, {'zone_name': 'South'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['po_no'], po2.po_no)
+
+        # Filter broker
+        response = self.client.get(url, {'broker': 'Broker B'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+        # Filter supplier_contact
+        response = self.client.get(url, {'supplier_contact': '123'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
+
+        # Filter gst_number
+        response = self.client.get(url, {'gst_number': 'GST222'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['po_no'], po2.po_no)
 
     def test_page_view_prev_next_navigation(self):
         """Verify prev/next record keys in SubSectionXCreateView context."""
@@ -1241,6 +1267,164 @@ class PurchaseOrderTests(APITestCase):
         self.assertEqual(response1.status_code, 200)
         self.assertEqual(response1.context['prev_pk'], po2.po_no)
         self.assertIsNone(response1.context['next_pk'])
+
+    def test_purchase_order_deletion_locking_rules(self):
+        """Verify that Approved and Submitted POs cannot be deleted/soft-deleted, while Draft/RefBack can be."""
+        from dashboard.models.purchase_order import PurchaseOrder
+
+        # 1. Test Approved PO (Active)
+        po_approved = PurchaseOrder.objects.create(
+            po_date=timezone.now(),
+            broker=self.broker,
+            supplier=self.supplier,
+            po_status='Approved',
+            status=True
+        )
+        url_approved = reverse('dashboard:api_subsection_x-detail', kwargs={'po_no': po_approved.po_no})
+        
+        # Try soft delete
+        response = self.client.delete(url_approved)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        po_approved.refresh_from_db()
+        self.assertTrue(po_approved.status) # Still Active
+
+        # Try toggle status
+        response = self.client.post(url_approved + 'toggle_status/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        po_approved.refresh_from_db()
+        self.assertTrue(po_approved.status)
+
+        # 1b. Test Approved PO (Inactive)
+        po_approved_inactive = PurchaseOrder.objects.create(
+            po_date=timezone.now(),
+            broker=self.broker,
+            supplier=self.supplier,
+            po_status='Approved',
+            status=False
+        )
+        url_approved_inactive = reverse('dashboard:api_subsection_x-detail', kwargs={'po_no': po_approved_inactive.po_no})
+
+        # Try to hard-delete Approved Inactive PO - should block it!
+        response = self.client.delete(url_approved_inactive)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        po_approved_inactive.refresh_from_db() # Still exists
+
+        # Try to restore (toggle status) Approved Inactive PO - should succeed!
+        response = self.client.post(url_approved_inactive + 'toggle_status/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        po_approved_inactive.refresh_from_db()
+        self.assertTrue(po_approved_inactive.status) # Successfully restored/activated!
+
+        # 2. Test Submitted PO
+        po_submitted = PurchaseOrder.objects.create(
+            po_date=timezone.now(),
+            broker=self.broker,
+            supplier=self.supplier,
+            po_status='Submitted',
+            status=True
+        )
+        url_submitted = reverse('dashboard:api_subsection_x-detail', kwargs={'po_no': po_submitted.po_no})
+        
+        # Try soft delete
+        response = self.client.delete(url_submitted)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+        # Try toggle status
+        response = self.client.post(url_submitted + 'toggle_status/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # 3. Test Draft PO
+        po_draft = PurchaseOrder.objects.create(
+            po_date=timezone.now(),
+            broker=self.broker,
+            supplier=self.supplier,
+            po_status='Draft',
+            status=True
+        )
+        url_draft = reverse('dashboard:api_subsection_x-detail', kwargs={'po_no': po_draft.po_no})
+        
+        # Soft delete Draft
+        response = self.client.delete(url_draft)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        po_draft.refresh_from_db()
+        self.assertFalse(po_draft.status) # Soft-deleted successfully
+
+        # Hard delete Draft
+        response = self.client.delete(url_draft)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.assertRaises(PurchaseOrder.DoesNotExist):
+            PurchaseOrder.objects.get(po_no=po_draft.po_no)
+
+    def test_checker_edit_approve_rights(self):
+        """Verify that Checker/Admin can edit/save POs even if Submitted/Approved, while normal users cannot."""
+        from dashboard.models.purchase_order import PurchaseOrder
+
+        # Create a Submitted PO
+        po = PurchaseOrder.objects.create(
+            po_no='PO-EDIT-111',
+            po_date=timezone.now(),
+            broker=self.broker,
+            supplier=self.supplier,
+            po_status='Submitted',
+            status=True
+        )
+        url = reverse('dashboard:api_subsection_x-detail', kwargs={'po_no': po.po_no})
+
+        valid_item = {
+            'item': self.material.id,
+            'order_qty': '10.5000',
+            'uom': 'MT',
+            'unit_rate': '150.0000',
+            'amount': '1575.00',
+            'remarks': 'Test item'
+        }
+
+        # 1. Try to edit as normal user (session role is empty)
+        payload = {
+            'po_date': po.po_date.isoformat(),
+            'supplier': self.supplier.pk,
+            'expected_delivery_date': '2026-07-01',
+            'special_instructions': 'Updated by Maker',
+            'po_status': 'Submitted',
+            'items': [valid_item]
+        }
+        response = self.client.put(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+        # 2. Try to edit as Checker
+        session = self.client.session
+        session['role'] = 'Checker'
+        session.save()
+
+        # Update fields and approve
+        payload = {
+            'po_date': po.po_date.isoformat(),
+            'supplier': self.supplier.pk,
+            'expected_delivery_date': '2026-07-01',
+            'special_instructions': 'Approved and updated by Checker',
+            'po_status': 'Approved',
+            'items': [valid_item]
+        }
+        response = self.client.put(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify changes in DB
+        po.refresh_from_db()
+        self.assertEqual(po.po_status, 'Approved')
+        self.assertEqual(po.special_instructions, 'Approved and updated by Checker')
+
+        # 3. Clear session and try to edit Approved PO as normal user again
+        session['role'] = 'User'
+        session.save()
+
+        payload = {
+            'po_date': po.po_date.isoformat(),
+            'supplier': self.supplier.pk,
+            'special_instructions': 'Attempt by Normal User',
+            'items': [valid_item]
+        }
+        response = self.client.put(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class MaterialCreateAPIViewTests(TestCase):
@@ -1548,6 +1732,60 @@ class UserMasterTests(TestCase):
         response = self.client.delete(detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(UserMaster.objects.filter(user_id='testuser2').exists())
+
+
+class SalPurGroupAPITests(APITestCase):
+    def setUp(self):
+        from dashboard.models.sal_pur_group import SalPurGroup, TransactionType
+        
+        # Create some Transaction Types
+        self.tt_purchase = TransactionType.objects.create(
+            TransactionTypeName="Purchase",
+            TransactionType="PURC"
+        )
+        self.tt_sales = TransactionType.objects.create(
+            TransactionTypeName="Sales",
+            TransactionType="SALE"
+        )
+        
+        # Create SalPurGroups
+        self.group_pur = SalPurGroup.objects.create(
+            SalPurGroupName="Purchase Group A",
+            TransactionTypeID=self.tt_purchase,
+            is_active=True
+        )
+        self.group_sal = SalPurGroup.objects.create(
+            SalPurGroupName="Sales Group B",
+            TransactionTypeID=self.tt_sales,
+            is_active=True
+        )
+
+    def test_sal_pur_group_list_and_filters(self):
+        url = reverse('dashboard:api_sal_pur_group-list')
+        
+        # 1. Test basic listing
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        results = response.data['results'] if 'results' in response.data else response.data
+        self.assertEqual(len(results), 2)
+        
+        # 2. Test filtering by transaction_type parameter
+        response = self.client.get(url, {'transaction_type': 'Purchase'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.data['results'] if 'results' in response.data else response.data
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['SalPurGroupName'], "Purchase Group A")
+        self.assertEqual(results[0]['transaction_type_display']['name'], "Purchase")
+
+        # 3. Test generic search by transaction type name
+        response = self.client.get(url, {'search': 'Sales'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.data['results'] if 'results' in response.data else response.data
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['SalPurGroupName'], "Sales Group B")
+        self.assertEqual(results[0]['transaction_type_display']['name'], "Sales")
+
 
 
 

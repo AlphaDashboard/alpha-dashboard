@@ -28,11 +28,12 @@
             const refUrl = new URL(referrer);
             const refPath = refUrl.pathname;
             // Find if the referrer is from the same listing module prefix
-            const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/'];
+            const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/', '/grn/'];
             const currentListPath = listPaths.find(lp => currentPath.startsWith(lp));
             if (currentListPath && refPath.startsWith(currentListPath)) {
                 fromSameModule = true;
             }
+
         } catch (e) {}
     }
 
@@ -50,12 +51,13 @@
     // Automatically update the saved row focus of the parent list screen and handle back navigation url rewriting
     (function() {
         const path = window.location.pathname;
-        const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/'];
+        const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/', '/grn/'];
         
         const matchingListPath = listPaths.find(lp => path.startsWith(lp));
         
         if (matchingListPath) {
             if (path !== matchingListPath) {
+
                 // We are on a detail/edit/create page of a module
                 const match = path.match(/^\/(.*?)\/([^/]+)\/edit\/?$/);
                 if (match) {
@@ -98,10 +100,11 @@
     document.addEventListener('scroll', function(e) {
         const target = e.target;
         const currentPath = window.location.pathname;
-        const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/'];
+        const listPaths = ['/account_master/', '/voucher/', '/bank-transaction/', '/section-c/', '/subsection-b2/', '/subsection-y/', '/grn/'];
         if (!listPaths.includes(currentPath)) return;
 
         if (target === document || target === document.body || target === window) {
+
             sessionStorage.setItem(keyPrefix + currentPath + '_scroll', window.scrollY);
         } else if (target.matches && (target.matches('tbody') || target.classList.contains('erp-table-scroll'))) {
             sessionStorage.setItem(keyPrefix + currentPath + '_scroll', target.scrollTop);

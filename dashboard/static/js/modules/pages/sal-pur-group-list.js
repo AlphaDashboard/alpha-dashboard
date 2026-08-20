@@ -363,7 +363,7 @@ class SalPurGroupList {
                 return;
             }
             this.tbody.innerHTML = `
-                <tr><td colspan="8" class="text-center py-5 text-danger fw-bold fs-6">
+                <tr><td colspan="9" class="text-center py-5 text-danger fw-bold fs-6">
                     <i class="bi bi-exclamation-circle me-2"></i>Failed to load groups. Please try again.
                 </td></tr>`;
             notifications.showError('Failed to load groups');
@@ -372,7 +372,7 @@ class SalPurGroupList {
 
     renderLoading() {
         this.tbody.innerHTML = `
-            <tr><td colspan="8" class="text-center py-5 bg-white">
+            <tr><td colspan="9" class="text-center py-5 bg-white">
                 <div class="spinner-border spinner-border-sm text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
@@ -476,7 +476,7 @@ class SalPurGroupList {
         if (!groups || groups.length === 0) {
             this.tbody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center py-5 bg-white border-0">
+                    <td colspan="9" class="text-center py-5 bg-white border-0">
                         <div class="empty-state py-5 fade-in-up" style="animation-delay: 0.2s;">
                             <div class="p-4 bg-light rounded-circle d-inline-block mb-4 shadow-sm">
                                 <i class="bi bi-mailbox2 display-3 text-primary" style="opacity: 0.8;"></i>
@@ -508,6 +508,7 @@ class SalPurGroupList {
             const createdDate = g.DateCreated ? new Date(g.DateCreated).toLocaleDateString('en-GB') : '-';
             const userCreated = g.UserCreated || 'System';
             const accountName = g.account_display ? g.account_display.text : '-';
+            const transactionTypeName = g.transaction_type_display ? g.transaction_type_display.name : '-';
             const statusBadge = g.is_active
                 ? `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">Active</span>`
                 : `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">Inactive</span>`;
@@ -549,6 +550,7 @@ class SalPurGroupList {
                 <tr class="align-middle" data-row-id="${g.SalPurGroupID}">
                     <td class="ps-3 fw-bold text-primary" style="font-size:0.85rem;">#${g.SalPurGroupID}</td>
                     <td class="fw-bold text-dark" style="font-size:0.85rem;">${g.SalPurGroupName || '-'}</td>
+                    <td class="text-dark" style="font-size:0.85rem;">${transactionTypeName}</td>
                     <td class="text-center">
                         ${gwAccounting}
                     </td>

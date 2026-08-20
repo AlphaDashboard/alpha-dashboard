@@ -33,7 +33,13 @@ from .views import (
     UserMasterListView,
     UserMasterCreateView,
     LoginView,
-    LogoutView
+    LogoutView,
+    GRNListView,
+    GRNCreateView,
+    WeighmentListView,
+    WeighmentCreateView,
+    PurchaseChallanListView,
+    PurchaseChallanCreateView
 )
 from rest_framework.routers import DefaultRouter
 from .api_views import (
@@ -44,7 +50,12 @@ from .api_views import (
     SubsectionYViewSet,
     SalPurGroupViewSet,
     UserMasterViewSet,
-    TransactionTypeViewSet
+    TransactionTypeViewSet,
+    GRNViewSet,
+    GateEntryViewSet,
+    GatePassViewSet,
+    WeighmentViewSet,
+    PurchaseChallanViewSet
 )
 
 router = DefaultRouter()
@@ -56,6 +67,11 @@ router.register(r'api/subsection-y', SubsectionYViewSet, basename='api_subsectio
 router.register(r'api/sal-pur-group', SalPurGroupViewSet, basename='api_sal_pur_group')
 router.register(r'api/user-master', UserMasterViewSet, basename='api_user_master')
 router.register(r'api/transaction-type', TransactionTypeViewSet, basename='api_transaction_type')
+router.register(r'api/grn', GRNViewSet, basename='api_grn')
+router.register(r'api/gate-entry', GateEntryViewSet, basename='api_gate_entry')
+router.register(r'api/gate-pass', GatePassViewSet, basename='api_gate_pass')
+router.register(r'api/weighment', WeighmentViewSet, basename='api_weighment')
+router.register(r'api/purchase-challan', PurchaseChallanViewSet, basename='api_purchase_challan')
 
 app_name = 'dashboard'
 
@@ -112,6 +128,21 @@ urlpatterns = [
     path('sal-pur-group/', SalPurGroupListView.as_view(), name='sal_pur_group_list'),
     path('sal-pur-group/create/', SalPurGroupCreateView.as_view(), name='sal_pur_group_create'),
     path('sal-pur-group/<path:pk>/edit/', SalPurGroupCreateView.as_view(), name='sal_pur_group_edit'),
+
+    # GRN (Subsection X0) URLs
+    path('grn/', GRNListView.as_view(), name='grn_list'),
+    path('grn/create/', GRNCreateView.as_view(), name='grn_create'),
+    path('grn/<path:pk>/edit/', GRNCreateView.as_view(), name='grn_edit'),
+
+    # Weighment URLs
+    path('weighment/', WeighmentListView.as_view(), name='weighment_list'),
+    path('weighment/create/', WeighmentCreateView.as_view(), name='weighment_create'),
+    path('weighment/<path:pk>/edit/', WeighmentCreateView.as_view(), name='weighment_edit'),
+
+    # Purchase Challan URLs
+    path('purchase-challan/', PurchaseChallanListView.as_view(), name='purchase_challan_list'),
+    path('purchase-challan/create/', PurchaseChallanCreateView.as_view(), name='purchase_challan_create'),
+    path('purchase-challan/<path:pk>/edit/', PurchaseChallanCreateView.as_view(), name='purchase_challan_edit'),
 
     # User Master URLs
     path('settings/user-master/', UserMasterListView.as_view(), name='user_master_list'),

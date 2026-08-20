@@ -292,7 +292,8 @@
         voucherNo: "{{ voucher_no }}",
         isEditMode: {% if voucher_no %}true{% else %}false{% endif %},
         isViewMode: {% if is_view_mode %}true{% else %}false{% endif %},
-        poStatus:   "{{ po_status }}"
+        poStatus:   "{{ po_status }}",
+        userRole:   "{{ request.session.role }}"
     };
 </script>
 
@@ -403,10 +404,10 @@
                 <div class="col-md-2">
                     <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
                         <select id="poStatus" name="po_status" class="form-select erp-floating-input">
-                            <option value="Draft">Draft</option>
-                            <option value="Submitted">Submitted for Approval</option>
-                            <option value="RefBack">Ref. Back by Approver</option>
-                            <option value="Approved">Approved</option>
+                            <option value="Draft" {% if po_status == 'Draft' %}selected{% endif %}>Draft</option>
+                            <option value="Submitted" {% if po_status == 'Submitted' %}selected{% endif %}>Submitted for Approval</option>
+                            <option value="RefBack" {% if po_status == 'RefBack' %}selected{% endif %}>Ref. Back by Approver</option>
+                            <option value="Approved" {% if po_status == 'Approved' %}selected{% endif %}>Approved</option>
                         </select>
                         <label for="poStatus" class="erp-floating-label">PO Status</label>
                     </div>
@@ -689,7 +690,7 @@
             <button type="button" class="btn btn-secondary px-4 py-2" id="saveDraftBtn"
                     style="border-radius:6px;font-weight:600;">Save Draft</button>
             <button type="button" class="btn btn-success px-4 py-2" id="submitApprovalBtn"
-                    style="border-radius:6px;font-weight:600;">Submit for Approval</button>
+                    style="border-radius:6px;font-weight:600;">Save and Submitted</button>
             <button type="submit" class="btn btn-primary px-4 py-2" id="generatePOBtn"
                     style="border-radius:6px;font-weight:600;">Generate PO</button>
         </div>

@@ -439,10 +439,10 @@ class PurchaseOrderList {
 
         // PO workflow locking rules
         // Submitted  → cannot Edit, cannot Mark Deleted
-        // Approved   → cannot Edit, CAN Mark Deleted (soft)
+        // Approved   → cannot Edit, cannot Mark Deleted
         // Draft/RefBack → full access
         const EDIT_LOCKED     = ['Submitted', 'Approved'];
-        const DELETE_LOCKED   = ['Submitted'];
+        const DELETE_LOCKED   = ['Submitted', 'Approved'];
 
         let rowsHtml = purchaseOrders.map(t => {
             const isActive    = !!t.status;
@@ -455,7 +455,9 @@ class PurchaseOrderList {
             const poStatusBadge = PO_STATUS_BADGE[poStatus] ||
                 `<span class="badge" style="font-size:0.72rem;background:#f3f4f6;color:#374151;border:1px solid #d1d5db;border-radius:4px;padding:3px 8px;">${poStatus}</span>`;
 
-            const editLocked   = EDIT_LOCKED.includes(poStatus);
+            const userRole = window.APP_CONFIG?.userRole;
+            const isApprover = (userRole === 'Checker' || userRole === 'Admin');
+            const editLocked   = EDIT_LOCKED.includes(poStatus) && !isApprover;
             const deleteLocked = DELETE_LOCKED.includes(poStatus);
 
             let actionItemsHtml = `
@@ -476,7 +478,7 @@ class PurchaseOrderList {
                     </li>`;
                 }
 
-                // Mark Deleted — blocked for Submitted POs only
+                // Mark Deleted — blocked for Submitted and Approved POs
                 if (!deleteLocked) {
                     actionItemsHtml += `
                     <li>
@@ -489,9 +491,10 @@ class PurchaseOrderList {
                     </li>`;
                 } else {
                     // Show a disabled/greyed-out item explaining why
+                    const lockReason = poStatus === 'Approved' ? 'PO is Approved' : 'PO is Submitted for Approval';
                     actionItemsHtml += `
                     <li>
-                        <span class="dropdown-item text-muted" style="cursor:not-allowed;opacity:0.55;" title="Cannot delete: PO is Submitted for Approval">
+                        <span class="dropdown-item text-muted" style="cursor:not-allowed;opacity:0.55;" title="Cannot delete: ${lockReason}">
                             <i class="bi bi-lock me-2"></i> Mark Deleted (Locked)
                         </span>
                     </li>`;
@@ -505,7 +508,10 @@ class PurchaseOrderList {
                             type="button">
                             <i class="bi bi-arrow-counterclockwise me-2"></i> Restore
                         </button>
-                    </li>
+                    </li>`;
+
+                if (!deleteLocked) {
+                    actionItemsHtml += `
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <button class="dropdown-item text-danger delete-btn"
@@ -514,6 +520,16 @@ class PurchaseOrderList {
                             <i class="bi bi-trash3 me-2"></i> Delete
                         </button>
                     </li>`;
+                } else {
+                    const lockReason = poStatus === 'Approved' ? 'PO is Approved' : 'PO is Submitted for Approval';
+                    actionItemsHtml += `
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <span class="dropdown-item text-muted" style="cursor:not-allowed;opacity:0.55;" title="Cannot delete: ${lockReason}">
+                            <i class="bi bi-lock me-2"></i> Delete (Locked)
+                        </span>
+                    </li>`;
+                }
             }
 
             return `

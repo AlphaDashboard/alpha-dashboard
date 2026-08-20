@@ -55,6 +55,9 @@ class PurchaseOrderForm {
         if (this.config.isEditMode && this.config.voucherNo) {
             await this.loadData(this.config.voucherNo);
         } else {
+            if (this.poStatusSelect) {
+                this.poStatusSelect.value = 'Draft';
+            }
             const poDateInput = domUtils.getElement('#poDate');
             if (poDateInput) {
                 const today = new Date().toISOString().split('T')[0];
@@ -543,23 +546,28 @@ class PurchaseOrderForm {
         const LOCKED_STATUSES = ['Submitted', 'Approved'];
         if (!LOCKED_STATUSES.includes(poStatus)) return; // Draft / RefBack — editable
 
-        // Disable all form inputs and action buttons
-        if (this.form) {
-            this.form.querySelectorAll('input, select, textarea').forEach(el => {
-                el.disabled = true;
-            });
-        }
-        if (this.tbody) {
-            this.tbody.querySelectorAll('input, select, textarea, button').forEach(el => {
-                el.disabled = true;
-            });
-        }
-        const actionBtnContainer = domUtils.getElement('#actionButtonsContainer');
-        if (actionBtnContainer) {
-            actionBtnContainer.style.setProperty('display', 'none', 'important');
+        const userRole = window.APP_CONFIG?.userRole;
+        const isApprover = (userRole === 'Checker' || userRole === 'Admin');
+
+        if (!isApprover) {
+            // Disable all form inputs and action buttons for normal users
+            if (this.form) {
+                this.form.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.disabled = true;
+                });
+            }
+            if (this.tbody) {
+                this.tbody.querySelectorAll('input, select, textarea, button').forEach(el => {
+                    el.disabled = true;
+                });
+            }
+            const actionBtnContainer = domUtils.getElement('#actionButtonsContainer');
+            if (actionBtnContainer) {
+                actionBtnContainer.style.setProperty('display', 'none', 'important');
+            }
         }
 
-        // Show the locked banner
+        // Show the banner (with adapted text for Checker/Admin)
         const banner     = domUtils.getElement('#poLockedBanner');
         const bannerText = domUtils.getElement('#poLockedBannerText');
         if (banner) {
@@ -568,14 +576,26 @@ class PurchaseOrderForm {
                 banner.style.borderLeftColor = '#f59e0b';
                 banner.style.background      = '#fffbeb';
                 banner.style.color           = '#92400e';
-                if (bannerText) bannerText.textContent =
-                    'This Purchase Order has been Submitted for Approval. Editing is locked until it is Ref. Back or rejected.';
+                if (bannerText) {
+                    if (isApprover) {
+                        bannerText.textContent = `This Purchase Order is Submitted for Approval. As ${userRole}, you can edit and change its status.`;
+                    } else {
+                        bannerText.textContent =
+                            'This Purchase Order has been Submitted for Approval. Editing is locked until it is Ref. Back or rejected.';
+                    }
+                }
             } else if (poStatus === 'Approved') {
                 banner.style.borderLeftColor = '#10b981';
                 banner.style.background      = '#d1fae5';
                 banner.style.color           = '#065f46';
-                if (bannerText) bannerText.textContent =
-                    'This Purchase Order is Approved. Editing is locked. You may only soft-delete it from the list view.';
+                if (bannerText) {
+                    if (isApprover) {
+                        bannerText.textContent = `This Purchase Order is Approved. As ${userRole}, you can edit and change its status.`;
+                    } else {
+                        bannerText.textContent =
+                            'This Purchase Order is Approved. Editing and deletion are locked.';
+                    }
+                }
             }
         }
     }

@@ -706,25 +706,23 @@ class SalPurGroupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         transactions_data = validated_data.pop('transactions', [])
-        group = SalPurGroup.objects.create(**validated_data)
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
 
-        for tx_data in transactions_data:
-            SalPurGroupTran.objects.create(SalPurGroupID=group, **tx_data)
-
-        return group
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        group_id = execute_sp_sal_pur_group('INSERT', validated_data, transactions_data, username)
+        return SalPurGroup.objects.get(SalPurGroupID=group_id)
 
     def update(self, instance, validated_data):
         transactions_data = validated_data.pop('transactions', [])
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
 
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+        validated_data['SalPurGroupID'] = instance.SalPurGroupID
 
-        if transactions_data:
-            instance.transactions.all().delete()
-            for tx_data in transactions_data:
-                SalPurGroupTran.objects.create(SalPurGroupID=instance, **tx_data)
-
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        execute_sp_sal_pur_group('UPDATE', validated_data, transactions_data, username)
+        instance.refresh_from_db()
         return instance
 
 
@@ -735,3 +733,428 @@ class UserMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMaster
         fields = '__all__'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GRN SERIALIZERS
+# ─────────────────────────────────────────────────────────────────────────────
+from .models.grn import GRN, GRNTranMat, GRNTranTest, GRNUser, ApprovalStages
+
+
+class GRNTranMatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GRNTranMat
+        fields = '__all__'
+
+
+class GRNTranTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GRNTranTest
+        fields = '__all__'
+
+
+class GRNUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for tblGRN_User — audit trail of who performed each
+    workflow action (Draft / Submit / Refer Back / Approve / Release).
+    """
+    class Meta:
+        model = GRNUser
+        fields = ['ID', 'GrnNo', 'GrnDate', 'User', 'actiondate', 'actionid']
+
+
+class GRNSerializer(serializers.ModelSerializer):
+    materials     = GRNTranMatSerializer(many=True, read_only=True)
+    tests         = GRNTranTestSerializer(many=True, read_only=True)
+    # Returns the list of audit log rows from tblGRN_User for this GRN
+    approval_log  = serializers.SerializerMethodField()
+
+    def get_approval_log(self, obj):
+        """Fetch audit rows from tblGRN_User matching this GRN's GrnNo."""
+        rows = GRNUser.objects.filter(GrnNo=obj.GrnNo).order_by('actionid')
+        return GRNUserSerializer(rows, many=True).data
+
+    class Meta:
+        model = GRN
+        fields = '__all__'
+
+    def create(self, validated_data):
+        mat_data = self.context.get('request').data.get('materials', [])
+        test_data = self.context.get('request').data.get('tests', [])
+        request = self.context.get('request')
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+
+        from dashboard.services.grn_sp_helper import execute_sp_grn
+        grn_no = execute_sp_grn('INSERT', validated_data, mat_data, test_data, username)
+        return GRN.objects.get(GrnNo=grn_no)
+
+    def update(self, instance, validated_data):
+        mat_data = self.context.get('request').data.get('materials', [])
+        test_data = self.context.get('request').data.get('tests', [])
+        request = self.context.get('request')
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+
+        validated_data['GrnNo'] = instance.GrnNo
+        from dashboard.services.grn_sp_helper import execute_sp_grn
+        execute_sp_grn('UPDATE', validated_data, mat_data, test_data, username)
+        instance.refresh_from_db()
+        return instance
+
+
+
+from .models.gate_entry import GateEntry, GatePass, GatePassTran
+
+class GateEntrySerializer(serializers.ModelSerializer):
+    entry_datetime = SafeDateTimeField(required=False)
+
+    class Meta:
+        model = GateEntry
+        fields = '__all__'
+
+
+class GatePassTranSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GatePassTran
+        fields = '__all__'
+
+
+class GatePassSerializer(serializers.ModelSerializer):
+    items = GatePassTranSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GatePass
+        fields = '__all__'
+
+
+# ──────────────────────────────────────────────────────────────────
+# Weighment Serializers
+# ──────────────────────────────────────────────────────────────────
+from .models.weighment import Weighment, WeighmentTran
+
+
+class WeighmentTranSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeighmentTran
+        fields = '__all__'
+
+
+class WeighmentSerializer(serializers.ModelSerializer):
+    WeighmentSlipNo = serializers.CharField(required=False, allow_blank=True)
+    materials = WeighmentTranSerializer(
+        source='weighmenttran_set', many=True, read_only=True
+    )
+
+    class Meta:
+        model = Weighment
+        fields = '__all__'
+
+    def _get_username(self):
+        request = self.context.get('request')
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                return request.session['user_name']
+            if request.user and request.user.username:
+                return request.user.username
+        return 'system'
+
+    def create(self, validated_data):
+        slip_no = validated_data.get('WeighmentSlipNo')
+        if not slip_no:
+            import datetime
+            today_str = datetime.date.today().strftime('%Y%m%d')
+            prefix = f"WS-{today_str}-"
+            try:
+                # Query Weighment table to find the latest slip no for today
+                max_slip = Weighment.objects.filter(WeighmentSlipNo__startswith=prefix).order_by('-WeighmentSlipNo').first()
+                if max_slip:
+                    try:
+                        last_seq = int(max_slip.WeighmentSlipNo.split('-')[-1])
+                        seq = last_seq + 1
+                    except ValueError:
+                        seq = 1
+                else:
+                    seq = 1
+            except Exception:
+                seq = 1
+            validated_data['WeighmentSlipNo'] = f"{prefix}{seq:04d}"
+
+    def get_transaction_type_display(self, obj):
+        if obj.TransactionTypeID:
+            tt = obj.TransactionTypeID
+            return {
+                'id': tt.TransactionTypeID,
+                'name': tt.TransactionTypeName,
+                'code': tt.TransactionType
+            }
+        return None
+
+    def create(self, validated_data):
+        transactions_data = validated_data.pop('transactions', [])
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
+
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        group_id = execute_sp_sal_pur_group('INSERT', validated_data, transactions_data, username)
+        return SalPurGroup.objects.get(SalPurGroupID=group_id)
+
+    def update(self, instance, validated_data):
+        transactions_data = validated_data.pop('transactions', [])
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
+
+        validated_data['SalPurGroupID'] = instance.SalPurGroupID
+
+        from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
+        execute_sp_sal_pur_group('UPDATE', validated_data, transactions_data, username)
+        instance.refresh_from_db()
+        return instance
+
+
+from .models.user_master import UserMaster
+
+
+class UserMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMaster
+        fields = '__all__'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GRN SERIALIZERS
+# ─────────────────────────────────────────────────────────────────────────────
+from .models.grn import GRN, GRNTranMat, GRNTranTest, GRNUser, ApprovalStages
+
+
+class GRNTranMatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GRNTranMat
+        fields = '__all__'
+
+
+class GRNTranTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GRNTranTest
+        fields = '__all__'
+
+
+class GRNUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for tblGRN_User — audit trail of who performed each
+    workflow action (Draft / Submit / Refer Back / Approve / Release).
+    """
+    class Meta:
+        model = GRNUser
+        fields = ['ID', 'GrnNo', 'GrnDate', 'User', 'actiondate', 'actionid']
+
+
+class GRNSerializer(serializers.ModelSerializer):
+    materials     = GRNTranMatSerializer(many=True, read_only=True)
+    tests         = GRNTranTestSerializer(many=True, read_only=True)
+    # Returns the list of audit log rows from tblGRN_User for this GRN
+    approval_log  = serializers.SerializerMethodField()
+
+    def get_approval_log(self, obj):
+        """Fetch audit rows from tblGRN_User matching this GRN's GrnNo."""
+        rows = GRNUser.objects.filter(GrnNo=obj.GrnNo).order_by('actionid')
+        return GRNUserSerializer(rows, many=True).data
+
+    class Meta:
+        model = GRN
+        fields = '__all__'
+
+    def create(self, validated_data):
+        mat_data = self.context.get('request').data.get('materials', [])
+        test_data = self.context.get('request').data.get('tests', [])
+        request = self.context.get('request')
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+
+        from dashboard.services.grn_sp_helper import execute_sp_grn
+        grn_no = execute_sp_grn('INSERT', validated_data, mat_data, test_data, username)
+        return GRN.objects.get(GrnNo=grn_no)
+
+    def update(self, instance, validated_data):
+        mat_data = self.context.get('request').data.get('materials', [])
+        test_data = self.context.get('request').data.get('tests', [])
+        request = self.context.get('request')
+        username = 'system'
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                username = request.session['user_name']
+            elif request.user and request.user.username:
+                username = request.user.username
+
+        validated_data['GrnNo'] = instance.GrnNo
+        from dashboard.services.grn_sp_helper import execute_sp_grn
+        execute_sp_grn('UPDATE', validated_data, mat_data, test_data, username)
+        instance.refresh_from_db()
+        return instance
+
+
+
+from .models.gate_entry import GateEntry, GatePass, GatePassTran
+
+class GateEntrySerializer(serializers.ModelSerializer):
+    entry_datetime = SafeDateTimeField(required=False)
+
+    class Meta:
+        model = GateEntry
+        fields = '__all__'
+
+
+class GatePassTranSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GatePassTran
+        fields = '__all__'
+
+
+class GatePassSerializer(serializers.ModelSerializer):
+    items = GatePassTranSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GatePass
+        fields = '__all__'
+
+
+# ──────────────────────────────────────────────────────────────────
+# Weighment Serializers
+# ──────────────────────────────────────────────────────────────────
+from .models.weighment import Weighment, WeighmentTran
+
+
+class WeighmentTranSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeighmentTran
+        fields = '__all__'
+
+
+class WeighmentSerializer(serializers.ModelSerializer):
+    WeighmentSlipNo = serializers.CharField(required=False, allow_blank=True)
+    materials = WeighmentTranSerializer(
+        source='weighmenttran_set', many=True, read_only=True
+    )
+
+    class Meta:
+        model = Weighment
+        fields = '__all__'
+
+    def _get_username(self):
+        request = self.context.get('request')
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                return request.session['user_name']
+            if request.user and request.user.username:
+                return request.user.username
+        return 'system'
+
+    def create(self, validated_data):
+        slip_no = validated_data.get('WeighmentSlipNo')
+        if not slip_no:
+            import datetime
+            today_str = datetime.date.today().strftime('%Y%m%d')
+            prefix = f"WS-{today_str}-"
+            try:
+                # Query Weighment table to find the latest slip no for today
+                max_slip = Weighment.objects.filter(WeighmentSlipNo__startswith=prefix).order_by('-WeighmentSlipNo').first()
+                if max_slip:
+                    try:
+                        last_seq = int(max_slip.WeighmentSlipNo.split('-')[-1])
+                        seq = last_seq + 1
+                    except ValueError:
+                        seq = 1
+                else:
+                    seq = 1
+            except Exception:
+                seq = 1
+            validated_data['WeighmentSlipNo'] = f"{prefix}{seq:04d}"
+
+        tran_data = self.context.get('request').data.get('materials', [])
+        from dashboard.services.weighment_sp_helper import execute_sp_weighment
+        slip_no = execute_sp_weighment('INSERT', validated_data, tran_data, self._get_username())
+        return Weighment.objects.get(WeighmentSlipNo=slip_no)
+
+    def update(self, instance, validated_data):
+        tran_data = self.context.get('request').data.get('materials', [])
+        validated_data['WeighmentSlipNo'] = instance.WeighmentSlipNo
+        from dashboard.services.weighment_sp_helper import execute_sp_weighment
+        execute_sp_weighment('UPDATE', validated_data, tran_data, self._get_username())
+        instance.refresh_from_db()
+        return instance
+
+
+# ──────────────────────────────────────────────────────────────────
+# Purchase Challan Serializers
+# ──────────────────────────────────────────────────────────────────
+from .models.purchase_challan import PurchaseChallan, PurchaseChallanTran
+
+
+class PurchaseChallanTranSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurchaseChallanTran
+        fields = '__all__'
+
+
+class PurchaseChallanSerializer(serializers.ModelSerializer):
+    ChallanNo = serializers.CharField(required=False, allow_blank=True)
+    PODate = serializers.DateField(required=False, allow_null=True)
+    ChallanDate = serializers.DateField(required=False, allow_null=True)
+    materials = PurchaseChallanTranSerializer(
+        source='purchasechallantran_set', many=True, read_only=True
+    )
+
+    class Meta:
+        model = PurchaseChallan
+        fields = '__all__'
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict):
+            data = data.copy()
+            for date_field in ['PODate', 'ChallanDate', 'GatePassDate', 'WeighmentDate']:
+                if date_field in data and (data[date_field] == '' or data[date_field] is None):
+                    data[date_field] = None
+        return super().to_internal_value(data)
+
+    def _get_username(self):
+        request = self.context.get('request')
+        if request:
+            if hasattr(request, 'session') and request.session.get('user_name'):
+                return request.session['user_name']
+            if request.user and request.user.username:
+                return request.user.username
+        return 'system'
+
+    def create(self, validated_data):
+        tran_data = self.context.get('request').data.get('materials', [])
+        from dashboard.services.purchase_challan_sp_helper import execute_sp_purchase_challan
+        challan_no = execute_sp_purchase_challan('INSERT', validated_data, tran_data, self._get_username())
+        try:
+            return PurchaseChallan.objects.get(ChallanNo=challan_no)
+        except PurchaseChallan.DoesNotExist:
+            obj = PurchaseChallan()
+            obj.ChallanNo = challan_no
+            return obj
+
+    def update(self, instance, validated_data):
+        tran_data = self.context.get('request').data.get('materials', [])
+        validated_data['ChallanNo'] = instance.ChallanNo
+        from dashboard.services.purchase_challan_sp_helper import execute_sp_purchase_challan
+        execute_sp_purchase_challan('UPDATE', validated_data, tran_data, self._get_username())
+        try:
+            instance.refresh_from_db()
+        except Exception:
+            pass
+        return instance

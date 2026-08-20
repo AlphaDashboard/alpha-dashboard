@@ -2,7 +2,6 @@
 
 from django.db import migrations
 
-
 def create_sp_manage_transaction(apps, schema_editor):
     if schema_editor.connection.vendor == 'postgresql':
         with schema_editor.connection.cursor() as cursor:
