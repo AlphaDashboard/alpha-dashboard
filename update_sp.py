@@ -78,14 +78,19 @@ CREATE TABLE IF NOT EXISTS tblGatePass (
 """
 
 postgresql_sql = """
--- 1. Add GrossWeight column to tblsalepurchasechallans_tran if not exists
+-- 1. Add GrossWeight column to tblsalepurchasechallans_tran if table and column not exists
 DO $$ 
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'tblsalepurchasechallans_tran' AND column_name = 'GrossWeight'
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'tblsalepurchasechallans_tran'
     ) THEN
-        ALTER TABLE public.tblSalePurchaseChallans_Tran ADD COLUMN "GrossWeight" NUMERIC(18,2) DEFAULT 0;
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'tblsalepurchasechallans_tran' AND column_name = 'GrossWeight'
+        ) THEN
+            ALTER TABLE public.tblSalePurchaseChallans_Tran ADD COLUMN "GrossWeight" NUMERIC(18,2) DEFAULT 0;
+        END IF;
     END IF;
 END $$;
 
