@@ -105,7 +105,8 @@ CREATE OR REPLACE FUNCTION public.sp_manage_purchase_challan(
     p_po_no character varying DEFAULT NULL::character varying, 
     p_po_date date DEFAULT NULL::date, 
     p_username character varying DEFAULT 'system'::character varying, 
-    p_tran_items text DEFAULT '[]'::text
+    p_tran_items text DEFAULT '[]'::text,
+    p_notes character varying DEFAULT NULL::character varying
 )
  RETURNS character varying
  LANGUAGE plpgsql
@@ -152,12 +153,12 @@ BEGIN
             "ChallanNo", "ChallanDate", "TranType", "GPNo", "StatusId",
             "PONO", "PODate", "GatePassDate", "VehicleNo", "DriverName",
             "WeighmentSlipNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight",
-            "draftedby", "DraftedDate"
+            "draftedby", "DraftedDate", "Notes"
         ) VALUES (
             v_challan_no, p_challan_date, p_tran_type, p_gp_no, p_status_id,
             p_po_no, p_po_date, v_gp_date, v_veh_no, v_dr_name,
             v_weigh_no, v_weigh_date, v_bags, v_gross, v_tare, v_net,
-            p_username, NOW()
+            p_username, NOW(), p_notes
         );
 
         FOR v_item IN SELECT * FROM JSONB_ARRAY_ELEMENTS(v_items)
@@ -195,6 +196,7 @@ BEGIN
             "GrossWeight"     = v_gross,
             "TareWeight"      = v_tare,
             "NetWeight"       = v_net,
+            "Notes"           = p_notes,
             "submittedby"     = CASE WHEN p_status_id = 2 AND "submittedby" IS NULL THEN p_username ELSE "submittedby" END,
             "SubmissionDate"  = CASE WHEN p_status_id = 2 AND "SubmissionDate" IS NULL THEN NOW() ELSE "SubmissionDate" END,
             "approvedby"      = CASE WHEN p_status_id = 4 THEN p_username ELSE "approvedby" END,

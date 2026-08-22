@@ -12,10 +12,10 @@
     .erp-container-flex {
         display: flex;
         flex-direction: column;
-        height: calc(100vh - 75px);
+        height: calc(100vh - 85px);
         overflow: hidden;
         gap: 5px;
-        padding-bottom: 0px !important;
+        padding-bottom: 4px !important;
     }
 
     /* ── Middle section: header-card + table-card stacked ── */
@@ -34,9 +34,12 @@
         display: flex;
         flex-direction: column;
         min-height: 0;
-        overflow: hidden;
+        overflow: hidden !important;
         margin-bottom: 0 !important;
         padding: 0 !important;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
     }
     .erp-card-table-flex > .card-header { flex-shrink: 0; }
     .erp-card-table-flex > .card-body {
@@ -44,6 +47,7 @@
         min-height: 0;
         display: flex;
         flex-direction: column;
+        overflow: hidden !important;
         padding: 0 !important;
     }
     .erp-card-table-flex .tab-content {
@@ -51,18 +55,39 @@
         min-height: 0;
         display: flex;
         flex-direction: column;
+        overflow: hidden !important;
     }
-    .erp-card-table-flex .tab-pane.show.active {
+    .erp-card-table-flex .tab-pane {
         flex: 1 1 0%;
         min-height: 0;
         display: flex !important;
         flex-direction: column;
+        overflow: hidden !important;
     }
     .erp-card-table-flex .erp-table-wrapper {
         flex: 1 1 0%;
-        min-height: 120px;
-        overflow-y: auto;
-        overflow-x: auto;
+        min-height: 0;
+        max-height: 202px; /* Exactly 5 rows (34px each) + header (32px) */
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        position: relative;
+        background: #ffffff;
+    }
+
+    /* ── Custom Smooth Scrollbars ── */
+    .erp-table-wrapper::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
 
     /* ── Typography ── */
@@ -122,24 +147,103 @@
     .form-control::placeholder { color: #94a3b8 !important; font-size: 11px !important; }
 
     /* ── ERP Data Table ── */
-    .erp-data-table { border-collapse: collapse; width: 100%; border-radius: 4px; border: 1px solid #cbd5e1 !important; }
+    .erp-data-table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+        border-radius: 0;
+        border: none !important;
+        margin-bottom: 0 !important;
+    }
     .erp-data-table thead th {
-        background-color: #536479 !important; color: #ffffff !important; font-size: 11px;
-        font-weight: 600; padding: 8px !important; text-transform: uppercase;
-        border: 1px solid #cbd5e1 !important; letter-spacing: 0.5px; vertical-align: middle !important;
+        background-color: #536479 !important;
+        color: #ffffff !important;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 8px !important;
+        text-transform: uppercase;
+        border: 1px solid #475569 !important;
+        border-top: none !important;
+        letter-spacing: 0.5px;
+        vertical-align: middle !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
     }
     .erp-data-table tbody td {
-        padding: 4px 6px !important; vertical-align: middle;
-        border: 1px solid #cbd5e1 !important; background-color: #ffffff;
+        padding: 2px 6px !important;
+        vertical-align: middle;
+        border: 1px solid #cbd5e1 !important;
+        background-color: #ffffff;
+        height: 32px !important;
     }
     .erp-data-table .form-control, .erp-data-table .form-select {
-        height: 28px !important; padding: 2px 6px !important; font-size: 12px !important; border-radius: 3px !important;
+        height: 28px !important;
+        padding: 2px 6px !important;
+        font-size: 12px !important;
+        border-radius: 3px !important;
     }
-    .erp-table-footer-row { background-color: #536479; color: #ffffff; }
-    .erp-table-footer-row td {
-        background-color: #536479 !important; color: #ffffff !important;
-        font-weight: bold; font-size: 11px !important; border-color: #cbd5e1 !important;
-        padding: 8px !important; vertical-align: middle !important;
+
+    /* ── Pinned Bottom Footer Bar ── */
+    .erp-table-footer-bar {
+        flex-shrink: 0;
+        height: 38px;
+        min-height: 38px;
+        max-height: 38px;
+        background-color: #536479;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        border-top: 2px solid #475569;
+        z-index: 15;
+        box-sizing: border-box;
+    }
+    .erp-footer-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #ffffff;
+    }
+    .erp-footer-item {
+        font-size: 11.5px;
+        color: #cbd5e1;
+        font-weight: 500;
+    }
+    .erp-footer-item strong {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #ffffff !important;
+        margin-left: 4px;
+    }
+
+    .erp-btn-save {
+        height: 28px !important;
+        line-height: 28px !important;
+        padding: 0 16px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+        border-radius: 4px !important;
+        background-color: #10b981 !important;
+        border: 1px solid #059669 !important;
+        color: #ffffff !important;
+        cursor: pointer;
+        gap: 6px;
+        white-space: nowrap !important;
+        transition: all 0.15s ease;
+    }
+    .erp-btn-save:hover {
+        background-color: #059669 !important;
+        border-color: #047857 !important;
+    }
+    .erp-btn-save:disabled {
+        background-color: #93c5fd !important;
+        border-color: #93c5fd !important;
+        cursor: not-allowed;
     }
 
     /* ── Row gutter ── */
@@ -157,10 +261,6 @@
     .erp-btn-add:hover  { background-color: #dbeafe; }
     .erp-btn-delete { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
     .erp-btn-delete:hover { background-color: #fee2e2; }
-
-    /* ── Sticky thead / tfoot ── */
-    .erp-data-table thead th { position: sticky !important; top: 0 !important; z-index: 10 !important; box-shadow: inset 0 -1px 0 #cbd5e1; }
-    .erp-data-table tfoot td { position: sticky !important; bottom: 0 !important; z-index: 10 !important; }
 
     /* Tab Styling */
     .nav-tabs { border-bottom: 1px solid #e2e8f0; }
@@ -278,9 +378,6 @@
                 <i class="bi bi-arrow-left me-1"></i>Back
             </a>
             {% if not is_view_mode %}
-            <button class="btn btn-primary btn-sm save-btn" style="height:28px; font-size:11px; padding:2px 14px; font-weight:600;">
-                <i class="bi bi-floppy me-1"></i>Save
-            </button>
             {% endif %}
         </div>
     </div>
@@ -472,10 +569,10 @@
             </div>
 
             <div class="card-body">
-                <div class="tab-content h-100" id="challanTabContent">
+                <div class="tab-content" id="challanTabContent">
 
                     <!-- ── Materials Tab ── -->
-                    <div class="tab-pane fade show active h-100" id="panel-materials" role="tabpanel">
+                    <div class="tab-pane fade show active" id="panel-materials" role="tabpanel">
                         <div class="erp-table-wrapper">
                             <table class="table table-bordered mb-0 erp-data-table">
                                 <thead>
@@ -492,30 +589,33 @@
                                 <tbody id="matTableBody">
                                     <!-- Rows injected by purchase-challan-form.js -->
                                 </tbody>
-                                <tfoot>
-                                    <tr class="erp-table-footer-row">
-                                        <td colspan="2" class="text-end pe-2">TOTALS</td>
-                                        <td class="text-end" id="totalBags">0.00</td>
-                                        <td class="text-end" id="totalGrossWt">0.00</td>
-                                        <td class="text-end" id="totalNetWt">0.00</td>
-                                        <td colspan="2"></td>
-                                    </tr>
-                                </tfoot>
                             </table>
+                        </div>
+
+                        <!-- ── Pinned Bottom Footer Bar (Subsection B Style) ── -->
+                        <div class="erp-table-footer-bar">
+                            <div class="d-flex align-items-center justify-content-between w-100 px-3">
+                                <div class="d-flex align-items-center gap-4">
+                                    <span class="erp-footer-label">TOTALS</span>
+                                    <div class="d-flex align-items-center gap-4">
+                                        <span class="erp-footer-item">Bags: <strong id="totalBags">0.00</strong></span>
+                                        <span class="erp-footer-item">Gross Wt: <strong id="totalGrossWt">0.00</strong></span>
+                                        <span class="erp-footer-item">Net Wt: <strong id="totalNetWt">0.00</strong></span>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if not is_view_mode %}
+                                    <button type="button" class="erp-btn-save shadow-sm save-btn">
+                                        <i class="bi bi-floppy"></i> Save Record
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div><!-- /Materials Tab -->
 
                 </div>
             </div>
-
-            <!-- Inline Action Bar — attached below item tabs -->
-            {% if not is_view_mode %}
-            <div class="inline-action-bar">
-                <button class="btn btn-primary btn-sm save-btn" style="height:28px; font-size:11px; padding:2px 16px; font-weight:600;">
-                    <i class="bi bi-floppy me-1"></i>Save Record
-                </button>
-            </div>
-            {% endif %}
         </div><!-- /TABLE CARD -->
 
     </div><!-- /erp-form-flex -->

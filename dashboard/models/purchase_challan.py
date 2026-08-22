@@ -69,6 +69,7 @@ class PurchaseChallan(models.Model):
     SubmissionDate = models.DateTimeField(null=True, blank=True, db_column='SubmissionDate')
     approvedby = models.CharField(max_length=100, null=True, blank=True, db_column='approvedby')
     ApprovalDate = models.DateTimeField(null=True, blank=True, db_column='ApprovalDate')
+    Notes = models.CharField(max_length=1000, null=True, blank=True, db_column='Notes')
 
     class Meta:
         db_table = 'tblsalepurchasechallans'

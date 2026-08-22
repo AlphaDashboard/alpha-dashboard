@@ -29,6 +29,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
     status_val    = _val(header_data.get('StatusId')) or 1
     po_no         = _val(header_data.get('PONO'))
     po_date       = _val(header_data.get('PODate'))
+    notes         = _val(header_data.get('Notes'))
 
     # Normalize material rows
     normalized_tran = []
@@ -56,7 +57,8 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
                     p_po_no        := %s::varchar,
                     p_po_date      := %s::date,
                     p_username     := %s::varchar,
-                    p_tran_items   := %s::text
+                    p_tran_items   := %s::text,
+                    p_notes        := %s::varchar
                 )
                 """,
                 [
@@ -70,6 +72,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
                     po_date,
                     username,
                     json.dumps(normalized_tran),
+                    notes,
                 ]
             )
             row = cursor.fetchone()
@@ -90,6 +93,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
             StatusId=status_val,
             PONO=po_no,
             PODate=po_date,
+            Notes=notes,
             draftedby=username,
             DraftedDate=timezone.now(),
         )
@@ -107,6 +111,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
         pc.StatusId     = status_val
         pc.PONO         = po_no
         pc.PODate       = po_date
+        pc.Notes        = notes
         if status_val == 2 and not pc.submittedby:
             pc.submittedby   = username
             pc.SubmissionDate = timezone.now()

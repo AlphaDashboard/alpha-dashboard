@@ -1,4 +1,4 @@
-import { apiClient } from '../api/client.js?v=147';
+import { apiClient } from '../api/client.js?v=148';
 import { notifications } from '../utils/notifications.js?v=147';
 
 // ─── Module state ────────────────────────────────────────────────────────────
