@@ -78,9 +78,90 @@ CREATE TABLE IF NOT EXISTS tblGatePass (
 """
 
 postgresql_sql = """
--- 1. Add GrossWeight column to tblsalepurchasechallans_tran if table and column not exists
+-- 1. Create tables if not exist on PostgreSQL
+CREATE TABLE IF NOT EXISTS public.tblUserMaster (
+    user_id VARCHAR(50) PRIMARY KEY,
+    user_name VARCHAR(150) NOT NULL,
+    role VARCHAR(20) DEFAULT 'User',
+    empid VARCHAR(50) UNIQUE,
+    is_active BOOLEAN DEFAULT TRUE,
+    user_created VARCHAR(50),
+    date_created TIMESTAMP,
+    user_modified VARCHAR(50),
+    date_modified TIMESTAMP
+);
+
+INSERT INTO public.tblUserMaster (user_id, user_name, role, empid, is_active, user_created)
+VALUES 
+('maker', 'Maker User', 'Maker', 'EMP-MAKER', TRUE, 'system'),
+('checker', 'Checker User', 'Checker', 'EMP-CHECKER', TRUE, 'system'),
+('admin', 'Admin User', 'Admin', 'EMP-ADMIN', TRUE, 'system')
+ON CONFLICT (user_id) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS public.tblSalePurchaseChallans (
+    "ChallanNo" VARCHAR(50) PRIMARY KEY,
+    "ChallanDate" DATE,
+    "TranType" VARCHAR(20) DEFAULT 'RMPCH',
+    "GPNo" INTEGER,
+    "StatusId" INTEGER DEFAULT 1,
+    "PONO" VARCHAR(50),
+    "PODate" DATE,
+    "GatePassDate" DATE,
+    "VehicleNo" VARCHAR(50),
+    "DriverName" VARCHAR(100),
+    "WeighmentSlipNo" VARCHAR(50),
+    "WeighmentDate" DATE,
+    "Bags" NUMERIC(18,2) DEFAULT 0,
+    "GrossWeight" NUMERIC(18,2) DEFAULT 0,
+    "TareWeight" NUMERIC(18,2) DEFAULT 0,
+    "NetWeight" NUMERIC(18,2) DEFAULT 0,
+    "draftedby" VARCHAR(100),
+    "DraftedDate" TIMESTAMP,
+    "submittedby" VARCHAR(100),
+    "SubmissionDate" TIMESTAMP,
+    "approvedby" VARCHAR(100),
+    "ApprovalDate" TIMESTAMP,
+    "Notes" VARCHAR(1000)
+);
+
+CREATE TABLE IF NOT EXISTS public.tblSalePurchaseChallans_Tran (
+    "ID" SERIAL PRIMARY KEY,
+    "ChallanNo" VARCHAR(50),
+    "MaterialID" INTEGER,
+    "Bags" NUMERIC(18,2) DEFAULT 0,
+    "GrossWeight" NUMERIC(18,2) DEFAULT 0,
+    "NetWeight" NUMERIC(18,2) DEFAULT 0,
+    "Remarks" VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS public."tblGatePass" (
+    "GatePassNo" INTEGER PRIMARY KEY,
+    "GatePassdate" DATE,
+    "VehicleNo" VARCHAR(50),
+    "DriverName" VARCHAR(100),
+    "WeighmentNo" VARCHAR(50),
+    "WeighmentDate" DATE,
+    "Bags" NUMERIC(18,2) DEFAULT 0,
+    "GrossWeight" NUMERIC(18,2) DEFAULT 0,
+    "TareWeight" NUMERIC(18,2) DEFAULT 0,
+    "NetWeight" NUMERIC(18,2) DEFAULT 0
+);
+
+-- Ensure Notes and GrossWeight columns exist on existing tables
 DO $$ 
 BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'tblsalepurchasechallans'
+    ) THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'tblsalepurchasechallans' AND column_name = 'Notes'
+        ) THEN
+            ALTER TABLE public.tblSalePurchaseChallans ADD COLUMN "Notes" VARCHAR(1000);
+        END IF;
+    END IF;
+
     IF EXISTS (
         SELECT 1 FROM information_schema.tables 
         WHERE table_schema = 'public' AND table_name = 'tblsalepurchasechallans_tran'
