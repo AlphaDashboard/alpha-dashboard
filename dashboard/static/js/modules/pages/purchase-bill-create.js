@@ -1,7 +1,7 @@
-import { PurchaseBillAPI } from '../api/purchase-bill-api.js?v=149';
-import { domUtils } from '../utils/dom.js?v=149';
-import { formatter } from '../utils/formatter.js?v=149';
-import { notifications } from '../utils/notifications.js?v=149';
+import { PurchaseBillAPI } from '../api/purchase-bill-api.js?v=150';
+import { domUtils } from '../utils/dom.js?v=150';
+import { formatter } from '../utils/formatter.js?v=150';
+import { notifications } from '../utils/notifications.js?v=150';
 
 class PurchaseBillForm {
 
@@ -13,7 +13,6 @@ class PurchaseBillForm {
         this.alert = domUtils.getElement('#validationAlert');
 
         this.totalBasicAmountDisplay = domUtils.getElement('#totalBasicAmountDisplay');
-        this.taxesDisplay = domUtils.getElement('#taxesDisplay');
         this.grandTotalDisplay = domUtils.getElement('#grandTotalDisplay');
 
         this.saveDraftBtn = domUtils.getElement('#saveDraftBtn');
@@ -53,6 +52,7 @@ class PurchaseBillForm {
         this.bindEvents();
         this.initGatePassDropdown();
         this.initPODropdown();
+        this.initFloatingLabels();
 
         if (this.config.isEditMode && this.config.voucherNo) {
             await this.loadData(this.config.voucherNo);
@@ -64,7 +64,7 @@ class PurchaseBillForm {
             if (billDateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 billDateInput.value = today;
-                billDateInput.dispatchEvent(new Event('change'));
+                billDateInput.closest('.form-group')?.classList.add('has-value');
             }
             this.addRow();
             this.updateProgress();
@@ -79,10 +79,29 @@ class PurchaseBillForm {
         }
     }
 
+    initFloatingLabels() {
+        document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(el => {
+            const toggle = () => {
+                if (el.value && el.value.trim() !== '') {
+                    el.closest('.form-group')?.classList.add('has-value');
+                } else {
+                    el.closest('.form-group')?.classList.remove('has-value');
+                }
+            };
+            el.addEventListener('input', toggle);
+            el.addEventListener('change', toggle);
+            el.addEventListener('focus', () => el.closest('.form-group')?.classList.add('is-focused'));
+            el.addEventListener('blur', () => {
+                el.closest('.form-group')?.classList.remove('is-focused');
+                toggle();
+            });
+            toggle();
+        });
+    }
+
     bindEvents() {
-        // Table actions (delegated)
+        // Table actions
         if (this.tbody) {
-            // Inline + button
             domUtils.delegate('#itemsTableBody', 'click', '.add-row-btn', (e, target) => {
                 const currentRow = target.closest('.item-row');
                 const newRow = this._cloneRow(null);
@@ -95,7 +114,6 @@ class PurchaseBillForm {
                 this.calculateTotals();
             });
 
-            // Delete button
             domUtils.delegate('#itemsTableBody', 'click', '.remove-row-btn', (e, target) => {
                 const row = target.closest('.item-row');
                 if (!row) return;
@@ -121,7 +139,6 @@ class PurchaseBillForm {
                 }
             });
 
-            // Handle "Add New Item" selection
             domUtils.delegate('#itemsTableBody', 'change', '.row-item', (e, target) => {
                 if (target.value === 'add_new') {
                     target.value = '';
@@ -160,7 +177,7 @@ class PurchaseBillForm {
             this.form.addEventListener('blur',   (e) => this.validateField(e.target), true);
         }
 
-        // Handle Material creation
+        // Modals
         if (this.createMaterialForm) {
             this.createMaterialForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -168,7 +185,6 @@ class PurchaseBillForm {
             });
         }
 
-        // Handle "Add New Group" selection
         const groupSelect = domUtils.getElement('#salPurGroup');
         if (groupSelect) {
             groupSelect.addEventListener('change', (e) => {
@@ -188,7 +204,6 @@ class PurchaseBillForm {
             });
         }
 
-        // Handle "Add New Broker" selection
         const brokerSelect = domUtils.getElement('#broker');
         if (brokerSelect) {
             brokerSelect.addEventListener('change', (e) => {
@@ -208,7 +223,6 @@ class PurchaseBillForm {
             });
         }
 
-        // Handle "Add New Supplier" selection
         const supplierSelect = domUtils.getElement('#supplier');
         if (supplierSelect) {
             supplierSelect.addEventListener('change', (e) => {
@@ -228,7 +242,6 @@ class PurchaseBillForm {
             });
         }
 
-        // Optional Fields Chevron rotation
         const collapseEl = domUtils.getElement('#moreBillDetailsCollapse');
         const chevron = domUtils.getElement('#toggleChevron');
         if (collapseEl && chevron) {
@@ -316,7 +329,7 @@ class PurchaseBillForm {
             }
             filtered.forEach(gp => {
                 const row = document.createElement('div');
-                row.style.cssText = 'display:grid; grid-template-columns:90px 100px 120px 130px 1fr; padding:6px 10px; font-size:12px; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#334155;';
+                row.style.cssText = 'display:grid; grid-template-columns:90px 95px 110px 110px 1fr; padding:6px 8px; font-size:11.5px; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#334155;';
                 const gpDateStr = gp.GatePassdate ? gp.GatePassdate.split('T')[0] : '—';
                 row.innerHTML = `
                     <span style="font-weight:600; color:#2563eb;">GP-${gp.GatePassNo + 10000}</span>
@@ -330,12 +343,12 @@ class PurchaseBillForm {
                 row.addEventListener('click', () => {
                     gpHiddenInput.value = `GP-${gp.GatePassNo + 10000}`;
                     gpDisplayInput.value = `GP-${gp.GatePassNo + 10000}`;
-                    gpDisplayInput.closest('.erp-field')?.classList.add('is-filled');
+                    gpDisplayInput.closest('.form-group')?.classList.add('has-value');
                     
                     const gpDateField = domUtils.getElement('#gatePassDate');
                     if (gpDateField) {
                         gpDateField.value = gp.GatePassdate ? gp.GatePassdate.split('T')[0] : '';
-                        gpDateField.closest('.erp-field')?.classList.add('is-filled');
+                        gpDateField.closest('.form-group')?.classList.add('has-value');
                     }
 
                     closeGpDropdown();
@@ -441,7 +454,7 @@ class PurchaseBillForm {
             }
             filtered.forEach(po => {
                 const row = document.createElement('div');
-                row.style.cssText = 'display:grid; grid-template-columns:140px 110px 1fr; padding:6px 10px; font-size:12px; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#334155;';
+                row.style.cssText = 'display:grid; grid-template-columns:130px 100px 1fr; padding:6px 8px; font-size:11.5px; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#334155;';
                 row.innerHTML = `
                     <span style="font-weight:600; color:#2563eb;">${escHtml(po.po_no)}</span>
                     <span>${escHtml(po.po_date || '—')}</span>
@@ -452,12 +465,12 @@ class PurchaseBillForm {
                 row.addEventListener('click', () => {
                     poHiddenInput.value  = po.po_no;
                     poDisplayInput.value = po.po_no;
-                    poDisplayInput.closest('.erp-field')?.classList.add('is-filled');
+                    poDisplayInput.closest('.form-group')?.classList.add('has-value');
                     
                     const poDateField = domUtils.getElement('#poDate');
                     if (poDateField) {
                         poDateField.value = po.po_date || '';
-                        poDateField.closest('.erp-field')?.classList.add('is-filled');
+                        poDateField.closest('.form-group')?.classList.add('has-value');
                     }
 
                     closePoDropdown();
@@ -533,15 +546,6 @@ class PurchaseBillForm {
         this.tbody.appendChild(row);
         this.renumberRows();
         this.calculateTotals();
-        
-        if (!this.config.isViewMode) {
-            const wrapper = this.tbody.closest('.table-responsive');
-            if (wrapper) {
-                setTimeout(() => {
-                    wrapper.scrollTop = wrapper.scrollHeight;
-                }, 50);
-            }
-        }
 
         if (this.config.isViewMode) {
             row.querySelectorAll('input, select, textarea, button').forEach(el => {
@@ -593,10 +597,6 @@ class PurchaseBillForm {
 
         const totalFormatted = formatter.formatCurrency(totalBasic);
         if (this.totalBasicAmountDisplay) this.totalBasicAmountDisplay.textContent = totalFormatted;
-        
-        const tableFooterTotal = domUtils.getElement('#tableTotalBasicAmountDisplay');
-        if (tableFooterTotal) tableFooterTotal.value = totalFormatted;
-
         if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = totalFormatted;
     }
 
@@ -613,7 +613,7 @@ class PurchaseBillForm {
             }
         });
 
-        const fill = domUtils.getElement('#progressLineFill');
+        const fill = domUtils.getElement('#statusProgressFill');
         if (fill) {
             const pct = currentIndex >= 0 ? (currentIndex / (steps.length - 1)) * 100 : 0;
             fill.style.width = `${pct}%`;
@@ -627,17 +627,23 @@ class PurchaseBillForm {
         try {
             const data = await PurchaseBillAPI.getById(billNo);
 
-            if (billNoEl) billNoEl.value = data.bill_no || billNo;
+            if (billNoEl) {
+                billNoEl.value = data.bill_no || billNo;
+                billNoEl.closest('.form-group')?.classList.add('has-value');
+            }
             const billDateEl = domUtils.getElement('#billDate');
             if (billDateEl) {
                 billDateEl.value = data.bill_date ? data.bill_date.split('T')[0] : '';
+                if (billDateEl.value) billDateEl.closest('.form-group')?.classList.add('has-value');
             }
             const expDateEl = domUtils.getElement('#expectedDeliveryDate');
             if (expDateEl) {
                 expDateEl.value = data.expected_delivery_date ? data.expected_delivery_date.split('T')[0] : '';
+                if (expDateEl.value) expDateEl.closest('.form-group')?.classList.add('has-value');
             }
             if (this.billStatusSelect) {
                 this.billStatusSelect.value = data.bill_status || 'Draft';
+                this.billStatusSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             // Gate Pass & PO No fields
@@ -645,15 +651,27 @@ class PurchaseBillForm {
             const gpDispEl = domUtils.getElement('#gatePassNoDisplay');
             const gpDateEl = domUtils.getElement('#gatePassDate');
             if (gpNoEl) gpNoEl.value = data.gate_pass_no || '';
-            if (gpDispEl) gpDispEl.value = data.gate_pass_no || '';
-            if (gpDateEl) gpDateEl.value = data.gate_pass_date ? data.gate_pass_date.split('T')[0] : '';
+            if (gpDispEl) {
+                gpDispEl.value = data.gate_pass_no || '';
+                if (gpDispEl.value) gpDispEl.closest('.form-group')?.classList.add('has-value');
+            }
+            if (gpDateEl) {
+                gpDateEl.value = data.gate_pass_date ? data.gate_pass_date.split('T')[0] : '';
+                if (gpDateEl.value) gpDateEl.closest('.form-group')?.classList.add('has-value');
+            }
 
             const poNoEl = domUtils.getElement('#poNo');
             const poDispEl = domUtils.getElement('#poNoDisplay');
             const poDateEl = domUtils.getElement('#poDate');
             if (poNoEl) poNoEl.value = data.po_no || '';
-            if (poDispEl) poDispEl.value = data.po_no || '';
-            if (poDateEl) poDateEl.value = data.po_date ? data.po_date.split('T')[0] : '';
+            if (poDispEl) {
+                poDispEl.value = data.po_no || '';
+                if (poDispEl.value) poDispEl.closest('.form-group')?.classList.add('has-value');
+            }
+            if (poDateEl) {
+                poDateEl.value = data.po_date ? data.po_date.split('T')[0] : '';
+                if (poDateEl.value) poDateEl.closest('.form-group')?.classList.add('has-value');
+            }
 
             // Group, Broker, Supplier
             const groupSelect = domUtils.getElement('#salPurGroup');
@@ -665,6 +683,7 @@ class PurchaseBillForm {
                     groupSelect.add(opt);
                 }
                 groupSelect.value = groupVal;
+                if (groupVal) groupSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             const brokerSelect = domUtils.getElement('#broker');
@@ -676,6 +695,7 @@ class PurchaseBillForm {
                     brokerSelect.add(opt);
                 }
                 brokerSelect.value = brokerVal;
+                if (brokerVal) brokerSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             const supplierSelect = domUtils.getElement('#supplier');
@@ -687,26 +707,54 @@ class PurchaseBillForm {
                     supplierSelect.add(opt);
                 }
                 supplierSelect.value = supplierVal;
+                if (supplierVal) supplierSelect.closest('.form-group')?.classList.add('has-value');
             }
 
-            domUtils.getElement('#zoneName').value = data.zone_name || '';
-            domUtils.getElement('#supplierContact').value = data.supplier_contact || '';
-            domUtils.getElement('#supplierAddress').value = data.supplier_address || '';
-            domUtils.getElement('#gstNumber').value       = data.gst_number       || '';
+            const zoneNameEl = domUtils.getElement('#zoneName');
+            if (zoneNameEl) {
+                zoneNameEl.value = data.zone_name || '';
+                if (zoneNameEl.value) zoneNameEl.closest('.form-group')?.classList.add('has-value');
+            }
+
+            const scEl = domUtils.getElement('#supplierContact');
+            if (scEl) {
+                scEl.value = data.supplier_contact || '';
+                if (scEl.value) scEl.closest('.form-group')?.classList.add('has-value');
+            }
+            const saEl = domUtils.getElement('#supplierAddress');
+            if (saEl) {
+                saEl.value = data.supplier_address || '';
+                if (saEl.value) saEl.closest('.form-group')?.classList.add('has-value');
+            }
+            const gstEl = domUtils.getElement('#gstNumber');
+            if (gstEl) {
+                gstEl.value = data.gst_number || '';
+                if (gstEl.value) gstEl.closest('.form-group')?.classList.add('has-value');
+            }
 
             // Delivery section
-            domUtils.getElement('#deliveryLocation').value  = data.delivery_location || '';
-            domUtils.getElement('#deliveryTerms').value     = data.delivery_terms    || '';
-            domUtils.getElement('#paymentTerms').value      = data.payment_terms     || '';
-            domUtils.getElement('#freightTerms').value      = data.freight_terms     || '';
-            domUtils.getElement('#currency').value          = data.currency          || 'INR';
+            const dlEl = domUtils.getElement('#deliveryLocation');
+            if (dlEl) { dlEl.value = data.delivery_location || ''; if (dlEl.value) dlEl.closest('.form-group')?.classList.add('has-value'); }
+            const dtEl = domUtils.getElement('#deliveryTerms');
+            if (dtEl) { dtEl.value = data.delivery_terms || ''; if (dtEl.value) dtEl.closest('.form-group')?.classList.add('has-value'); }
+            const ptEl = domUtils.getElement('#paymentTerms');
+            if (ptEl) { ptEl.value = data.payment_terms || ''; if (ptEl.value) ptEl.closest('.form-group')?.classList.add('has-value'); }
+            const ftEl = domUtils.getElement('#freightTerms');
+            if (ftEl) { ftEl.value = data.freight_terms || ''; if (ftEl.value) ftEl.closest('.form-group')?.classList.add('has-value'); }
+            const curEl = domUtils.getElement('#currency');
+            if (curEl) { curEl.value = data.currency || 'INR'; if (curEl.value) curEl.closest('.form-group')?.classList.add('has-value'); }
 
             // Additional
-            domUtils.getElement('#purchaserName').value       = data.purchaser_name       || '';
-            domUtils.getElement('#department').value          = data.department           || '';
-            domUtils.getElement('#costCenter').value          = data.cost_center          || '';
-            domUtils.getElement('#specialInstructions').value = data.special_instructions || '';
-            domUtils.getElement('#internalNotes').value       = data.internal_notes       || '';
+            const pnEl = domUtils.getElement('#purchaserName');
+            if (pnEl) { pnEl.value = data.purchaser_name || ''; if (pnEl.value) pnEl.closest('.form-group')?.classList.add('has-value'); }
+            const depEl = domUtils.getElement('#department');
+            if (depEl) { depEl.value = data.department || ''; if (depEl.value) depEl.closest('.form-group')?.classList.add('has-value'); }
+            const ccEl = domUtils.getElement('#costCenter');
+            if (ccEl) { ccEl.value = data.cost_center || ''; if (ccEl.value) ccEl.closest('.form-group')?.classList.add('has-value'); }
+            const siEl = domUtils.getElement('#specialInstructions');
+            if (siEl) { siEl.value = data.special_instructions || ''; if (siEl.value) siEl.closest('.form-group')?.classList.add('has-value'); }
+            const inEl = domUtils.getElement('#internalNotes');
+            if (inEl) { inEl.value = data.internal_notes || ''; if (inEl.value) inEl.closest('.form-group')?.classList.add('has-value'); }
 
             // Items
             if (this.tbody) this.tbody.innerHTML = '';
@@ -720,10 +768,6 @@ class PurchaseBillForm {
 
             this.updateProgress();
             this.calculateTotals();
-
-            this.form.querySelectorAll('.erp-floating-input').forEach(input => {
-                input.dispatchEvent(new Event('change'));
-            });
 
             if (this.config.isEditMode && !this.config.isViewMode) {
                 this._applyWorkflowLock(data.bill_status || 'Draft');
@@ -838,47 +882,24 @@ class PurchaseBillForm {
             return true;
         }
 
-        let isValid = true, errorMessage = '';
-        const parent = field.parentElement;
-        if (!parent) return true;
-
-        parent.querySelector('.invalid-feedback-erp')?.remove();
-
+        let isValid = true;
         const val = (field.value || '').trim();
 
-        if      (field.id === 'billDate')         { if (!val) { isValid = false; errorMessage = 'Bill Date is required'; } }
-        else if (field.id === 'salPurGroup')      { if (!val) { isValid = false; errorMessage = 'Sales/Purchase Group is required'; } }
-        else if (field.id === 'broker')           { if (!val) { isValid = false; errorMessage = 'Broker is required'; } }
-        else if (field.id === 'zoneName')         { if (!val) { isValid = false; errorMessage = 'Zone is required'; } }
-        else if (field.id === 'supplier')         { if (!val) { isValid = false; errorMessage = 'Supplier is required'; } }
-        else if (field.id === 'deliveryLocation') { if (!val) { isValid = false; errorMessage = 'Delivery Location is required'; } }
-        else if (field.classList.contains('row-item')) {
-            if (!val) { isValid = false; errorMessage = 'Item is required'; }
-        }
-        else if (field.classList.contains('row-qty')) {
+        if (field.id === 'billDate' || field.id === 'salPurGroup' || field.id === 'broker' || field.id === 'zoneName' || field.id === 'supplier' || field.id === 'deliveryLocation') {
+            if (!val) isValid = false;
+        } else if (field.classList.contains('row-item')) {
+            if (!val) isValid = false;
+        } else if (field.classList.contains('row-qty') || field.classList.contains('row-rate')) {
             const n = parseFloat(val);
-            if (!val || isNaN(n)) { isValid = false; errorMessage = 'Qty required'; }
-            else if (n <= 0)      { isValid = false; errorMessage = 'Qty must be > 0'; }
-        }
-        else if (field.classList.contains('row-rate')) {
-            const n = parseFloat(val);
-            if (!val || isNaN(n)) { isValid = false; errorMessage = 'Rate required'; }
-            else if (n <= 0)      { isValid = false; errorMessage = 'Rate must be > 0'; }
-        }
-        else if (field.hasAttribute('required') && !val) {
-            isValid = false; errorMessage = 'This field is required';
+            if (!val || isNaN(n) || n <= 0) isValid = false;
+        } else if (field.hasAttribute('required') && !val) {
+            isValid = false;
         }
 
         if (isValid) {
             field.classList.remove('is-invalid');
         } else {
             field.classList.add('is-invalid');
-            if (!field.closest('#itemsTable')) {
-                const feedback = document.createElement('div');
-                feedback.className = 'invalid-feedback-erp';
-                feedback.textContent = errorMessage;
-                field.insertAdjacentElement('afterend', feedback);
-            }
         }
         return isValid;
     }
@@ -921,16 +942,19 @@ class PurchaseBillForm {
         if (!isFormValid) {
             this.showErrors('<i class="bi bi-exclamation-triangle-fill me-2"></i>Please fill in all required fields highlighted in red.');
             if (firstInvalid) {
-                const section = firstInvalid.closest('#section-items, #section-totals, #section-additional');
+                const section = firstInvalid.closest('#panel-items, #panel-terms, #panel-additional');
                 if (section) {
                     const tabId = section.id;
                     let btnId = '';
-                    if (tabId === 'section-items') btnId = '#btn-tab-items';
-                    else if (tabId === 'section-totals') btnId = '#btn-tab-totals';
-                    else if (tabId === 'section-additional') btnId = '#btn-tab-additional';
+                    if (tabId === 'panel-items') btnId = '#tab-items';
+                    else if (tabId === 'panel-terms') btnId = '#tab-terms';
+                    else if (tabId === 'panel-additional') btnId = '#tab-additional';
                     
                     const tabBtn = document.querySelector(btnId);
-                    if (tabBtn) tabBtn.click();
+                    if (tabBtn) {
+                        const tabInstance = bootstrap.Tab.getOrCreateInstance(tabBtn);
+                        if (tabInstance) tabInstance.show();
+                    }
                 }
 
                 setTimeout(() => {
@@ -1129,6 +1153,7 @@ class PurchaseBillForm {
                     const newOption = new Option(data.SalPurGroupName, data.SalPurGroupID, true, true);
                     groupSelect.add(newOption);
                     groupSelect.value = data.SalPurGroupID;
+                    groupSelect.closest('.form-group')?.classList.add('has-value');
                     groupSelect.dispatchEvent(new Event('change'));
                 }
             } else {
@@ -1165,6 +1190,7 @@ class PurchaseBillForm {
                     const newOption = new Option(data.name || formData.get('broker_name'), data.id, true, true);
                     brokerSelect.add(newOption);
                     brokerSelect.value = data.id;
+                    brokerSelect.closest('.form-group')?.classList.add('has-value');
                     brokerSelect.dispatchEvent(new Event('change'));
                 }
             } else {
@@ -1201,6 +1227,7 @@ class PurchaseBillForm {
                     const newOption = new Option(data.name || formData.get('supplier_name'), data.id, true, true);
                     supplierSelect.add(newOption);
                     supplierSelect.value = data.id;
+                    supplierSelect.closest('.form-group')?.classList.add('has-value');
                     supplierSelect.dispatchEvent(new Event('change'));
                 }
             } else {

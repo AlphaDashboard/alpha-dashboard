@@ -4,146 +4,297 @@
 {% block title %}{% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill - Alpha Management{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
 <style>
+    body { background-color: #f4f6f9; color: #334155; }
+
+    /* ── Typography ── */
+    .page-title { font-size: 1.05rem; font-weight: 700; color: #000000 !important; margin-bottom: 0; }
+
+    /* ── Base Cards ── */
     .card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-    .section-title {
-        font-weight: 600;
-        color: #2d3748;
-        margin-bottom: 15px;
-    }
-    .table thead {
-        background: #0d6efd;
-        color: white;
-    }
-    .summary-box {
-        background: #eef4ff;
-        padding: 15px;
-        border-radius: 10px;
-    }
-    .required::after {
-        content: " *";
-        color: red;
+        border-radius: 4px;
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        background-color: #ffffff;
+        padding: 8px 12px !important;
+        margin-bottom: 0 !important;
     }
 
-    /* Progress Bar */
+    /* ── Floating labels (Exact Challan Style) ── */
+    .form-group { position: relative; margin-bottom: 1px !important; }
+    .form-group label.floating-label {
+        position: absolute; left: 8px; top: 9px;
+        color: #64748b; font-size: 11px; pointer-events: none;
+        transition: 0.2s ease all; background: #ffffff !important; padding: 0 3px; line-height: 1;
+        z-index: 12 !important;
+    }
+    .form-group input:focus + label.floating-label,
+    .form-group input:not(:placeholder-shown) + label.floating-label,
+    .form-group select + label.floating-label,
+    .form-group input[readonly] + label.floating-label,
+    .form-group input:disabled + label.floating-label,
+    .form-group textarea:focus + label.floating-label,
+    .form-group textarea:not(:placeholder-shown) + label.floating-label,
+    .form-group.is-focused label.floating-label,
+    .form-group.has-value label.floating-label {
+        top: -6px !important; left: 6px !important;
+        font-size: 9.5px !important; color: #334155 !important;
+        font-weight: 600 !important; z-index: 12 !important;
+    }
+    .form-group input[readonly] + label.floating-label,
+    .form-group input:disabled + label.floating-label {
+        background: #f8fafc !important;
+    }
+
+    /* ── Form controls (Exact Challan 30px Box Size) ── */
+    .form-control, .form-select {
+        height: 30px !important; font-size: 11.5px !important;
+        border-radius: 4px !important; border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important; background-color: #ffffff !important;
+        padding: 3px 7px !important;
+    }
+    .form-control[readonly], .form-control:disabled, .form-select:disabled {
+        background-color: #f8fafc !important;
+        color: #334155 !important;
+        cursor: default;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.1) !important;
+        outline: none !important;
+    }
+    .form-control::placeholder { color: #94a3b8 !important; font-size: 11px !important; }
+
+    /* ── Row gutter ── */
+    .row.g-2 > [class*="col-"] { padding: 1px 4px; }
+
+    /* ── Status Progress Bar Stepper (Exact Challan Style) ── */
     .progress-container {
         display: flex;
         justify-content: space-between;
-        margin: 10px 0;
+        margin: 0;
         position: relative;
     }
     .progress-step {
         flex: 1;
         text-align: center;
         position: relative;
-    }
-    .progress-step::before {
-        content: '';
-        position: absolute;
-        top: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #ccc;
         z-index: 2;
     }
-    .progress-step.active::before { background: #004080; }
-    .progress-step span {
+    .progress-step .step-badge {
+        width: 22px;
+        height: 22px;
+        line-height: 18px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        color: #475569;
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        border: 2px solid #ffffff;
+        transition: all 0.3s ease;
+    }
+    .progress-step.active .step-badge {
+        background: #2563eb;
+        color: #ffffff;
+    }
+    .progress-step .step-text {
         display: block;
-        margin-top: 30px;
-        font-size: 14px;
-        font-weight: 500;
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .progress-step.active .step-text {
+        color: #1e293b;
+        font-weight: 700;
     }
     .progress-line {
         position: absolute;
-        top: 13px;
-        left: 12.5%;
-        width: 75%;
-        height: 4px;
-        background: #ccc;
+        top: 11px;
+        left: 10%;
+        width: 80%;
+        height: 3px;
+        background: #e2e8f0;
         z-index: 1;
     }
     .progress-line-fill {
         height: 100%;
         width: 0%;
-        background: #004080;
+        background: #2563eb;
         transition: width 0.3s ease;
     }
 
-    /* Back button */
-    .erp-btn-back {
-        text-decoration: none;
-        color: #4b5563;
-        font-size: 13px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        transition: color 0.15s ease;
+    /* ── Tab Buttons (Exact Challan Nav Tabs) ── */
+    .nav-tabs { border-bottom: 1px solid #cbd5e1; margin-bottom: 4px; }
+    .nav-tabs .nav-link {
+        border: none; border-bottom: 2px solid transparent;
+        color: #64748b; font-size: 11.5px; font-weight: 600;
+        padding: 6px 14px; border-radius: 0; background: transparent;
     }
-    .erp-btn-back:hover { color: #111827; }
+    .nav-tabs .nav-link.active {
+        color: #2563eb !important; border-bottom-color: #2563eb !important;
+        background: transparent !important; font-weight: 700 !important;
+    }
 
-    /* Items table row sizing */
-    #itemsTable tbody tr { height: 34px !important; }
-    #itemsTable tbody td {
-        height: 34px !important;
-        padding: 3px 6px !important;
-        vertical-align: middle !important;
-        background-color: #ffffff;
-        box-sizing: border-box !important;
-    }
-    #itemsTable tbody td select.form-select,
-    #itemsTable tbody td input.form-control {
-        height: 28px !important;
-        min-height: 28px !important;
-        padding: 2px 6px !important;
-        font-size: 12px !important;
-        border-radius: 3px !important;
-        box-shadow: none !important;
-        border: 1px solid #dee2e6 !important;
-        box-sizing: border-box !important;
-    }
-    #itemsTable tbody td .erp-action-btn {
-        height: 26px !important;
-        width: 26px !important;
+    /* ── Subsection B Style Unified Table Card & Border ── */
+    .erp-table-card {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 4px !important;
+        overflow: hidden !important;
+        background: #ffffff;
+        margin: 0 !important;
         padding: 0 !important;
+    }
+
+    /* ── ERP Data Table (Exact Challan / Subsection B Style) ── */
+    .erp-data-table {
+        border-collapse: collapse !important;
+        width: 100%;
+        table-layout: fixed;
+        border-radius: 0;
+        border: none !important;
+        margin-bottom: 0 !important;
+    }
+    .erp-data-table thead th {
+        background-color: #536479 !important;
+        color: #ffffff !important;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 8px !important;
+        text-transform: uppercase;
+        border: 1px solid #475569 !important;
+        border-top: none !important;
+        letter-spacing: 0.5px;
+        vertical-align: middle !important;
+    }
+    .erp-data-table tbody td {
+        padding: 2px 6px !important;
+        vertical-align: middle;
+        border: 1px solid #cbd5e1 !important;
+        background-color: #ffffff;
+        height: 32px !important;
+    }
+    .erp-data-table .form-control, .erp-data-table .form-select {
+        height: 26px !important;
+        padding: 2px 6px !important;
+        font-size: 11.5px !important;
+        border-radius: 3px !important;
+    }
+
+    .erp-action-btn {
+        width: 24px; height: 24px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 4px; padding: 0; cursor: pointer;
+        border: 1px solid transparent; transition: all 0.15s;
+        background: none;
+    }
+    .erp-btn-add { background-color: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    .erp-btn-add:hover { background-color: #dbeafe; }
+    .erp-btn-delete { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .erp-btn-delete:hover { background-color: #fee2e2; }
+
+    /* ── Pinned Bottom Footer Bar (Subsection B Theme) ── */
+    .erp-table-footer-bar {
+        height: 38px !important;
+        min-height: 38px !important;
+        background-color: #536479 !important;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid #475569 !important;
+        margin: 0 !important;
+        padding: 0 12px !important;
+        box-sizing: border-box;
+    }
+    .erp-footer-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #ffffff;
+    }
+    .erp-footer-item {
+        font-size: 11.5px;
+        color: #cbd5e1;
+        font-weight: 500;
+    }
+    .erp-footer-item strong {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #ffffff !important;
+        margin-left: 4px;
+    }
+
+    /* Footer buttons */
+    .erp-btn-save {
+        height: 28px !important;
+        line-height: 28px !important;
+        padding: 0 16px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+        vertical-align: middle !important;
+        border-radius: 4px !important;
+        background-color: #10b981 !important;
+        border: 1px solid #059669 !important;
+        color: #ffffff !important;
+        cursor: pointer;
+        gap: 6px;
+        white-space: nowrap !important;
+        transition: all 0.15s ease;
+    }
+    .erp-btn-save:hover {
+        background-color: #059669 !important;
+        border-color: #047857 !important;
+    }
+    .erp-btn-secondary {
+        height: 28px !important;
+        line-height: 28px !important;
+        padding: 0 14px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 4px !important;
+        background-color: #64748b !important;
+        border: 1px solid #475569 !important;
+        color: #ffffff !important;
+        cursor: pointer;
+        gap: 6px;
+        white-space: nowrap !important;
+        transition: all 0.15s ease;
+    }
+    .erp-btn-secondary:hover {
+        background-color: #475569 !important;
+    }
+    .erp-btn-submit {
+        height: 28px !important;
+        line-height: 28px !important;
+        padding: 0 14px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 4px !important;
+        background-color: #0284c7 !important;
+        border: 1px solid #0369a1 !important;
+        color: #ffffff !important;
+        cursor: pointer;
+        gap: 6px;
+        white-space: nowrap !important;
+        transition: all 0.15s ease;
+    }
+    .erp-btn-submit:hover {
+        background-color: #0369a1 !important;
     }
 
-    /* Validation styles */
-    .invalid-feedback-erp {
-        color: #ef4444;
-        font-size: 11px;
-        margin-top: 3px;
-        display: block;
-        font-weight: 500;
-    }
-    .form-control.is-invalid,
-    .form-select.is-invalid {
-        border-color: #ef4444 !important;
-        background-color: #fef2f2 !important;
-        box-shadow: 0 0 0 2px rgba(239,68,68,.12) !important;
-    }
-    .form-control.is-invalid:focus,
-    .form-select.is-invalid:focus {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239,68,68,.18) !important;
-    }
-    #itemsTable .form-control.is-invalid,
-    #itemsTable .form-select.is-invalid {
-        border-color: #ef4444 !important;
-        background-color: #fff5f5 !important;
-        box-shadow: none !important;
-    }
-
-    /* Smart dropdown styling */
+    /* ── Smart dropdown styling ── */
     .smart-dropdown-panel {
         display: none;
         position: fixed;
@@ -169,145 +320,131 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 py-2" style="max-width: 100% !important; margin: 0 auto; margin-top: -20px !important;">
+<div class="container-fluid px-2 py-1" style="max-width: 100% !important; margin: 0 auto; margin-top: -20px !important;">
     <form id="purchaseBillForm" novalidate>
         {% csrf_token %}
-    <div class="sticky-top-section">
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-1" style="height: 38px !important;">
-            <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; margin: 0;">
-                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
-                <span class="badge ms-2" style="font-size: 11px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;">RMPBL</span>
-            </h2>
+
+        <!-- ══════════════════════════════════════════════════
+             PAGE HEADER
+        ══════════════════════════════════════════════════ -->
+        <div class="d-flex justify-content-between align-items-center mb-1" style="min-height: 32px;">
+            <div class="d-flex align-items-center gap-2">
+                <h1 class="page-title">
+                    {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
+                </h1>
+                <span class="badge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px;">RMPBL</span>
+            </div>
             <div class="d-flex align-items-center gap-2">
                 {% if is_view_mode %}
                     {% if prev_pk %}
                         <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
                            class="btn btn-sm btn-outline-secondary px-2 py-1"
-                           style="font-size:12px;font-weight:500;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                           style="font-size:11px;font-weight:500;border-radius:4px;" title="Previous">
                             <i class="bi bi-chevron-left"></i> Prev
                         </a>
-                    {% else %}
-                        <span class="d-inline-flex align-items-center gap-1 px-2 py-1"
-                              style="font-size:11px;font-weight:500;border-radius:4px;background:#fef9c3;color:#92400e;border:1px solid #fde68a;">
-                            <i class="bi bi-skip-start-fill"></i> First Record
-                        </span>
                     {% endif %}
-
                     {% if next_pk %}
                         <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
                            class="btn btn-sm btn-outline-secondary px-2 py-1"
-                           style="font-size:12px;font-weight:500;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                           style="font-size:11px;font-weight:500;border-radius:4px;" title="Next">
                             Next <i class="bi bi-chevron-right"></i>
                         </a>
-                    {% else %}
-                        <span class="d-inline-flex align-items-center gap-1 px-2 py-1"
-                              style="font-size:11px;font-weight:500;border-radius:4px;background:#fef9c3;color:#92400e;border:1px solid #fde68a;">
-                            End of Records <i class="bi bi-skip-end-fill"></i>
-                        </span>
                     {% endif %}
-
-                    {% if bill_status == 'Submitted' %}
-                        <span class="badge px-2 py-1" style="font-size:11px;background-color:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
-                            <i class="bi bi-lock-fill"></i> Submitted — Editing Locked
-                        </span>
-                    {% elif bill_status == 'Approved' %}
-                        <span class="badge px-2 py-1" style="font-size:11px;background-color:#d1fae5;color:#065f46;border:1px solid #34d399;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
-                            <i class="bi bi-lock-fill"></i> Approved — Editing Locked
-                        </span>
-                    {% else %}
+                    {% if bill_status != 'Submitted' and bill_status != 'Approved' %}
                         <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
                            class="btn btn-sm btn-success px-2 py-1"
-                           style="font-size:12px;font-weight:600;border-radius:4px;display:inline-flex;align-items:center;gap:4px;background-color:#10b981;border-color:#10b981;color:white;">
+                           style="font-size:11px;font-weight:600;border-radius:4px;background-color:#10b981;border-color:#10b981;color:white;">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>
                     {% endif %}
                 {% endif %}
-                <a href="{% url 'dashboard:purchase_bill_list' %}" class="erp-btn-back">
+                <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
                     <i class="bi bi-arrow-left me-1"></i> Back
                 </a>
             </div>
         </div>
 
-        <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-2"
-             style="border-radius:6px;font-size:13px;"></div>
+        <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-1"
+             style="border-radius:4px;font-size:12px;"></div>
 
         <!-- Bill Locked Banner -->
-        <div id="billLockedBanner" class="d-none mb-2 p-2 d-flex align-items-center gap-2"
-             style="border-radius:6px;font-size:13px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
-            <i class="bi bi-lock-fill" style="font-size:15px;flex-shrink:0;"></i>
+        <div id="billLockedBanner" class="d-none mb-1 p-2 d-flex align-items-center gap-2"
+             style="border-radius:4px;font-size:12px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
+            <i class="bi bi-lock-fill" style="font-size:14px;flex-shrink:0;"></i>
             <span id="billLockedBannerText">This Purchase Bill cannot be edited in its current state.</span>
         </div>
 
-        <!-- Purchase Bill Header Card -->
-        <div class="card px-4 pt-2 pb-2 mb-3 shadow-sm" id="billDetailsCard" style="border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
-            <h5 class="section-title" style="font-size: 15px; margin-bottom: 6px;">Purchase Bill Details</h5>
+        <!-- ══════════════════════════════════════════════════
+             HEADER CARD (Balanced 4 Columns Layout)
+        ══════════════════════════════════════════════════ -->
+        <div class="card mb-1" id="billDetailsCard">
             
-            <!-- Row 1: Bill No | Bill Date | Expected Delivery Date | Sales/Purchase Group | Bill Status -->
-            <div class="row">
-                <div class="col-md-2">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <input type="text" id="billNo" name="bill_no" class="form-control erp-floating-input"
-                               value="{% if is_view_mode %}{{ voucher_no }}{% else %}Auto Generated{% endif %}" disabled placeholder=" " style="background-color:#f3f4f6;">
-                        <label for="billNo" class="erp-floating-label required">Bill No</label>
+            <!-- ── ROW 1: Bill No | Bill Date | Sales/Purchase Group | Bill Status ── -->
+            <div class="row g-2">
+                <!-- Bill No -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" id="billNo" name="bill_no" class="form-control"
+                               value="{% if is_view_mode %}{{ voucher_no }}{% else %}(Auto Generated){% endif %}" disabled placeholder=" ">
+                        <label for="billNo" class="floating-label">Bill No *</label>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <input type="date" id="billDate" name="bill_date" class="form-control erp-floating-input" placeholder=" " required>
-                        <label for="billDate" class="erp-floating-label required">Bill Date</label>
+
+                <!-- Bill Date -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="date" id="billDate" name="bill_date" class="form-control" placeholder=" " required {% if is_view_mode %}disabled{% endif %}>
+                        <label for="billDate" class="floating-label">Bill Date *</label>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control erp-floating-input" placeholder=" ">
-                        <label for="expectedDeliveryDate" class="erp-floating-label">Expected Date</label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <select id="salPurGroup" name="sal_pur_group" class="form-select erp-floating-input" required>
+
+                <!-- Sales/Purchase Group -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="salPurGroup" name="sal_pur_group" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
-                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Group</option>
+                            <option value="add_new" class="text-primary fw-bold">+ Add New Group</option>
                             {% for g in sal_pur_groups %}
                             <option value="{{ g.SalPurGroupID }}">{{ g.SalPurGroupName }}</option>
                             {% endfor %}
                         </select>
-                        <label for="salPurGroup" class="erp-floating-label required">Sales/Purchase Group</label>
+                        <label for="salPurGroup" class="floating-label">Sales/Purchase Group *</label>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <select id="billStatus" name="bill_status" class="form-select erp-floating-input">
+
+                <!-- Bill Status -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="billStatus" name="bill_status" class="form-select" {% if is_view_mode %}disabled{% endif %}>
                             <option value="Draft" {% if bill_status == 'Draft' %}selected{% endif %}>Draft</option>
                             <option value="Submitted" {% if bill_status == 'Submitted' %}selected{% endif %}>Submitted for Approval</option>
                             <option value="RefBack" {% if bill_status == 'RefBack' %}selected{% endif %}>Ref. Back by Approver</option>
                             <option value="Approved" {% if bill_status == 'Approved' %}selected{% endif %}>Approved</option>
                         </select>
-                        <label for="billStatus" class="erp-floating-label">Bill Status</label>
+                        <label for="billStatus" class="floating-label">Bill Status</label>
                     </div>
                 </div>
             </div>
 
-            <!-- Row 2 (4 EXTRA FIELDS): Gate Pass No (Dropdown) | Gate Pass Date | PO No (Dropdown) | PO Date -->
-            <div class="row mt-3">
-                <!-- Gate Pass No — Smart Dropdown -->
+            <!-- ── ROW 2: Gate Pass No | Gate Pass Date | PO No | PO Date ── -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <!-- Gate Pass No (Smart Dropdown) -->
                 <div class="col-md-3" style="position:relative;">
-                    <div class="erp-field erp-floating-group" id="gpDropdownGroup" style="margin-top: 2px !important;">
+                    <div class="form-group mb-0" id="gpDropdownGroup">
                         <input type="hidden" id="gatePassNo" name="gate_pass_no">
-                        <input type="text" id="gatePassNoDisplay" class="form-control erp-floating-input" placeholder=" " autocomplete="off"
+                        <input type="text" id="gatePassNoDisplay" class="form-control" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
-                        <label for="gatePassNoDisplay" class="erp-floating-label">Gate Pass No</label>
+                        <label for="gatePassNoDisplay" class="floating-label">Gate Pass No</label>
 
                         <!-- Gate Pass Dropdown Panel -->
                         <div id="gpDropdownPanel" class="smart-dropdown-panel">
-                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                            <div style="padding:6px 8px; border-bottom:1px solid #e2e8f0;">
                                 <input type="text" id="gpSearchInput" placeholder="Search Gate Pass, Vehicle, Driver..." class="form-control"
-                                    style="height:28px; font-size:12px;">
+                                    style="height:26px; font-size:11.5px;">
                             </div>
-                            <div style="display:grid; grid-template-columns:90px 100px 120px 130px 1fr;
+                            <div style="display:grid; grid-template-columns:90px 95px 110px 110px 1fr;
                                         background:#536479; color:#fff; font-size:10px; font-weight:700;
-                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:4px 8px; flex-shrink:0;">
                                 <span>GP No</span>
                                 <span>Date</span>
                                 <span>Driver</span>
@@ -315,7 +452,7 @@
                                 <span>Supplier</span>
                             </div>
                             <div id="gpDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:200px;"></div>
-                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                            <div style="padding:4px 8px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
                                 <span id="gpDropdownCount">Select Gate Pass</span>
                                 <button type="button" id="gpDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
                             </div>
@@ -325,35 +462,35 @@
 
                 <!-- Gate Pass Date (Auto-fill) -->
                 <div class="col-md-3">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <input type="date" id="gatePassDate" name="gate_pass_date" class="form-control erp-floating-input" placeholder=" " readonly style="background-color:#f9fafb;">
-                        <label for="gatePassDate" class="erp-floating-label">Gate Pass Date</label>
+                    <div class="form-group has-value">
+                        <input type="date" id="gatePassDate" name="gate_pass_date" class="form-control" placeholder=" " readonly>
+                        <label for="gatePassDate" class="floating-label">Gate Pass Date</label>
                     </div>
                 </div>
 
-                <!-- PO No — Smart Dropdown -->
+                <!-- PO No (Smart Dropdown) -->
                 <div class="col-md-3" style="position:relative;">
-                    <div class="erp-field erp-floating-group" id="poDropdownGroup" style="margin-top: 2px !important;">
+                    <div class="form-group mb-0" id="poDropdownGroup">
                         <input type="hidden" id="poNo" name="po_no">
-                        <input type="text" id="poNoDisplay" class="form-control erp-floating-input" placeholder=" " autocomplete="off"
+                        <input type="text" id="poNoDisplay" class="form-control" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
-                        <label for="poNoDisplay" class="erp-floating-label">PO No</label>
+                        <label for="poNoDisplay" class="floating-label">PO No</label>
 
                         <!-- PO Dropdown Panel -->
                         <div id="poDropdownPanel" class="smart-dropdown-panel">
-                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                            <div style="padding:6px 8px; border-bottom:1px solid #e2e8f0;">
                                 <input type="text" id="poSearchInput" placeholder="Search PO No or Supplier..." class="form-control"
-                                    style="height:28px; font-size:12px;">
+                                    style="height:26px; font-size:11.5px;">
                             </div>
-                            <div style="display:grid; grid-template-columns:140px 110px 1fr;
+                            <div style="display:grid; grid-template-columns:130px 100px 1fr;
                                         background:#536479; color:#fff; font-size:10px; font-weight:700;
-                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:4px 8px; flex-shrink:0;">
                                 <span>PO No</span>
                                 <span>PO Date</span>
                                 <span>Supplier Name</span>
                             </div>
                             <div id="poDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:200px;"></div>
-                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                            <div style="padding:4px 8px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
                                 <span id="poDropdownCount">Select PO</span>
                                 <button type="button" id="poDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
                             </div>
@@ -363,30 +500,41 @@
 
                 <!-- PO Date (Auto-fill) -->
                 <div class="col-md-3">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <input type="date" id="poDate" name="po_date" class="form-control erp-floating-input" placeholder=" " readonly style="background-color:#f9fafb;">
-                        <label for="poDate" class="erp-floating-label">PO Date</label>
+                    <div class="form-group has-value">
+                        <input type="date" id="poDate" name="po_date" class="form-control" placeholder=" " readonly>
+                        <label for="poDate" class="floating-label">PO Date</label>
                     </div>
                 </div>
             </div>
 
-            <!-- Row 3: Broker Name | Zone Name | Supplier Name -->
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <select id="broker" name="broker" class="form-select erp-floating-input" required>
+            <!-- ── ROW 3: Expected Date | Broker Name | Zone Name | Supplier Name ── -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <!-- Expected Delivery Date -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                        <label for="expectedDeliveryDate" class="floating-label">Expected Date</label>
+                    </div>
+                </div>
+
+                <!-- Broker Name -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="broker" name="broker" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
-                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Broker</option>
+                            <option value="add_new" class="text-primary fw-bold">+ Add New Broker</option>
                             {% for b in brokers %}
                             <option value="{{ b.BrokerID }}">{{ b.BrokerName }}</option>
                             {% endfor %}
                         </select>
-                        <label for="broker" class="erp-floating-label required">Broker Name</label>
+                        <label for="broker" class="floating-label">Broker Name *</label>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <select id="zoneName" name="zone_name" class="form-select erp-floating-input" required>
+
+                <!-- Zone Name -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="zoneName" name="zone_name" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
                             <option value="North Region">North Region</option>
                             <option value="East Region">East Region</option>
@@ -396,261 +544,308 @@
                             <option value="Delhi Region">Delhi Region</option>
                             <option value="NE Region">NE Region</option>
                         </select>
-                        <label for="zoneName" class="erp-floating-label required">Zone Name</label>
+                        <label for="zoneName" class="floating-label">Zone Name *</label>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                        <select id="supplier" name="supplier" class="form-select erp-floating-input" required>
+
+                <!-- Supplier Name -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select id="supplier" name="supplier" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
-                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Supplier</option>
+                            <option value="add_new" class="text-primary fw-bold">+ Add New Supplier</option>
                             {% for s in suppliers %}
                             <option value="{{ s.VendorSupplierID }}">{{ s.VendorSupplierName }}</option>
                             {% endfor %}
                         </select>
-                        <label for="supplier" class="erp-floating-label required">Supplier Name</label>
+                        <label for="supplier" class="floating-label">Supplier Name *</label>
                     </div>
                 </div>
             </div>
 
-            <!-- Toggle Link/Button for Optional Fields -->
+            <!-- Toggle Link for Optional Fields -->
             <div class="mt-2 text-start">
-                <a href="#moreBillDetailsCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="moreBillDetailsCollapse" class="fw-semibold text-decoration-none" id="toggleOptionalFieldsBtn" style="font-size: 13px; color: #2563eb; display: inline-flex; align-items: center;">
+                <a href="#moreBillDetailsCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="moreBillDetailsCollapse" class="fw-semibold text-decoration-none" id="toggleOptionalFieldsBtn" style="font-size: 11.5px; color: #2563eb; display: inline-flex; align-items: center;">
                     <i class="bi bi-chevron-right me-1" id="toggleChevron" style="transition: transform 0.2s ease;"></i> <span>Show Optional Fields</span>
                 </a>
             </div>
 
             <!-- Collapsible container for optional fields -->
-            <div class="collapse mt-2" id="moreBillDetailsCollapse">
-                <div class="row pt-2" style="border-top: 1px dashed #e2e8f0;">
+            <div class="collapse mt-1" id="moreBillDetailsCollapse">
+                <div class="row g-2 pt-1" style="border-top: 1px dashed #e2e8f0;">
                     <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <input type="text" id="supplierContact" name="supplier_contact" class="form-control erp-floating-input" placeholder=" ">
-                            <label for="supplierContact" class="erp-floating-label">Supplier Contact</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <textarea id="supplierAddress" name="supplier_address" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
-                            <label for="supplierAddress" class="erp-floating-label">Supplier Address</label>
+                        <div class="form-group">
+                            <input type="text" id="supplierContact" name="supplier_contact" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                            <label for="supplierContact" class="floating-label">Supplier Contact</label>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <input type="text" id="gstNumber" name="gst_number" class="form-control erp-floating-input" placeholder=" ">
-                            <label for="gstNumber" class="erp-floating-label">GST Number</label>
+                        <div class="form-group">
+                            <input type="text" id="supplierAddress" name="supplier_address" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                            <label for="supplierAddress" class="floating-label">Supplier Address</label>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- End sticky-top-section -->
-
-        <!-- Progress Bar -->
-        <div class="position-relative mb-4 px-4 py-1 bg-white card shadow-sm">
-            <div class="progress-container">
-                <div class="progress-line">
-                    <div class="progress-line-fill" id="progressLineFill"></div>
-                </div>
-                <div class="progress-step active" id="step-Draft"><span>Draft</span></div>
-                <div class="progress-step" id="step-Submitted"><span>Submitted</span></div>
-                <div class="progress-step" id="step-RefBack"><span>Ref. Back</span></div>
-                <div class="progress-step" id="step-Approved"><span>Approved</span></div>
-            </div>
-        </div>
-
-        <!-- Tabs Toggle Buttons -->
-        <div class="d-flex gap-2 mb-4 ms-1">
-            <button type="button" class="btn btn-primary px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-items" style="border-radius: 8px;">Items</button>
-            <button type="button" class="btn btn-light px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-totals" style="border-radius: 8px; background-color: #f8f9fa; color: #4b5563; border: 1px solid #dee2e6;">Delivery and Payment terms</button>
-            <button type="button" class="btn btn-light px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-additional" style="border-radius: 8px; background-color: #f8f9fa; color: #4b5563; border: 1px solid #dee2e6;">Additional Information</button>
-        </div>
-
-        <div id="section-items">
-            <!-- Item Table Card -->
-            <div class="card px-4 pt-2 pb-4 mb-4">
-                <div class="mb-3">
-                    <h5 class="section-title mb-0" style="font-size: 15px;">Purchase Bill Items</h5>
-                </div>
-                <div class="table-responsive erp-items-table-wrapper">
-                    <table class="table table-bordered align-middle" id="itemsTable" style="font-size:13px;">
-                        <thead class="shadow-sm" style="border-top:none;">
-                            <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center">#</th>
-                                <th style="width:30%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Item Name <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Order Qty <span class="text-danger">*</span></th>
-                                <th style="width:10%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">UOM <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Unit Rate <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Amount</th>
-                                <th style="width:14%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Remarks</th>
-                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center border-end-0">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsTableBody">
-                            <!-- Dynamic rows injected here -->
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="5" class="text-end align-middle fw-bold border-0"
-                                    style="text-align: right !important; padding-right: 16px; letter-spacing: 0.5px; font-size: 11px; background-color: #64748b !important; color: white !important;">TOTAL BASIC AMOUNT
-                                </td>
-                                <td class="align-middle border-0 p-0" style="background-color: #64748b !important;">
-                                    <input type="text" id="tableTotalBasicAmountDisplay"
-                                        class="form-control text-end fw-bold m-0 w-100" value="0.00"
-                                        style="background-color: transparent !important; border: none !important; color: white !important; padding: 8px 12px; box-shadow: none !important;" readonly>
-                                </td>
-                                <td colspan="2" class="border-0 align-middle text-end p-0" style="background-color: #64748b !important;">
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Summary Card -->
-            <div class="card px-4 pt-3 pb-3 mb-4 shadow-sm" style="border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
-                <h5 class="section-title" style="font-size: 15px; margin-bottom: 12px;">Bill Summary</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="summary-box p-3 rounded" style="background:#f8f9fa; border:1px solid #e5e7eb;">
-                            <h6 style="font-size:12px;font-weight:600;color:#4b5563;text-transform:uppercase;margin-bottom:4px;">Total Basic Amount</h6>
-                            <h4 id="totalBasicAmountDisplay" class="mb-0 fw-bold" style="color:#1f2937;font-size:18px;">0.00</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="summary-box p-3 rounded" style="background:#e0f2fe; border:1px solid #bae6fd;">
-                            <h6 style="font-size:12px;font-weight:600;color:#0284c7;text-transform:uppercase;margin-bottom:4px;">Grand Total</h6>
-                            <h4 id="grandTotalDisplay" class="mb-0 fw-bold" style="color:#0369a1;font-size:18px;">0.00</h4>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input type="text" id="gstNumber" name="gst_number" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                            <label for="gstNumber" class="floating-label">GST Number</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="section-totals" class="d-none">
-            <!-- Delivery & Payment Card -->
-            <div class="card px-3 pt-2 pb-3 mb-4">
-                <h5 class="section-title" style="margin-bottom: 12px; margin-top: 4px; font-size: 16px;">Delivery &amp; Payment Terms</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="deliveryLocation" name="delivery_location" class="form-select erp-floating-input" required>
-                                <option value=""></option>
-                                <option value="Plant 1">Plant 1</option>
-                                <option value="Plant 2">Plant 2</option>
-                                <option value="Warehouse">Warehouse</option>
-                            </select>
-                            <label for="deliveryLocation" class="erp-floating-label required">Delivery Location</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="deliveryTerms" name="delivery_terms" class="form-select erp-floating-input">
-                                <option value="Ex Works/Ex-Godown">Ex Works/Ex-Godown</option>
-                                <option value="FOB">FOB</option>
-                                <option value="Door Delivery">Door Delivery</option>
-                                <option value="FOB-FOT-FOR">FOB-FOT-FOR</option>
-                                <option value="CIF">CIF</option>
-                                <option value="EXW">EXW</option>
-                                <option value="DAP">DAP</option>
-                            </select>
-                            <label for="deliveryTerms" class="erp-floating-label">Delivery Terms / Incoterms</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="paymentTerms" name="payment_terms" class="form-select erp-floating-input">
-                                <option value="Advance">Advance</option>
-                                <option value="30 Days Credit">30 Days Credit</option>
-                                <option value="45 Days Credit">45 Days Credit</option>
-                                <option value="60 Days Credit">60 Days Credit</option>
-                            </select>
-                            <label for="paymentTerms" class="erp-floating-label">Payment Terms</label>
-                        </div>
-                    </div>
+        <!-- ══════════════════════════════════════════════════
+             STATUS WORKFLOW STEPPER (Exact Challan Style)
+        ══════════════════════════════════════════════════ -->
+        <div class="card mb-1 border-0 p-2" style="background: #f8fafc; border: 1px solid #cbd5e1 !important;">
+            <div class="progress-container px-4 py-1">
+                <div class="progress-line"><div class="progress-line-fill" id="statusProgressFill"></div></div>
+                <div class="progress-step active" id="step-Draft">
+                    <span class="step-badge">1</span>
+                    <span class="step-text">Draft</span>
                 </div>
-                <div class="row mt-0">
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="freightTerms" name="freight_terms" class="form-select erp-floating-input">
-                                <option value="Supplier Paid">Supplier Paid</option>
-                                <option value="Buyer Paid">Buyer Paid</option>
-                            </select>
-                            <label for="freightTerms" class="erp-floating-label">Freight Terms</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="currency" name="currency" class="form-select erp-floating-input">
-                                <option value="INR">INR</option>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                            </select>
-                            <label for="currency" class="erp-floating-label">Currency</label>
-                        </div>
-                    </div>
+                <div class="progress-step" id="step-Submitted">
+                    <span class="step-badge">2</span>
+                    <span class="step-text">Submitted for approval</span>
+                </div>
+                <div class="progress-step" id="step-RefBack">
+                    <span class="step-badge">3</span>
+                    <span class="step-text">Referred Back</span>
+                </div>
+                <div class="progress-step" id="step-Approved">
+                    <span class="step-badge">4</span>
+                    <span class="step-text">Approved</span>
                 </div>
             </div>
         </div>
 
-        <div id="section-additional" class="d-none">
-            <!-- Additional Information Card -->
-            <div class="card px-3 pt-2 pb-3 mb-4">
-                <h5 class="section-title" style="margin-bottom: 12px; margin-top: 4px; font-size: 16px;">Additional Information</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <input type="text" id="purchaserName" name="purchaser_name" class="form-control erp-floating-input" placeholder=" ">
-                            <label for="purchaserName" class="erp-floating-label">Purchaser Name</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="department" name="department" class="form-select erp-floating-input">
-                                <option value="Purchase">Purchase</option>
-                                <option value="Production">Production</option>
-                                <option value="Stores">Stores</option>
-                            </select>
-                            <label for="department" class="erp-floating-label">Department</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <select id="costCenter" name="cost_center" class="form-select erp-floating-input">
-                                <option value="Plant A">Plant A</option>
-                                <option value="Plant B">Plant B</option>
-                            </select>
-                            <label for="costCenter" class="erp-floating-label">Cost Center</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-0">
-                    <div class="col-md-6">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <textarea id="specialInstructions" name="special_instructions" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
-                            <label for="specialInstructions" class="erp-floating-label">Special Instructions</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
-                            <textarea id="internalNotes" name="internal_notes" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
-                            <label for="internalNotes" class="erp-floating-label">Internal Notes</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ══════════════════════════════════════════════════
+             TABS NAVIGATION
+        ══════════════════════════════════════════════════ -->
+        <ul class="nav nav-tabs" id="billTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="tab-items"
+                        data-bs-toggle="tab" data-bs-target="#panel-items"
+                        type="button">
+                    <i class="bi bi-list-ul me-1"></i>Items
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-terms"
+                        data-bs-toggle="tab" data-bs-target="#panel-terms"
+                        type="button">
+                    <i class="bi bi-truck me-1"></i>Delivery and Payment Terms
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-additional"
+                        data-bs-toggle="tab" data-bs-target="#panel-additional"
+                        type="button">
+                    <i class="bi bi-info-circle me-1"></i>Additional Information
+                </button>
+            </li>
+        </ul>
 
-        <!-- Action Buttons -->
-        <div class="text-end mb-4 gap-2 d-flex justify-content-end" id="actionButtonsContainer">
-            <button type="button" class="btn btn-secondary px-4 py-2" id="saveDraftBtn"
-                    style="border-radius:6px;font-weight:600;">Save Draft</button>
-            <button type="button" class="btn btn-success px-4 py-2" id="submitApprovalBtn"
-                    style="border-radius:6px;font-weight:600;">Save and Submitted</button>
-            <button type="submit" class="btn btn-primary px-4 py-2" id="generateBillBtn"
-                    style="border-radius:6px;font-weight:600;">Save Bill</button>
+        <!-- ══════════════════════════════════════════════════
+             TAB PANES (Subsection B Style Table + Footer Card)
+        ══════════════════════════════════════════════════ -->
+        <div class="tab-content" id="billTabContent">
+
+            <!-- ── TAB 1: Items Table Card ── -->
+            <div class="tab-pane fade show active" id="panel-items" role="tabpanel">
+                <div class="erp-table-card">
+                    <div style="max-height: 220px; overflow-y: auto;">
+                        <table class="table mb-0 erp-data-table" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;" class="text-center">#</th>
+                                    <th style="width:28%;">Item Name *</th>
+                                    <th style="width:11%;" class="text-end">Order Qty *</th>
+                                    <th style="width:9%;">UOM *</th>
+                                    <th style="width:11%;" class="text-end">Unit Rate *</th>
+                                    <th style="width:13%;" class="text-end">Amount</th>
+                                    <th style="width:15%;">Remarks</th>
+                                    <th style="width:8%;" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                <!-- Injected by purchase-bill-create.js -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ── Attached Footer Bar (Subsection B Style) ── -->
+                    <div class="erp-table-footer-bar">
+                        <div class="d-flex align-items-center justify-content-between w-100 px-2">
+                            <div class="d-flex align-items-center gap-4">
+                                <span class="erp-footer-label">TOTALS</span>
+                                <div class="d-flex align-items-center gap-4">
+                                    <span class="erp-footer-item">Total Basic: <strong id="totalBasicAmountDisplay">0.00</strong></span>
+                                    <span class="erp-footer-item">Grand Total: <strong id="grandTotalDisplay">0.00</strong></span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2" id="actionButtonsContainer">
+                                {% if not is_view_mode %}
+                                <button type="button" class="erp-btn-secondary" id="saveDraftBtn">
+                                    <i class="bi bi-file-earmark"></i> Save Draft
+                                </button>
+                                <button type="button" class="erp-btn-submit" id="submitApprovalBtn">
+                                    <i class="bi bi-send-check"></i> Save and Submitted
+                                </button>
+                                <button type="submit" class="erp-btn-save shadow-sm" id="generateBillBtn">
+                                    <i class="bi bi-floppy"></i> Save Bill
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /TAB 1 -->
+
+            <!-- ── TAB 2: Delivery & Payment Terms Card ── -->
+            <div class="tab-pane fade" id="panel-terms" role="tabpanel">
+                <div class="card p-3">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="deliveryLocation" name="delivery_location" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
+                                    <option value=""></option>
+                                    <option value="Plant 1">Plant 1</option>
+                                    <option value="Plant 2">Plant 2</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                </select>
+                                <label for="deliveryLocation" class="floating-label">Delivery Location *</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="deliveryTerms" name="delivery_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="Ex Works/Ex-Godown">Ex Works/Ex-Godown</option>
+                                    <option value="FOB">FOB</option>
+                                    <option value="Door Delivery">Door Delivery</option>
+                                    <option value="FOB-FOT-FOR">FOB-FOT-FOR</option>
+                                    <option value="CIF">CIF</option>
+                                    <option value="EXW">EXW</option>
+                                    <option value="DAP">DAP</option>
+                                </select>
+                                <label for="deliveryTerms" class="floating-label">Delivery Terms / Incoterms</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="paymentTerms" name="payment_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="Advance">Advance</option>
+                                    <option value="30 Days Credit">30 Days Credit</option>
+                                    <option value="45 Days Credit">45 Days Credit</option>
+                                    <option value="60 Days Credit">60 Days Credit</option>
+                                </select>
+                                <label for="paymentTerms" class="floating-label">Payment Terms</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-1">
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="freightTerms" name="freight_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="Supplier Paid">Supplier Paid</option>
+                                    <option value="Buyer Paid">Buyer Paid</option>
+                                </select>
+                                <label for="freightTerms" class="floating-label">Freight Terms</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="currency" name="currency" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                                <label for="currency" class="floating-label">Currency</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons inside Terms Tab -->
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                        {% if not is_view_mode %}
+                        <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
+                            <i class="bi bi-file-earmark"></i> Save Draft
+                        </button>
+                        <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
+                            <i class="bi bi-send-check"></i> Save and Submitted
+                        </button>
+                        <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
+                            <i class="bi bi-floppy"></i> Save Bill
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div><!-- /TAB 2 -->
+
+            <!-- ── TAB 3: Additional Information Card ── -->
+            <div class="tab-pane fade" id="panel-additional" role="tabpanel">
+                <div class="card p-3">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="text" id="purchaserName" name="purchaser_name" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                <label for="purchaserName" class="floating-label">Purchaser Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="department" name="department" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="Purchase">Purchase</option>
+                                    <option value="Production">Production</option>
+                                    <option value="Stores">Stores</option>
+                                </select>
+                                <label for="department" class="floating-label">Department</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-value">
+                                <select id="costCenter" name="cost_center" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                    <option value="Plant A">Plant A</option>
+                                    <option value="Plant B">Plant B</option>
+                                </select>
+                                <label for="costCenter" class="floating-label">Cost Center</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-1">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" id="specialInstructions" name="special_instructions" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                <label for="specialInstructions" class="floating-label">Special Instructions</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" id="internalNotes" name="internal_notes" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                <label for="internalNotes" class="floating-label">Internal Notes</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons inside Additional Info Tab -->
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                        {% if not is_view_mode %}
+                        <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
+                            <i class="bi bi-file-earmark"></i> Save Draft
+                        </button>
+                        <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
+                            <i class="bi bi-send-check"></i> Save and Submitted
+                        </button>
+                        <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
+                            <i class="bi bi-floppy"></i> Save Bill
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div><!-- /TAB 3 -->
+
         </div>
-    </div>
     </form>
 </div>
 
@@ -661,7 +856,7 @@
         <td class="align-middle">
             <select class="form-select row-item" required>
                 <option value="">Select Item</option>
-                <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Item</option>
+                <option value="add_new" class="text-primary fw-bold">+ Add New Item</option>
                 {% for item in items %}
                 <option value="{{ item.id }}" data-name="{{ item.material_name }}">
                     {{ item.material_name }}
@@ -688,19 +883,11 @@
         <td class="align-middle">
             <input type="text" class="form-control row-remarks" maxlength="200">
         </td>
-        <td class="text-center align-middle" style="white-space:nowrap;">
-            <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row"
-                    style="background:transparent;border:1.5px solid #0d6efd;color:#0d6efd;border-radius:4px;
-                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
-                           cursor:pointer;font-size:15px;font-weight:bold;margin-right:3px;
-                           transition:background .15s,color .15s;">
+        <td class="text-center align-middle" style="white-space:nowrap; padding: 2px 4px !important;">
+            <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row">
                 <i class="bi bi-plus-lg"></i>
             </button>
-            <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1" title="Delete Row"
-                    style="background:transparent;border:1.5px solid #ef4444;color:#ef4444;border-radius:4px;
-                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
-                           cursor:pointer;font-size:14px;
-                           transition:background .15s,color .15s;">
+            <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1" title="Delete Row">
                 <i class="bi bi-trash"></i>
             </button>
         </td>
@@ -710,12 +897,6 @@
 <!-- ── CREATE NEW MATERIAL MODAL ──────────────────────────────────── -->
 <div class="modal fade" id="createMaterialModal" tabindex="-1" aria-hidden="true"
     style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
-    <style>
-        .erp-modal-input:focus {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
-        }
-    </style>
     <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
         <form id="createMaterialForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
             {% csrf_token %}
@@ -726,21 +907,18 @@
             <div class="modal-body bg-white px-4 py-3">
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Name <span class="text-danger">*</span></label>
-                    <input type="text" name="material_name" id="newMaterialName" class="form-control erp-modal-input" placeholder="Enter Item Name"
-                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                    <input type="text" name="material_name" id="newMaterialName" class="form-control" placeholder="Enter Item Name" required>
                 </div>
                 <div class="mb-2">
                     <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Code <span class="text-secondary">(Optional)</span></label>
-                    <input type="text" name="material_code" id="newMaterialCode" class="form-control erp-modal-input" placeholder="Auto-generated if empty"
-                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                    <input type="text" name="material_code" id="newMaterialCode" class="form-control" placeholder="Auto-generated if empty">
                 </div>
                 <div id="materialModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
             </div>
             <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
-                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="saveMaterialBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
-                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
-                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Item
+                <button type="button" class="btn btn-light border fw-medium btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveMaterialBtn" class="btn btn-primary fw-bold btn-sm d-flex align-items-center shadow-sm">
+                    <i class="bi bi-box-arrow-in-down me-1"></i> Save Item
                 </button>
             </div>
         </form>
@@ -760,8 +938,7 @@
             <div class="modal-body bg-white px-4 py-3">
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Group Name <span class="text-danger">*</span></label>
-                    <input type="text" name="SalPurGroupName" id="newGroupName" class="form-control erp-modal-input" placeholder="Enter Group Name"
-                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                    <input type="text" name="SalPurGroupName" id="newGroupName" class="form-control" placeholder="Enter Group Name" required>
                 </div>
                 
                 <div class="mb-3 d-flex align-items-center gap-2">
@@ -786,10 +963,9 @@
                 <div id="groupModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
             </div>
             <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
-                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="saveGroupBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
-                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
-                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Group
+                <button type="button" class="btn btn-light border fw-medium btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveGroupBtn" class="btn btn-primary fw-bold btn-sm d-flex align-items-center shadow-sm">
+                    <i class="bi bi-box-arrow-in-down me-1"></i> Save Group
                 </button>
             </div>
         </form>
@@ -809,16 +985,14 @@
             <div class="modal-body bg-white px-4 py-3">
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Broker Name <span class="text-danger">*</span></label>
-                    <input type="text" name="broker_name" id="newBrokerName" class="form-control erp-modal-input" placeholder="Enter Broker Name"
-                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                    <input type="text" name="broker_name" id="newBrokerName" class="form-control" placeholder="Enter Broker Name" required>
                 </div>
                 <div id="brokerModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
             </div>
             <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
-                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="saveBrokerBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
-                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
-                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Broker
+                <button type="button" class="btn btn-light border fw-medium btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveBrokerBtn" class="btn btn-primary fw-bold btn-sm d-flex align-items-center shadow-sm">
+                    <i class="bi bi-box-arrow-in-down me-1"></i> Save Broker
                 </button>
             </div>
         </form>
@@ -838,16 +1012,14 @@
             <div class="modal-body bg-white px-4 py-3">
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Supplier Name <span class="text-danger">*</span></label>
-                    <input type="text" name="supplier_name" id="newSupplierName" class="form-control erp-modal-input" placeholder="Enter Supplier Name"
-                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                    <input type="text" name="supplier_name" id="newSupplierName" class="form-control" placeholder="Enter Supplier Name" required>
                 </div>
                 <div id="supplierModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
             </div>
             <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
-                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="saveSupplierBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
-                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
-                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Supplier
+                <button type="button" class="btn btn-light border fw-medium btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveSupplierBtn" class="btn btn-primary fw-bold btn-sm d-flex align-items-center shadow-sm">
+                    <i class="bi bi-box-arrow-in-down me-1"></i> Save Supplier
                 </button>
             </div>
         </form>
@@ -856,60 +1028,4 @@
 
 <!-- Load JS Module -->
 <script type="module" src="{% static 'js/modules/pages/purchase-bill-create.js' %}?v={% now 'U' %}"></script>
-{% endblock %}
-
-{% block extra_js %}
-<!-- Floating Label Auto-Fill Logic -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function toggleFloat(el) {
-            const field = el.closest('.erp-field, .erp-floating');
-            if (!field) return;
-            if (el.value && el.value.trim() !== '') {
-                field.classList.add('is-filled');
-            } else {
-                field.classList.remove('is-filled');
-            }
-        }
-
-        // Listeners for standard inputs
-        document.querySelectorAll('.erp-field .erp-floating-input, .erp-floating .erp-floating-input').forEach(el => {
-            setTimeout(() => toggleFloat(el), 100);
-            el.addEventListener('input', () => toggleFloat(el));
-            el.addEventListener('change', () => toggleFloat(el));
-            el.addEventListener('blur', () => toggleFloat(el));
-        });
-
-        // Toggle logic for Tabs
-        const tabs = [
-            { btn: document.getElementById('btn-tab-items'), sec: document.getElementById('section-items') },
-            { btn: document.getElementById('btn-tab-totals'), sec: document.getElementById('section-totals') },
-            { btn: document.getElementById('btn-tab-additional'), sec: document.getElementById('section-additional') }
-        ];
-
-        tabs.forEach(tab => {
-            if (tab.btn) {
-                tab.btn.addEventListener('click', function () {
-                    tabs.forEach(t => {
-                        if (t.btn === tab.btn) {
-                            t.btn.classList.remove('btn-light');
-                            t.btn.classList.add('btn-primary');
-                            t.btn.style.backgroundColor = '';
-                            t.btn.style.color = '';
-                            t.btn.style.border = '';
-                            if (t.sec) t.sec.classList.remove('d-none');
-                        } else {
-                            t.btn.classList.remove('btn-primary');
-                            t.btn.classList.add('btn-light');
-                            t.btn.style.backgroundColor = '#f8f9fa';
-                            t.btn.style.color = '#4b5563';
-                            t.btn.style.border = '1px solid #dee2e6';
-                            if (t.sec) t.sec.classList.add('d-none');
-                        }
-                    });
-                });
-            }
-        });
-    });
-</script>
 {% endblock %}
