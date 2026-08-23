@@ -1,0 +1,915 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill - Alpha Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .section-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    .table thead {
+        background: #0d6efd;
+        color: white;
+    }
+    .summary-box {
+        background: #eef4ff;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .required::after {
+        content: " *";
+        color: red;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        position: relative;
+    }
+    .progress-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    .progress-step::before {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ccc;
+        z-index: 2;
+    }
+    .progress-step.active::before { background: #004080; }
+    .progress-step span {
+        display: block;
+        margin-top: 30px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .progress-line {
+        position: absolute;
+        top: 13px;
+        left: 12.5%;
+        width: 75%;
+        height: 4px;
+        background: #ccc;
+        z-index: 1;
+    }
+    .progress-line-fill {
+        height: 100%;
+        width: 0%;
+        background: #004080;
+        transition: width 0.3s ease;
+    }
+
+    /* Back button */
+    .erp-btn-back {
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.15s ease;
+    }
+    .erp-btn-back:hover { color: #111827; }
+
+    /* Items table row sizing */
+    #itemsTable tbody tr { height: 34px !important; }
+    #itemsTable tbody td {
+        height: 34px !important;
+        padding: 3px 6px !important;
+        vertical-align: middle !important;
+        background-color: #ffffff;
+        box-sizing: border-box !important;
+    }
+    #itemsTable tbody td select.form-select,
+    #itemsTable tbody td input.form-control {
+        height: 28px !important;
+        min-height: 28px !important;
+        padding: 2px 6px !important;
+        font-size: 12px !important;
+        border-radius: 3px !important;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        box-sizing: border-box !important;
+    }
+    #itemsTable tbody td .erp-action-btn {
+        height: 26px !important;
+        width: 26px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Validation styles */
+    .invalid-feedback-erp {
+        color: #ef4444;
+        font-size: 11px;
+        margin-top: 3px;
+        display: block;
+        font-weight: 500;
+    }
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+        box-shadow: 0 0 0 2px rgba(239,68,68,.12) !important;
+    }
+    .form-control.is-invalid:focus,
+    .form-select.is-invalid:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239,68,68,.18) !important;
+    }
+    #itemsTable .form-control.is-invalid,
+    #itemsTable .form-select.is-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fff5f5 !important;
+        box-shadow: none !important;
+    }
+
+    /* Smart dropdown styling */
+    .smart-dropdown-panel {
+        display: none;
+        position: fixed;
+        z-index: 999999;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        max-width: 95vw;
+        max-height: 300px;
+        overflow: hidden;
+        flex-direction: column;
+    }
+</style>
+<script>
+    window.APP_CONFIG = {
+        voucherNo: "{{ voucher_no }}",
+        isEditMode: {% if voucher_no %}true{% else %}false{% endif %},
+        isViewMode: {% if is_view_mode %}true{% else %}false{% endif %},
+        billStatus: "{{ bill_status|default:'Draft' }}",
+    };
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 py-2" style="max-width: 100% !important; margin: 0 auto; margin-top: -20px !important;">
+    <form id="purchaseBillForm" novalidate>
+        {% csrf_token %}
+    <div class="sticky-top-section">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-1" style="height: 38px !important;">
+            <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; margin: 0;">
+                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
+                <span class="badge ms-2" style="font-size: 11px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;">RMPBL</span>
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+                {% if is_view_mode %}
+                    {% if prev_pk %}
+                        <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
+                           class="btn btn-sm btn-outline-secondary px-2 py-1"
+                           style="font-size:12px;font-weight:500;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="bi bi-chevron-left"></i> Prev
+                        </a>
+                    {% else %}
+                        <span class="d-inline-flex align-items-center gap-1 px-2 py-1"
+                              style="font-size:11px;font-weight:500;border-radius:4px;background:#fef9c3;color:#92400e;border:1px solid #fde68a;">
+                            <i class="bi bi-skip-start-fill"></i> First Record
+                        </span>
+                    {% endif %}
+
+                    {% if next_pk %}
+                        <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
+                           class="btn btn-sm btn-outline-secondary px-2 py-1"
+                           style="font-size:12px;font-weight:500;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    {% else %}
+                        <span class="d-inline-flex align-items-center gap-1 px-2 py-1"
+                              style="font-size:11px;font-weight:500;border-radius:4px;background:#fef9c3;color:#92400e;border:1px solid #fde68a;">
+                            End of Records <i class="bi bi-skip-end-fill"></i>
+                        </span>
+                    {% endif %}
+
+                    {% if bill_status == 'Submitted' %}
+                        <span class="badge px-2 py-1" style="font-size:11px;background-color:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="bi bi-lock-fill"></i> Submitted — Editing Locked
+                        </span>
+                    {% elif bill_status == 'Approved' %}
+                        <span class="badge px-2 py-1" style="font-size:11px;background-color:#d1fae5;color:#065f46;border:1px solid #34d399;border-radius:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="bi bi-lock-fill"></i> Approved — Editing Locked
+                        </span>
+                    {% else %}
+                        <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
+                           class="btn btn-sm btn-success px-2 py-1"
+                           style="font-size:12px;font-weight:600;border-radius:4px;display:inline-flex;align-items:center;gap:4px;background-color:#10b981;border-color:#10b981;color:white;">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'dashboard:purchase_bill_list' %}" class="erp-btn-back">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-2"
+             style="border-radius:6px;font-size:13px;"></div>
+
+        <!-- Bill Locked Banner -->
+        <div id="billLockedBanner" class="d-none mb-2 p-2 d-flex align-items-center gap-2"
+             style="border-radius:6px;font-size:13px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
+            <i class="bi bi-lock-fill" style="font-size:15px;flex-shrink:0;"></i>
+            <span id="billLockedBannerText">This Purchase Bill cannot be edited in its current state.</span>
+        </div>
+
+        <!-- Purchase Bill Header Card -->
+        <div class="card px-4 pt-2 pb-2 mb-3 shadow-sm" id="billDetailsCard" style="border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
+            <h5 class="section-title" style="font-size: 15px; margin-bottom: 6px;">Purchase Bill Details</h5>
+            
+            <!-- Row 1: Bill No | Bill Date | Expected Delivery Date | Sales/Purchase Group | Bill Status -->
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <input type="text" id="billNo" name="bill_no" class="form-control erp-floating-input"
+                               value="{% if is_view_mode %}{{ voucher_no }}{% else %}Auto Generated{% endif %}" disabled placeholder=" " style="background-color:#f3f4f6;">
+                        <label for="billNo" class="erp-floating-label required">Bill No</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <input type="date" id="billDate" name="bill_date" class="form-control erp-floating-input" placeholder=" " required>
+                        <label for="billDate" class="erp-floating-label required">Bill Date</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control erp-floating-input" placeholder=" ">
+                        <label for="expectedDeliveryDate" class="erp-floating-label">Expected Date</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <select id="salPurGroup" name="sal_pur_group" class="form-select erp-floating-input" required>
+                            <option value=""></option>
+                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Group</option>
+                            {% for g in sal_pur_groups %}
+                            <option value="{{ g.SalPurGroupID }}">{{ g.SalPurGroupName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="salPurGroup" class="erp-floating-label required">Sales/Purchase Group</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <select id="billStatus" name="bill_status" class="form-select erp-floating-input">
+                            <option value="Draft" {% if bill_status == 'Draft' %}selected{% endif %}>Draft</option>
+                            <option value="Submitted" {% if bill_status == 'Submitted' %}selected{% endif %}>Submitted for Approval</option>
+                            <option value="RefBack" {% if bill_status == 'RefBack' %}selected{% endif %}>Ref. Back by Approver</option>
+                            <option value="Approved" {% if bill_status == 'Approved' %}selected{% endif %}>Approved</option>
+                        </select>
+                        <label for="billStatus" class="erp-floating-label">Bill Status</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2 (4 EXTRA FIELDS): Gate Pass No (Dropdown) | Gate Pass Date | PO No (Dropdown) | PO Date -->
+            <div class="row mt-3">
+                <!-- Gate Pass No — Smart Dropdown -->
+                <div class="col-md-3" style="position:relative;">
+                    <div class="erp-field erp-floating-group" id="gpDropdownGroup" style="margin-top: 2px !important;">
+                        <input type="hidden" id="gatePassNo" name="gate_pass_no">
+                        <input type="text" id="gatePassNoDisplay" class="form-control erp-floating-input" placeholder=" " autocomplete="off"
+                               style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
+                        <label for="gatePassNoDisplay" class="erp-floating-label">Gate Pass No</label>
+
+                        <!-- Gate Pass Dropdown Panel -->
+                        <div id="gpDropdownPanel" class="smart-dropdown-panel">
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="gpSearchInput" placeholder="Search Gate Pass, Vehicle, Driver..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <div style="display:grid; grid-template-columns:90px 100px 120px 130px 1fr;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>GP No</span>
+                                <span>Date</span>
+                                <span>Driver</span>
+                                <span>Vehicle</span>
+                                <span>Supplier</span>
+                            </div>
+                            <div id="gpDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:200px;"></div>
+                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                                <span id="gpDropdownCount">Select Gate Pass</span>
+                                <button type="button" id="gpDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gate Pass Date (Auto-fill) -->
+                <div class="col-md-3">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <input type="date" id="gatePassDate" name="gate_pass_date" class="form-control erp-floating-input" placeholder=" " readonly style="background-color:#f9fafb;">
+                        <label for="gatePassDate" class="erp-floating-label">Gate Pass Date</label>
+                    </div>
+                </div>
+
+                <!-- PO No — Smart Dropdown -->
+                <div class="col-md-3" style="position:relative;">
+                    <div class="erp-field erp-floating-group" id="poDropdownGroup" style="margin-top: 2px !important;">
+                        <input type="hidden" id="poNo" name="po_no">
+                        <input type="text" id="poNoDisplay" class="form-control erp-floating-input" placeholder=" " autocomplete="off"
+                               style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
+                        <label for="poNoDisplay" class="erp-floating-label">PO No</label>
+
+                        <!-- PO Dropdown Panel -->
+                        <div id="poDropdownPanel" class="smart-dropdown-panel">
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="poSearchInput" placeholder="Search PO No or Supplier..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <div style="display:grid; grid-template-columns:140px 110px 1fr;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>PO No</span>
+                                <span>PO Date</span>
+                                <span>Supplier Name</span>
+                            </div>
+                            <div id="poDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:200px;"></div>
+                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                                <span id="poDropdownCount">Select PO</span>
+                                <button type="button" id="poDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PO Date (Auto-fill) -->
+                <div class="col-md-3">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <input type="date" id="poDate" name="po_date" class="form-control erp-floating-input" placeholder=" " readonly style="background-color:#f9fafb;">
+                        <label for="poDate" class="erp-floating-label">PO Date</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Broker Name | Zone Name | Supplier Name -->
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <select id="broker" name="broker" class="form-select erp-floating-input" required>
+                            <option value=""></option>
+                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Broker</option>
+                            {% for b in brokers %}
+                            <option value="{{ b.BrokerID }}">{{ b.BrokerName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="broker" class="erp-floating-label required">Broker Name</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <select id="zoneName" name="zone_name" class="form-select erp-floating-input" required>
+                            <option value=""></option>
+                            <option value="North Region">North Region</option>
+                            <option value="East Region">East Region</option>
+                            <option value="South Region">South Region</option>
+                            <option value="West Region">West Region</option>
+                            <option value="Kolkata Region">Kolkata Region</option>
+                            <option value="Delhi Region">Delhi Region</option>
+                            <option value="NE Region">NE Region</option>
+                        </select>
+                        <label for="zoneName" class="erp-floating-label required">Zone Name</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                        <select id="supplier" name="supplier" class="form-select erp-floating-input" required>
+                            <option value=""></option>
+                            <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Supplier</option>
+                            {% for s in suppliers %}
+                            <option value="{{ s.VendorSupplierID }}">{{ s.VendorSupplierName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="supplier" class="erp-floating-label required">Supplier Name</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toggle Link/Button for Optional Fields -->
+            <div class="mt-2 text-start">
+                <a href="#moreBillDetailsCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="moreBillDetailsCollapse" class="fw-semibold text-decoration-none" id="toggleOptionalFieldsBtn" style="font-size: 13px; color: #2563eb; display: inline-flex; align-items: center;">
+                    <i class="bi bi-chevron-right me-1" id="toggleChevron" style="transition: transform 0.2s ease;"></i> <span>Show Optional Fields</span>
+                </a>
+            </div>
+
+            <!-- Collapsible container for optional fields -->
+            <div class="collapse mt-2" id="moreBillDetailsCollapse">
+                <div class="row pt-2" style="border-top: 1px dashed #e2e8f0;">
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <input type="text" id="supplierContact" name="supplier_contact" class="form-control erp-floating-input" placeholder=" ">
+                            <label for="supplierContact" class="erp-floating-label">Supplier Contact</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <textarea id="supplierAddress" name="supplier_address" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
+                            <label for="supplierAddress" class="erp-floating-label">Supplier Address</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <input type="text" id="gstNumber" name="gst_number" class="form-control erp-floating-input" placeholder=" ">
+                            <label for="gstNumber" class="erp-floating-label">GST Number</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End sticky-top-section -->
+
+        <!-- Progress Bar -->
+        <div class="position-relative mb-4 px-4 py-1 bg-white card shadow-sm">
+            <div class="progress-container">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressLineFill"></div>
+                </div>
+                <div class="progress-step active" id="step-Draft"><span>Draft</span></div>
+                <div class="progress-step" id="step-Submitted"><span>Submitted</span></div>
+                <div class="progress-step" id="step-RefBack"><span>Ref. Back</span></div>
+                <div class="progress-step" id="step-Approved"><span>Approved</span></div>
+            </div>
+        </div>
+
+        <!-- Tabs Toggle Buttons -->
+        <div class="d-flex gap-2 mb-4 ms-1">
+            <button type="button" class="btn btn-primary px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-items" style="border-radius: 8px;">Items</button>
+            <button type="button" class="btn btn-light px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-totals" style="border-radius: 8px; background-color: #f8f9fa; color: #4b5563; border: 1px solid #dee2e6;">Delivery and Payment terms</button>
+            <button type="button" class="btn btn-light px-4 fw-semibold shadow-sm tab-btn" id="btn-tab-additional" style="border-radius: 8px; background-color: #f8f9fa; color: #4b5563; border: 1px solid #dee2e6;">Additional Information</button>
+        </div>
+
+        <div id="section-items">
+            <!-- Item Table Card -->
+            <div class="card px-4 pt-2 pb-4 mb-4">
+                <div class="mb-3">
+                    <h5 class="section-title mb-0" style="font-size: 15px;">Purchase Bill Items</h5>
+                </div>
+                <div class="table-responsive erp-items-table-wrapper">
+                    <table class="table table-bordered align-middle" id="itemsTable" style="font-size:13px;">
+                        <thead class="shadow-sm" style="border-top:none;">
+                            <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center">#</th>
+                                <th style="width:30%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Item Name <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Order Qty <span class="text-danger">*</span></th>
+                                <th style="width:10%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">UOM <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Unit Rate <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Amount</th>
+                                <th style="width:14%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Remarks</th>
+                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center border-end-0">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <!-- Dynamic rows injected here -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-end align-middle fw-bold border-0"
+                                    style="text-align: right !important; padding-right: 16px; letter-spacing: 0.5px; font-size: 11px; background-color: #64748b !important; color: white !important;">TOTAL BASIC AMOUNT
+                                </td>
+                                <td class="align-middle border-0 p-0" style="background-color: #64748b !important;">
+                                    <input type="text" id="tableTotalBasicAmountDisplay"
+                                        class="form-control text-end fw-bold m-0 w-100" value="0.00"
+                                        style="background-color: transparent !important; border: none !important; color: white !important; padding: 8px 12px; box-shadow: none !important;" readonly>
+                                </td>
+                                <td colspan="2" class="border-0 align-middle text-end p-0" style="background-color: #64748b !important;">
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Summary Card -->
+            <div class="card px-4 pt-3 pb-3 mb-4 shadow-sm" style="border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
+                <h5 class="section-title" style="font-size: 15px; margin-bottom: 12px;">Bill Summary</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="summary-box p-3 rounded" style="background:#f8f9fa; border:1px solid #e5e7eb;">
+                            <h6 style="font-size:12px;font-weight:600;color:#4b5563;text-transform:uppercase;margin-bottom:4px;">Total Basic Amount</h6>
+                            <h4 id="totalBasicAmountDisplay" class="mb-0 fw-bold" style="color:#1f2937;font-size:18px;">0.00</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="summary-box p-3 rounded" style="background:#e0f2fe; border:1px solid #bae6fd;">
+                            <h6 style="font-size:12px;font-weight:600;color:#0284c7;text-transform:uppercase;margin-bottom:4px;">Grand Total</h6>
+                            <h4 id="grandTotalDisplay" class="mb-0 fw-bold" style="color:#0369a1;font-size:18px;">0.00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-totals" class="d-none">
+            <!-- Delivery & Payment Card -->
+            <div class="card px-3 pt-2 pb-3 mb-4">
+                <h5 class="section-title" style="margin-bottom: 12px; margin-top: 4px; font-size: 16px;">Delivery &amp; Payment Terms</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="deliveryLocation" name="delivery_location" class="form-select erp-floating-input" required>
+                                <option value=""></option>
+                                <option value="Plant 1">Plant 1</option>
+                                <option value="Plant 2">Plant 2</option>
+                                <option value="Warehouse">Warehouse</option>
+                            </select>
+                            <label for="deliveryLocation" class="erp-floating-label required">Delivery Location</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="deliveryTerms" name="delivery_terms" class="form-select erp-floating-input">
+                                <option value="Ex Works/Ex-Godown">Ex Works/Ex-Godown</option>
+                                <option value="FOB">FOB</option>
+                                <option value="Door Delivery">Door Delivery</option>
+                                <option value="FOB-FOT-FOR">FOB-FOT-FOR</option>
+                                <option value="CIF">CIF</option>
+                                <option value="EXW">EXW</option>
+                                <option value="DAP">DAP</option>
+                            </select>
+                            <label for="deliveryTerms" class="erp-floating-label">Delivery Terms / Incoterms</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="paymentTerms" name="payment_terms" class="form-select erp-floating-input">
+                                <option value="Advance">Advance</option>
+                                <option value="30 Days Credit">30 Days Credit</option>
+                                <option value="45 Days Credit">45 Days Credit</option>
+                                <option value="60 Days Credit">60 Days Credit</option>
+                            </select>
+                            <label for="paymentTerms" class="erp-floating-label">Payment Terms</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="freightTerms" name="freight_terms" class="form-select erp-floating-input">
+                                <option value="Supplier Paid">Supplier Paid</option>
+                                <option value="Buyer Paid">Buyer Paid</option>
+                            </select>
+                            <label for="freightTerms" class="erp-floating-label">Freight Terms</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="currency" name="currency" class="form-select erp-floating-input">
+                                <option value="INR">INR</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                            <label for="currency" class="erp-floating-label">Currency</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-additional" class="d-none">
+            <!-- Additional Information Card -->
+            <div class="card px-3 pt-2 pb-3 mb-4">
+                <h5 class="section-title" style="margin-bottom: 12px; margin-top: 4px; font-size: 16px;">Additional Information</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <input type="text" id="purchaserName" name="purchaser_name" class="form-control erp-floating-input" placeholder=" ">
+                            <label for="purchaserName" class="erp-floating-label">Purchaser Name</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="department" name="department" class="form-select erp-floating-input">
+                                <option value="Purchase">Purchase</option>
+                                <option value="Production">Production</option>
+                                <option value="Stores">Stores</option>
+                            </select>
+                            <label for="department" class="erp-floating-label">Department</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <select id="costCenter" name="cost_center" class="form-select erp-floating-input">
+                                <option value="Plant A">Plant A</option>
+                                <option value="Plant B">Plant B</option>
+                            </select>
+                            <label for="costCenter" class="erp-floating-label">Cost Center</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-md-6">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <textarea id="specialInstructions" name="special_instructions" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
+                            <label for="specialInstructions" class="erp-floating-label">Special Instructions</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="erp-field erp-floating-group" style="margin-top: 2px !important;">
+                            <textarea id="internalNotes" name="internal_notes" class="form-control erp-floating-input" rows="1" placeholder=" " style="height: 38px !important; min-height: 38px !important;"></textarea>
+                            <label for="internalNotes" class="erp-floating-label">Internal Notes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-end mb-4 gap-2 d-flex justify-content-end" id="actionButtonsContainer">
+            <button type="button" class="btn btn-secondary px-4 py-2" id="saveDraftBtn"
+                    style="border-radius:6px;font-weight:600;">Save Draft</button>
+            <button type="button" class="btn btn-success px-4 py-2" id="submitApprovalBtn"
+                    style="border-radius:6px;font-weight:600;">Save and Submitted</button>
+            <button type="submit" class="btn btn-primary px-4 py-2" id="generateBillBtn"
+                    style="border-radius:6px;font-weight:600;">Save Bill</button>
+        </div>
+    </div>
+    </form>
+</div>
+
+<!-- Dynamic Row Template -->
+<template id="rowTemplate">
+    <tr class="item-row">
+        <td class="row-num text-center align-middle fw-semibold text-secondary">1</td>
+        <td class="align-middle">
+            <select class="form-select row-item" required>
+                <option value="">Select Item</option>
+                <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Item</option>
+                {% for item in items %}
+                <option value="{{ item.id }}" data-name="{{ item.material_name }}">
+                    {{ item.material_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td class="align-middle">
+            <input type="number" step="0.0001" min="0" class="form-control text-end row-qty" required>
+        </td>
+        <td class="align-middle">
+            <select class="form-select row-uom" required>
+                <option value="MT">MT</option>
+                <option value="KG">KG</option>
+                <option value="TON">TON</option>
+            </select>
+        </td>
+        <td class="align-middle">
+            <input type="number" step="0.0001" min="0" class="form-control text-end row-rate" required>
+        </td>
+        <td class="align-middle">
+            <input type="number" class="form-control text-end row-amount bg-light" readonly value="0.00">
+        </td>
+        <td class="align-middle">
+            <input type="text" class="form-control row-remarks" maxlength="200">
+        </td>
+        <td class="text-center align-middle" style="white-space:nowrap;">
+            <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row"
+                    style="background:transparent;border:1.5px solid #0d6efd;color:#0d6efd;border-radius:4px;
+                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+                           cursor:pointer;font-size:15px;font-weight:bold;margin-right:3px;
+                           transition:background .15s,color .15s;">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+            <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1" title="Delete Row"
+                    style="background:transparent;border:1.5px solid #ef4444;color:#ef4444;border-radius:4px;
+                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+                           cursor:pointer;font-size:14px;
+                           transition:background .15s,color .15s;">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<!-- ── CREATE NEW MATERIAL MODAL ──────────────────────────────────── -->
+<div class="modal fade" id="createMaterialModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <style>
+        .erp-modal-input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        }
+    </style>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <form id="createMaterialForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            {% csrf_token %}
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Add New Item</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Name <span class="text-danger">*</span></label>
+                    <input type="text" name="material_name" id="newMaterialName" class="form-control erp-modal-input" placeholder="Enter Item Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Item Code <span class="text-secondary">(Optional)</span></label>
+                    <input type="text" name="material_code" id="newMaterialCode" class="form-control erp-modal-input" placeholder="Auto-generated if empty"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;">
+                </div>
+                <div id="materialModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveMaterialBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
+                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Item
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ── CREATE NEW SALES/PURCHASE GROUP MODAL ──────────────────────── -->
+<div class="modal fade" id="createSalPurGroupModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <form id="createSalPurGroupForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            {% csrf_token %}
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Add Sales/Purchase Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Group Name <span class="text-danger">*</span></label>
+                    <input type="text" name="SalPurGroupName" id="newGroupName" class="form-control erp-modal-input" placeholder="Enter Group Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+                
+                <div class="mb-3 d-flex align-items-center gap-2">
+                    <input type="checkbox" name="GST_Applicable_Y_N" id="newGroupGST" value="true" checked style="width: 16px; height: 16px; cursor: pointer;">
+                    <label for="newGroupGST" class="fw-semibold text-dark mb-0" style="font-size: 13px; cursor: pointer; user-select: none;">GST Applicable Y/N</label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Tax Type</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Interstate_Y_WithinState_N" id="newGroupInterstateY" value="true" checked style="cursor: pointer;">
+                            <label class="form-check-label" for="newGroupInterstateY" style="font-size: 13px; cursor: pointer; user-select: none;">Interstate (IGST)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Interstate_Y_WithinState_N" id="newGroupInterstateN" value="false" style="cursor: pointer;">
+                            <label class="form-check-label" for="newGroupInterstateN" style="font-size: 13px; cursor: pointer; user-select: none;">Within State (CGST/SGST)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="groupModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveGroupBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
+                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Group
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ── CREATE NEW BROKER MODAL ──────────────────────────────────── -->
+<div class="modal fade" id="createBrokerModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <form id="createBrokerForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            {% csrf_token %}
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Add New Broker</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Broker Name <span class="text-danger">*</span></label>
+                    <input type="text" name="broker_name" id="newBrokerName" class="form-control erp-modal-input" placeholder="Enter Broker Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+                <div id="brokerModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveBrokerBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
+                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Broker
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ── CREATE NEW SUPPLIER MODAL ────────────────────────────────── -->
+<div class="modal fade" id="createSupplierModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter: blur(4px); background-color: rgba(15, 23, 42, 0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <form id="createSupplierForm" class="modal-content shadow-lg border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+            {% csrf_token %}
+            <div class="modal-header border-bottom px-4 py-2 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size: 1.1rem;">Add New Supplier</h5>
+                <button type="button" class="btn-close position-absolute" style="right: 16px; font-size: 0.8rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-3">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 13px;">Supplier Name <span class="text-danger">*</span></label>
+                    <input type="text" name="supplier_name" id="newSupplierName" class="form-control erp-modal-input" placeholder="Enter Supplier Name"
+                        style="border-radius: 8px; padding: 8px 12px; font-size: 14px; height: 38px;" required>
+                </div>
+                <div id="supplierModalError" class="text-danger mt-2 d-none" style="font-size: 12px; font-weight: 500;"></div>
+            </div>
+            <div class="modal-footer border-top px-4 py-2 d-flex justify-content-end" style="gap: 10px; background-color: #f8fafc;">
+                <button type="button" class="btn btn-light border fw-medium" style="border-radius: 8px; padding: 6px 16px; font-size: 14px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="saveSupplierBtn" class="btn btn-primary fw-bold d-flex align-items-center shadow-sm"
+                    style="border-radius: 8px; padding: 6px 16px; font-size: 14px; background-color: #2563eb; border-color: #2563eb;">
+                    <i class="bi bi-box-arrow-in-down me-2"></i> Save Supplier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Load JS Module -->
+<script type="module" src="{% static 'js/modules/pages/purchase-bill-create.js' %}?v={% now 'U' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Floating Label Auto-Fill Logic -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function toggleFloat(el) {
+            const field = el.closest('.erp-field, .erp-floating');
+            if (!field) return;
+            if (el.value && el.value.trim() !== '') {
+                field.classList.add('is-filled');
+            } else {
+                field.classList.remove('is-filled');
+            }
+        }
+
+        // Listeners for standard inputs
+        document.querySelectorAll('.erp-field .erp-floating-input, .erp-floating .erp-floating-input').forEach(el => {
+            setTimeout(() => toggleFloat(el), 100);
+            el.addEventListener('input', () => toggleFloat(el));
+            el.addEventListener('change', () => toggleFloat(el));
+            el.addEventListener('blur', () => toggleFloat(el));
+        });
+
+        // Toggle logic for Tabs
+        const tabs = [
+            { btn: document.getElementById('btn-tab-items'), sec: document.getElementById('section-items') },
+            { btn: document.getElementById('btn-tab-totals'), sec: document.getElementById('section-totals') },
+            { btn: document.getElementById('btn-tab-additional'), sec: document.getElementById('section-additional') }
+        ];
+
+        tabs.forEach(tab => {
+            if (tab.btn) {
+                tab.btn.addEventListener('click', function () {
+                    tabs.forEach(t => {
+                        if (t.btn === tab.btn) {
+                            t.btn.classList.remove('btn-light');
+                            t.btn.classList.add('btn-primary');
+                            t.btn.style.backgroundColor = '';
+                            t.btn.style.color = '';
+                            t.btn.style.border = '';
+                            if (t.sec) t.sec.classList.remove('d-none');
+                        } else {
+                            t.btn.classList.remove('btn-primary');
+                            t.btn.classList.add('btn-light');
+                            t.btn.style.backgroundColor = '#f8f9fa';
+                            t.btn.style.color = '#4b5563';
+                            t.btn.style.border = '1px solid #dee2e6';
+                            if (t.sec) t.sec.classList.add('d-none');
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

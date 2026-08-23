@@ -1,0 +1,170 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Purchase Bills (RMPBL) - AccountMaster Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/bank-transactions.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 d-flex flex-column" style="height: calc(100vh - 100px); overflow: hidden; margin-top: -20px;">
+    <div class="list-header flex-shrink-0" style="margin-bottom: 4px;">
+        <div class="d-flex justify-content-between align-items-start" style="margin-bottom: 4px;">
+            <div style="margin-top: 4px;">
+                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">Purchase Bills (RMPBL)</h2>
+                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage raw material purchase bill records.</p>
+            </div>
+            <a href="{% url 'dashboard:purchase_bill_create' %}" class="btn btn-primary shadow-sm" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; width: calc(14% - 4px); padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; letter-spacing: 0.1px; margin-top: 4px; margin-right: 7px;">
+                Create New
+            </a>
+        </div>
+
+        <!-- Filters/Search Card -->
+        <div class="card border-0 mb-1 shadow-sm" style="border-radius: 4px; background: #ffffff; border: 1px solid #e5e7eb !important; position: relative; z-index: 1050;">
+            <form id="filterForm" class="d-flex align-items-center m-0 w-100" style="gap: 6px; flex-wrap: nowrap; padding: 6px 6px;">
+                
+                <!-- Search Input -->
+                <div style="flex: 20; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1;"></i>
+                        <input type="text" id="searchInput" class="form-control bg-light text-dark w-100" placeholder="Search Text..." style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <!-- Field Dropdown -->
+                <div style="flex: 15; min-width: 0;">
+                    <select id="typeFilter" class="form-select bg-light text-dark w-100" style="height: 32px !important; padding: 4px 24px 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
+                        <option value="">Search By...</option>
+                        <option value="bill_no">Bill No.</option>
+                        <option value="po_no">PO No.</option>
+                        <option value="gate_pass_no">Gate Pass No.</option>
+                        <option value="date">Bill Date</option>
+                        <option value="supplier_name">Supplier Name</option>
+                        <option value="bill_status">Bill Status</option>
+                        <option value="zone_name">Zone Name</option>
+                        <option value="broker">Broker</option>
+                        <option value="supplier_contact">Contact No.</option>
+                        <option value="gst_number">GST No.</option>
+                        <option value="narration">Special Instructions</option>
+                        <option value="amount">Amount</option>
+                    </select>
+                </div>
+                
+                <!-- Date From -->
+                <div style="flex: 13; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-calendar3 text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; pointer-events: none; z-index: 5;"></i>
+                        <input type="text" id="fromDate" class="form-control flatpickr-date bg-light text-dark w-100" placeholder="From" style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; cursor: pointer; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <!-- Date To -->
+                <div style="flex: 13; min-width: 0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-calendar3 text-muted position-absolute" style="left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; pointer-events: none; z-index: 5;"></i>
+                        <input type="text" id="toDate" class="form-control flatpickr-date bg-light text-dark w-100" placeholder="To" style="height: 32px !important; padding: 4px 6px 4px 26px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; cursor: pointer; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <!-- Actions Filter -->
+                <div style="flex: 15; min-width: 0;">
+                    <input type="hidden" id="statusFilter" name="statusFilter" value="">
+                    <div class="dropdown position-relative w-100">
+                        <button type="button" id="actionsDropdownBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="height: 32px !important; padding: 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 600; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                            <i class="bi bi-sliders" style="margin-right: 4px; font-size: 11px;"></i> <span id="actionsLabel">Status</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="actionsMenu" style="font-size: 12px; min-width: 120px;">
+                            <li><a class="dropdown-item py-1" href="#" data-value="active">Active</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="inactive">Inactive</a></li>
+                            <li><a class="dropdown-item py-1" href="#" data-value="all">All</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex: 12; min-width: 0;">
+                    <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm" style="height: 32px !important; padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; border-color: #d1d5db; background: #fff; color: #374151; box-sizing: border-box;">
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div> <!-- END list-header -->
+
+    <!-- ── Data Table ──────────────────────────────────────────────────────── -->
+    <div class="erp-table-wrapper flex-grow-1 d-flex flex-column mb-0" style="overflow:hidden; min-height:0;">
+        <div class="erp-table-scroll flex-grow-1" style="overflow-y: auto; overflow-x: auto; min-height:0;">
+            <table class="table table-bordered mb-0 erp-data-table">
+                <thead class="erp-table-header">
+                    <tr>
+                        <th style="width:9%; cursor:pointer;" data-sort="bill_no" class="sortable-header text-nowrap">
+                            Bill No. <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:8%; cursor:pointer;" data-sort="date" class="sortable-header text-nowrap">
+                            Bill Date <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th style="width:8%;" class="text-nowrap">PO No.</th>
+                        <th style="width:8%;" class="text-nowrap">Gate Pass</th>
+                        <th style="width:8%;" class="text-nowrap text-center">Bill Status</th>
+                        <th style="width:11%;">Supplier Name</th>
+                        <th style="width:8%;">Zone</th>
+                        <th style="width:8%;">Broker</th>
+                        <th style="width:8%;">Contact</th>
+                        <th style="width:10%; cursor:pointer; text-align:right;" data-sort="amount" class="sortable-header text-nowrap">
+                            Amount <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th class="status-column sortable-header text-center" style="width:7%; cursor:pointer;" data-sort="status">
+                            Status <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                        </th>
+                        <th class="action-column text-center" style="width:7%;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody" class="erp-table-body">
+                    <!-- Rows injected by purchase-bill-list.js -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ── Pagination Bar ──────────────────────────────────────────────────── -->
+        <div class="erp-pagination-container d-flex justify-content-between align-items-center px-3 py-2 bg-white border-top list-footer" style="border-bottom-left-radius:8px; border-bottom-right-radius:8px;">
+            <div class="erp-pagination-info text-muted" style="font-size:0.8rem;">
+                Showing <span id="paginationStart" class="fw-semibold text-dark">0</span> to <span id="paginationEnd" class="fw-semibold text-dark">0</span> of <span id="paginationTotal" class="fw-semibold text-dark">0</span> entries
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationControls" style="gap:4px;">
+                    <!-- Rendered by JS -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- ── Total Amount Footer ─────────────────────────────────────────────────── -->
+<div class="erp-list-footer-fixed" id="erpListFooter">
+    <div class="erp-list-footer-inner" style="display: flex; width: 100%; padding: 0; gap: 0; justify-content: start;">
+        <div style="width: 76%; flex-shrink: 0;"></div>
+        <div class="d-flex align-items-center justify-content-end text-end" style="width: 10%; padding-right: 16px; gap: 16px; box-sizing: border-box; flex-shrink: 0;">
+            <span class="erp-list-footer-label" style="margin: 0;">TOTAL AMOUNT</span>
+            <span id="totalAmountDisplay" class="erp-list-footer-amount">₹ 0.00</span>
+        </div>
+        <div style="width: 14%; flex-shrink: 0;"></div>
+    </div>
+</div>
+
+<script>
+    window.APP_CONFIG = {
+        userRole: "{{ request.session.role }}"
+    };
+</script>
+
+<!-- ── JS Module ──────────────────────────────────────────────────────────── -->
+<script type="module" src="{% static 'js/modules/pages/purchase-bill-list.js' %}?v={% now 'U' %}"></script>
+{% endblock %}

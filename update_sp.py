@@ -75,6 +75,58 @@ CREATE TABLE IF NOT EXISTS tblGatePass (
     TareWeight NUMERIC(18,2) DEFAULT 0,
     NetWeight NUMERIC(18,2) DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS tblPurchaseBill (
+    bill_no VARCHAR(50) PRIMARY KEY,
+    tran_type VARCHAR(20) DEFAULT 'RMPBL',
+    bill_date DATETIME,
+    expected_delivery_date DATE,
+    bill_status VARCHAR(20) DEFAULT 'Draft',
+    gate_pass_no VARCHAR(50),
+    gate_pass_date DATE,
+    po_no VARCHAR(50),
+    po_date DATE,
+    SalPurGroupID BIGINT,
+    broker_id INTEGER,
+    zone_name VARCHAR(50),
+    supplier_id INTEGER,
+    supplier_contact VARCHAR(50),
+    supplier_address TEXT,
+    gst_number VARCHAR(50),
+    delivery_location VARCHAR(100),
+    delivery_terms VARCHAR(100),
+    payment_terms VARCHAR(100),
+    freight_terms VARCHAR(100),
+    currency VARCHAR(10) DEFAULT 'INR',
+    purchaser_name VARCHAR(100),
+    department VARCHAR(50),
+    cost_center VARCHAR(50),
+    special_instructions TEXT,
+    internal_notes TEXT,
+    total_basic_amount NUMERIC(15,2) DEFAULT 0,
+    taxes NUMERIC(15,2) DEFAULT 0,
+    grand_total NUMERIC(15,2) DEFAULT 0,
+    status BOOLEAN DEFAULT 1,
+    user_created VARCHAR(50),
+    date_created DATETIME,
+    user_modified VARCHAR(50),
+    date_modified DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS tblPurchaseBill_TRAN (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    BillNo VARCHAR(50),
+    item_id INTEGER,
+    order_qty NUMERIC(15,4) DEFAULT 0,
+    uom VARCHAR(10),
+    unit_rate NUMERIC(15,4) DEFAULT 0,
+    amount NUMERIC(15,2) DEFAULT 0,
+    remarks VARCHAR(200),
+    user_created VARCHAR(50),
+    date_created DATETIME,
+    user_modified VARCHAR(50),
+    date_modified DATETIME
+);
 """
 
 postgresql_sql = """
@@ -146,6 +198,58 @@ CREATE TABLE IF NOT EXISTS public."tblGatePass" (
     "GrossWeight" NUMERIC(18,2) DEFAULT 0,
     "TareWeight" NUMERIC(18,2) DEFAULT 0,
     "NetWeight" NUMERIC(18,2) DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS public."tblPurchaseBill" (
+    bill_no VARCHAR(50) PRIMARY KEY,
+    tran_type VARCHAR(20) DEFAULT 'RMPBL',
+    bill_date TIMESTAMP,
+    expected_delivery_date DATE,
+    bill_status VARCHAR(20) DEFAULT 'Draft',
+    gate_pass_no VARCHAR(50),
+    gate_pass_date DATE,
+    po_no VARCHAR(50),
+    po_date DATE,
+    "SalPurGroupID" BIGINT,
+    broker_id INTEGER,
+    zone_name VARCHAR(50),
+    supplier_id INTEGER,
+    supplier_contact VARCHAR(50),
+    supplier_address TEXT,
+    gst_number VARCHAR(50),
+    delivery_location VARCHAR(100),
+    delivery_terms VARCHAR(100),
+    payment_terms VARCHAR(100),
+    freight_terms VARCHAR(100),
+    currency VARCHAR(10) DEFAULT 'INR',
+    purchaser_name VARCHAR(100),
+    department VARCHAR(50),
+    cost_center VARCHAR(50),
+    special_instructions TEXT,
+    internal_notes TEXT,
+    total_basic_amount NUMERIC(15,2) DEFAULT 0,
+    taxes NUMERIC(15,2) DEFAULT 0,
+    grand_total NUMERIC(15,2) DEFAULT 0,
+    status BOOLEAN DEFAULT TRUE,
+    user_created VARCHAR(50),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_modified VARCHAR(50),
+    date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public."tblPurchaseBill_TRAN" (
+    id SERIAL PRIMARY KEY,
+    "BillNo" VARCHAR(50),
+    item_id INTEGER,
+    order_qty NUMERIC(15,4) DEFAULT 0,
+    uom VARCHAR(10),
+    unit_rate NUMERIC(15,4) DEFAULT 0,
+    amount NUMERIC(15,2) DEFAULT 0,
+    remarks VARCHAR(200),
+    user_created VARCHAR(50),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_modified VARCHAR(50),
+    date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Ensure Notes, GrossWeight, and SupplierName columns exist on existing tables
@@ -322,6 +426,243 @@ BEGIN
     RETURN NULL;
 END;
 $function$;
+
+-- 3. Stored Procedure: sp_manage_purchase_bill (TranType = 'RMPBL')
+CREATE OR REPLACE PROCEDURE public.sp_manage_purchase_bill(
+    p_operation             VARCHAR(20),
+    INOUT p_bill_no         VARCHAR(50),
+    p_bill_date             TIMESTAMP,
+    p_expected_delivery_date DATE,
+    p_bill_status           VARCHAR(20),
+    p_gate_pass_no          VARCHAR(50),
+    p_gate_pass_date        DATE,
+    p_po_no                 VARCHAR(50),
+    p_po_date               DATE,
+    p_supplier_id           INT,
+    p_broker_id             INT,
+    p_zone_name             VARCHAR(50),
+    p_supplier_contact      VARCHAR(50),
+    p_supplier_address      TEXT,
+    p_gst_number            VARCHAR(50),
+    p_delivery_location     VARCHAR(100),
+    p_delivery_terms        VARCHAR(100),
+    p_payment_terms         VARCHAR(100),
+    p_freight_terms         VARCHAR(100),
+    p_currency              VARCHAR(10),
+    p_purchaser_name        VARCHAR(100),
+    p_department            VARCHAR(50),
+    p_cost_center           VARCHAR(50),
+    p_special_instructions  TEXT,
+    p_internal_notes        TEXT,
+    p_total_basic_amount    DECIMAL(15, 2),
+    p_taxes                 DECIMAL(15, 2),
+    p_grand_total           DECIMAL(15, 2),
+    p_user                  VARCHAR(50),
+    p_sal_pur_group_id      BIGINT,
+    p_items_json            JSONB DEFAULT '[]'::jsonb
+)
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_prefix  VARCHAR(20);
+    v_last_no INT;
+BEGIN
+    IF p_operation = 'INSERT' THEN
+        IF p_bill_no IS NULL OR p_bill_no = '' OR p_bill_no = 'Auto Generated' THEN
+            v_prefix := 'PB-' || TO_CHAR(COALESCE(p_bill_date, CURRENT_TIMESTAMP), 'YYYYMM') || '-';
+
+            SELECT COALESCE(
+                MAX(
+                    CASE
+                        WHEN REPLACE(bill_no, v_prefix, '') ~ '^[0-9]+$'
+                        THEN REPLACE(bill_no, v_prefix, '')::INT
+                        ELSE 0
+                    END
+                ), 0
+            ) + 1
+            INTO v_last_no
+            FROM public."tblPurchaseBill"
+            WHERE bill_no LIKE v_prefix || '%';
+
+            p_bill_no := v_prefix || LPAD(v_last_no::TEXT, 4, '0');
+        END IF;
+
+        INSERT INTO public."tblPurchaseBill" (
+            bill_no,
+            tran_type,
+            bill_date,
+            expected_delivery_date,
+            bill_status,
+            gate_pass_no,
+            gate_pass_date,
+            po_no,
+            po_date,
+            "SalPurGroupID",
+            supplier_id,
+            broker_id,
+            zone_name,
+            supplier_contact,
+            supplier_address,
+            gst_number,
+            delivery_location,
+            delivery_terms,
+            payment_terms,
+            freight_terms,
+            currency,
+            purchaser_name,
+            department,
+            cost_center,
+            special_instructions,
+            internal_notes,
+            total_basic_amount,
+            taxes,
+            grand_total,
+            status,
+            user_created,
+            date_created,
+            user_modified,
+            date_modified
+        ) VALUES (
+            p_bill_no,
+            'RMPBL',
+            COALESCE(p_bill_date, CURRENT_TIMESTAMP),
+            p_expected_delivery_date,
+            COALESCE(p_bill_status, 'Draft'),
+            p_gate_pass_no,
+            p_gate_pass_date,
+            p_po_no,
+            p_po_date,
+            p_sal_pur_group_id,
+            p_supplier_id,
+            p_broker_id,
+            COALESCE(p_zone_name, ''),
+            p_supplier_contact,
+            p_supplier_address,
+            p_gst_number,
+            COALESCE(p_delivery_location, ''),
+            COALESCE(p_delivery_terms, ''),
+            COALESCE(p_payment_terms, ''),
+            COALESCE(p_freight_terms, ''),
+            COALESCE(p_currency, 'INR'),
+            p_purchaser_name,
+            p_department,
+            p_cost_center,
+            p_special_instructions,
+            p_internal_notes,
+            COALESCE(p_total_basic_amount, 0.00),
+            COALESCE(p_taxes, 0.00),
+            COALESCE(p_grand_total, 0.00),
+            TRUE,
+            p_user,
+            CURRENT_TIMESTAMP,
+            p_user,
+            CURRENT_TIMESTAMP
+        );
+
+        INSERT INTO public."tblPurchaseBill_TRAN" (
+            "BillNo",
+            item_id,
+            order_qty,
+            uom,
+            unit_rate,
+            amount,
+            remarks,
+            user_created,
+            date_created,
+            user_modified,
+            date_modified
+        )
+        SELECT
+            p_bill_no,
+            (elem->>'item')::INT,
+            (elem->>'order_qty')::DECIMAL(15, 4),
+            elem->>'uom',
+            (elem->>'unit_rate')::DECIMAL(15, 4),
+            (elem->>'amount')::DECIMAL(15, 2),
+            elem->>'remarks',
+            p_user,
+            CURRENT_TIMESTAMP,
+            p_user,
+            CURRENT_TIMESTAMP
+        FROM JSONB_ARRAY_ELEMENTS(p_items_json) AS elem;
+
+    ELSIF p_operation = 'UPDATE' THEN
+        UPDATE public."tblPurchaseBill"
+        SET
+            bill_date              = COALESCE(p_bill_date, bill_date),
+            expected_delivery_date = p_expected_delivery_date,
+            bill_status            = COALESCE(p_bill_status, bill_status),
+            gate_pass_no           = p_gate_pass_no,
+            gate_pass_date         = p_gate_pass_date,
+            po_no                  = p_po_no,
+            po_date                = p_po_date,
+            "SalPurGroupID"        = p_sal_pur_group_id,
+            supplier_id            = p_supplier_id,
+            broker_id              = p_broker_id,
+            zone_name              = COALESCE(p_zone_name, zone_name),
+            supplier_contact       = p_supplier_contact,
+            supplier_address       = p_supplier_address,
+            gst_number             = p_gst_number,
+            delivery_location      = COALESCE(p_delivery_location, delivery_location),
+            delivery_terms         = COALESCE(p_delivery_terms, delivery_terms),
+            payment_terms          = COALESCE(p_payment_terms, payment_terms),
+            freight_terms          = COALESCE(p_freight_terms, freight_terms),
+            currency               = COALESCE(p_currency, currency),
+            purchaser_name         = p_purchaser_name,
+            department             = p_department,
+            cost_center            = p_cost_center,
+            special_instructions   = p_special_instructions,
+            internal_notes         = p_internal_notes,
+            total_basic_amount     = COALESCE(p_total_basic_amount, total_basic_amount),
+            taxes                  = COALESCE(p_taxes, taxes),
+            grand_total            = COALESCE(p_grand_total, grand_total),
+            user_modified          = p_user,
+            date_modified          = CURRENT_TIMESTAMP
+        WHERE bill_no = p_bill_no;
+
+        DELETE FROM public."tblPurchaseBill_TRAN" WHERE "BillNo" = p_bill_no;
+
+        INSERT INTO public."tblPurchaseBill_TRAN" (
+            "BillNo",
+            item_id,
+            order_qty,
+            uom,
+            unit_rate,
+            amount,
+            remarks,
+            user_created,
+            date_created,
+            user_modified,
+            date_modified
+        )
+        SELECT
+            p_bill_no,
+            (elem->>'item')::INT,
+            (elem->>'order_qty')::DECIMAL(15, 4),
+            elem->>'uom',
+            (elem->>'unit_rate')::DECIMAL(15, 4),
+            (elem->>'amount')::DECIMAL(15, 2),
+            elem->>'remarks',
+            p_user,
+            CURRENT_TIMESTAMP,
+            p_user,
+            CURRENT_TIMESTAMP
+        FROM JSONB_ARRAY_ELEMENTS(p_items_json) AS elem;
+
+    ELSIF p_operation = 'DELETE' THEN
+        UPDATE public."tblPurchaseBill"
+        SET
+            status        = FALSE,
+            user_modified = p_user,
+            date_modified = CURRENT_TIMESTAMP
+        WHERE bill_no = p_bill_no;
+
+    ELSIF p_operation = 'HARD_DELETE' THEN
+        DELETE FROM public."tblPurchaseBill_TRAN" WHERE "BillNo" = p_bill_no;
+        DELETE FROM public."tblPurchaseBill" WHERE bill_no = p_bill_no;
+
+    END IF;
+END;
+$$;
 """
 
 if __name__ == '__main__':

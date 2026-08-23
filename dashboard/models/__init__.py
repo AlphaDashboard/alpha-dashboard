@@ -12,6 +12,7 @@ from .user_master import UserMaster
 from .grn import GRN, GRNTranMat, GRNTranTest
 from .weighment import Weighment, WeighmentTran
 from .purchase_challan import PurchaseChallan, PurchaseChallanTran
+from .purchase_bill import PurchaseBill, PurchaseBillItem
 
 __all__ = [
     'Category',
@@ -45,4 +46,6 @@ __all__ = [
     'WeighmentTran',
     'PurchaseChallan',
     'PurchaseChallanTran',
+    'PurchaseBill',
+    'PurchaseBillItem',
 ]

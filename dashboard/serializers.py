@@ -478,6 +478,144 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
 
 # =============================================================================
+# PURCHASE BILL (RMPBL) SERIALIZERS
+# =============================================================================
+
+from .models.purchase_bill import PurchaseBill, PurchaseBillItem
+
+class PurchaseBillItemSerializer(serializers.ModelSerializer):
+    item_display = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = PurchaseBillItem
+        fields = [
+            'id', 'item', 'item_display', 'order_qty', 'uom', 'unit_rate', 'amount', 'remarks'
+        ]
+        extra_kwargs = {
+            'amount': {'required': False, 'allow_null': True}
+        }
+
+    def get_item_display(self, obj):
+        if obj.item_id:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                it = obj.item
+                return {
+                    'id': it.pk,
+                    'text': f"{it.material_code} - {it.material_name}"
+                }
+            except ObjectDoesNotExist:
+                return {
+                    'id': obj.item_id,
+                    'text': f"Unknown Item (ID: {obj.item_id})"
+                }
+        return None
+
+class PurchaseBillSerializer(serializers.ModelSerializer):
+    items = PurchaseBillItemSerializer(many=True)
+    bill_date = SafeDateTimeField(required=False)
+    broker_display = serializers.SerializerMethodField(read_only=True)
+    supplier_display = serializers.SerializerMethodField(read_only=True)
+    sal_pur_group_display = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = PurchaseBill
+        fields = [
+            'bill_no', 'tran_type', 'bill_date', 'expected_delivery_date', 'bill_status',
+            'gate_pass_no', 'gate_pass_date', 'po_no', 'po_date',
+            'sal_pur_group', 'sal_pur_group_display',
+            'broker', 'broker_display', 'zone_name', 'supplier', 'supplier_display',
+            'supplier_contact', 'supplier_address', 'gst_number',
+            'delivery_location', 'delivery_terms', 'payment_terms', 'freight_terms', 'currency',
+            'purchaser_name', 'department', 'cost_center', 'special_instructions', 'internal_notes',
+            'total_basic_amount', 'taxes', 'grand_total', 'status', 'items'
+        ]
+        extra_kwargs = {
+            'bill_no':            {'required': False, 'allow_blank': True},
+            'tran_type':          {'required': False},
+            'total_basic_amount': {'required': False},
+            'taxes':              {'required': False},
+            'grand_total':        {'required': False},
+            'gate_pass_no':       {'required': False, 'allow_blank': True, 'allow_null': True},
+            'gate_pass_date':     {'required': False, 'allow_null': True},
+            'po_no':              {'required': False, 'allow_blank': True, 'allow_null': True},
+            'po_date':            {'required': False, 'allow_null': True},
+            'supplier':           {'required': False, 'allow_null': True},
+            'broker':             {'required': False, 'allow_null': True},
+            'sal_pur_group':      {'required': False, 'allow_null': True},
+            'zone_name':          {'required': False, 'allow_blank': True},
+            'delivery_location':  {'required': False, 'allow_blank': True},
+            'delivery_terms':     {'required': False, 'allow_blank': True},
+            'payment_terms':      {'required': False, 'allow_blank': True},
+            'freight_terms':      {'required': False, 'allow_blank': True},
+            'currency':           {'required': False, 'allow_blank': True},
+        }
+
+    def get_sal_pur_group_display(self, obj):
+        if obj.sal_pur_group_id:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                g = obj.sal_pur_group
+                if g is None:
+                    raise ObjectDoesNotExist
+                return {'id': g.pk, 'text': f"{g.SalPurGroupName}"}
+            except ObjectDoesNotExist:
+                return {'id': obj.sal_pur_group_id, 'text': f"Unknown Group (ID: {obj.sal_pur_group_id})"}
+        return None
+
+    def get_broker_display(self, obj):
+        if obj.broker_id:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                b = obj.broker
+                if b is None:
+                    raise ObjectDoesNotExist
+                return {'id': b.pk, 'text': f"{b.BrokerName}"}
+            except ObjectDoesNotExist:
+                return {'id': obj.broker_id, 'text': f"Unknown Broker (ID: {obj.broker_id})"}
+        return None
+
+    def get_supplier_display(self, obj):
+        if obj.supplier_id:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                s = obj.supplier
+                if s is None:
+                    raise ObjectDoesNotExist
+                return {'id': s.pk, 'text': f"{s.VendorSupplierName}"}
+            except ObjectDoesNotExist:
+                return {'id': obj.supplier_id, 'text': f"Unknown Supplier (ID: {obj.supplier_id})"}
+        return None
+
+    def validate(self, data):
+        items = data.get('items', [])
+        if not items:
+            raise serializers.ValidationError({'items': 'At least one item line is required.'})
+        return data
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items', [])
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
+
+        from dashboard.services.purchase_bill_sp_helper import execute_sp_purchase_bill
+        bill_no = execute_sp_purchase_bill('INSERT', validated_data, items_data, username)
+        return PurchaseBill.objects.get(bill_no=bill_no)
+
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop('items', [])
+        request = self.context.get('request')
+        username = request.user.username if (request and request.user) else 'system'
+
+        validated_data['bill_no'] = instance.bill_no
+
+        from dashboard.services.purchase_bill_sp_helper import execute_sp_purchase_bill
+        execute_sp_purchase_bill('UPDATE', validated_data, items_data, username)
+        instance.refresh_from_db()
+        return instance
+
+
+# =============================================================================
 # SUB SECTION Y (PURCHASE ENTRY) SERIALIZERS
 # =============================================================================
 

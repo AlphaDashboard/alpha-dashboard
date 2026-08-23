@@ -39,7 +39,9 @@ from .views import (
     WeighmentListView,
     WeighmentCreateView,
     PurchaseChallanListView,
-    PurchaseChallanCreateView
+    PurchaseChallanCreateView,
+    PurchaseBillListView,
+    PurchaseBillCreateView
 )
 from rest_framework.routers import DefaultRouter
 from .api_views import (
@@ -47,6 +49,7 @@ from .api_views import (
     SectionCViewSet,
     SubsectionB2ViewSet,
     PurchaseOrderViewSet,
+    PurchaseBillViewSet,
     SubsectionYViewSet,
     SalPurGroupViewSet,
     UserMasterViewSet,
@@ -64,6 +67,7 @@ router.register(r'api/bank-transactions', CashBankViewSet, basename='api_bank_tr
 router.register(r'api/section-c', SectionCViewSet, basename='api_section_c')
 router.register(r'api/subsection-b2', SubsectionB2ViewSet, basename='api_subsection_b2')
 router.register(r'api/subsection-x', PurchaseOrderViewSet, basename='api_subsection_x')
+router.register(r'api/purchase-bill', PurchaseBillViewSet, basename='api_purchase_bill')
 router.register(r'api/subsection-y', SubsectionYViewSet, basename='api_subsection_y') # Aliased for cached clients
 router.register(r'api/sal-pur-group', SalPurGroupViewSet, basename='api_sal_pur_group')
 router.register(r'api/user-master', UserMasterViewSet, basename='api_user_master')
@@ -145,6 +149,11 @@ urlpatterns = [
     path('purchase-challan/create/', PurchaseChallanCreateView.as_view(), name='purchase_challan_create'),
     path('purchase-challan/<path:pk>/edit/', PurchaseChallanCreateView.as_view(), name='purchase_challan_edit'),
     path('api/po-list-for-challan/', POListForChallanDropdown.as_view(), name='api_po_list_for_challan'),
+
+    # Purchase Bill (RMPBL) URLs
+    path('purchase-bill/', PurchaseBillListView.as_view(), name='purchase_bill_list'),
+    path('purchase-bill/create/', PurchaseBillCreateView.as_view(), name='purchase_bill_create'),
+    path('purchase-bill/<path:pk>/edit/', PurchaseBillCreateView.as_view(), name='purchase_bill_edit'),
 
     # User Master URLs
     path('settings/user-master/', UserMasterListView.as_view(), name='user_master_list'),

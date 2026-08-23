@@ -671,6 +671,163 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
 
 # =============================================================================
+# PURCHASE BILL VIEWSET (TranType = 'RMPBL')
+# =============================================================================
+
+from .serializers import PurchaseBillSerializer
+from .models.purchase_bill import PurchaseBill
+
+class PurchaseBillViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for Purchase Bills (TranType = 'RMPBL').
+    """
+    serializer_class = PurchaseBillSerializer
+    lookup_field = 'bill_no'
+    lookup_value_regex = '(?:(?!/toggle_status/).)+'
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        queryset = PurchaseBill.objects.all().select_related('broker', 'supplier')
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(bill_no__icontains=search) |
+                Q(po_no__icontains=search) |
+                Q(gate_pass_no__icontains=search) |
+                Q(supplier__VendorSupplierName__icontains=search) |
+                Q(broker__BrokerName__icontains=search)
+            )
+
+        bill_no_q = self.request.query_params.get('voucher_no') or self.request.query_params.get('bill_no')
+        po_no_q = self.request.query_params.get('po_no')
+        gp_no_q = self.request.query_params.get('gate_pass_no')
+        supplier_name_q = self.request.query_params.get('supplier_name')
+        narration_q = self.request.query_params.get('narration')
+        amount_q = self.request.query_params.get('amount')
+        date_after = self.request.query_params.get('date_after', None)
+        date_before = self.request.query_params.get('date_before', None)
+        status_filter = self.request.query_params.get('status', None)
+
+        bill_status_q = self.request.query_params.get('bill_status')
+        zone_name_q = self.request.query_params.get('zone_name')
+        broker_q = self.request.query_params.get('broker')
+        supplier_contact_q = self.request.query_params.get('supplier_contact')
+        gst_number_q = self.request.query_params.get('gst_number')
+
+        if bill_no_q:
+            queryset = queryset.filter(bill_no__icontains=bill_no_q)
+        if po_no_q:
+            queryset = queryset.filter(po_no__icontains=po_no_q)
+        if gp_no_q:
+            queryset = queryset.filter(gate_pass_no__icontains=gp_no_q)
+        if supplier_name_q:
+            queryset = queryset.filter(
+                Q(supplier__VendorSupplierName__icontains=supplier_name_q)
+            )
+        if narration_q:
+            queryset = queryset.filter(
+                Q(special_instructions__icontains=narration_q) |
+                Q(internal_notes__icontains=narration_q)
+            )
+        if amount_q:
+            amount_str = amount_q.replace(',', '').strip()
+            queryset = queryset.filter(grand_total__icontains=amount_str)
+        if bill_status_q:
+            queryset = queryset.filter(bill_status__icontains=bill_status_q)
+        if zone_name_q:
+            queryset = queryset.filter(zone_name__icontains=zone_name_q)
+        if broker_q:
+            queryset = queryset.filter(broker__BrokerName__icontains=broker_q)
+        if supplier_contact_q:
+            queryset = queryset.filter(supplier_contact__icontains=supplier_contact_q)
+        if gst_number_q:
+            queryset = queryset.filter(gst_number__icontains=gst_number_q)
+        if date_after:
+            queryset = queryset.filter(bill_date__date__gte=date_after)
+        if date_before:
+            queryset = queryset.filter(bill_date__date__lte=date_before)
+        if status_filter is not None and status_filter != '':
+            is_active = status_filter.lower() == 'true'
+            queryset = queryset.filter(status=is_active)
+
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            allowed_fields = {
+                'voucher_no': 'bill_no',
+                '-voucher_no': '-bill_no',
+                'bill_no': 'bill_no',
+                '-bill_no': '-bill_no',
+                'date': 'bill_date',
+                '-date': '-bill_date',
+                'amount': 'grand_total',
+                '-amount': '-grand_total',
+                'status': 'status',
+                '-status': '-status'
+            }
+            db_field = allowed_fields.get(ordering)
+            if db_field:
+                queryset = queryset.order_by(db_field)
+
+        return queryset
+
+    LOCKED_STATUSES       = ('Submitted', 'Approved')
+    NO_DELETE_STATUSES    = ('Submitted', 'Approved')
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user_role = request.session.get('role')
+        if user_role not in ('Checker', 'Admin'):
+            if instance.bill_status in self.LOCKED_STATUSES:
+                status_label = instance.get_bill_status_display()
+                return Response(
+                    {'detail': f'This Purchase Bill is in "{status_label}" state and cannot be edited.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.bill_status in self.NO_DELETE_STATUSES:
+            status_label = instance.get_bill_status_display()
+            return Response(
+                {'detail': f'This Purchase Bill is in "{status_label}" state and cannot be deleted.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        username = request.user.username if request.user else 'system'
+        header_data = {'bill_no': instance.bill_no}
+
+        from dashboard.services.purchase_bill_sp_helper import execute_sp_purchase_bill
+
+        if instance.status:
+            execute_sp_purchase_bill('DELETE', header_data, [], username)
+            return Response({'status': False}, status=status.HTTP_200_OK)
+        else:
+            execute_sp_purchase_bill('HARD_DELETE', header_data, [], username)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['post'])
+    def toggle_status(self, request, bill_no=None):
+        instance = self.get_object()
+
+        if instance.status and instance.bill_status in self.NO_DELETE_STATUSES:
+            status_label = instance.get_bill_status_display()
+            return Response(
+                {'detail': f'This Purchase Bill is in "{status_label}" state and cannot be marked as deleted.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        instance.status = not instance.status
+        instance.save()
+        return Response({'status': instance.status})
+
+
+# =============================================================================
 # SUB SECTION Y VIEWSET
 # Partitioned using module_type='Y' and tran_type='J001'.
 # Modeled exactly on CashBankViewSet.

@@ -65,6 +65,8 @@ __all__ = [
     'WeighmentCreateView',
     'PurchaseChallanListView',
     'PurchaseChallanCreateView',
+    'PurchaseBillListView',
+    'PurchaseBillCreateView',
 ]
 from .section_c_views import SectionCListView, SectionCCreateView
 from .subsection_x_views import SubSectionXListView, SubSectionXCreateView, MaterialCreateAPIView, BrokerCreateAPIView, VendorSupplierCreateAPIView
@@ -74,4 +76,5 @@ from .user_master_views import UserMasterListView, UserMasterCreateView, LoginVi
 from .grn_views import GRNListView, GRNCreateView
 from .weighment_views import WeighmentListView, WeighmentCreateView
 from .purchase_challan_views import PurchaseChallanListView, PurchaseChallanCreateView
+from .purchase_bill_views import PurchaseBillListView, PurchaseBillCreateView
 

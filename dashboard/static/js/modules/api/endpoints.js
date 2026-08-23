@@ -16,4 +16,7 @@ export const ENDPOINTS = {
     // ─── Sales/Purchase Group ───
     SAL_PUR_GROUP:             '/api/sal-pur-group/',
     SAL_PUR_GROUP_DETAIL:      (id) => `/api/sal-pur-group/${id}/`,
+    // ─── Purchase Bill (RMPBL) ───
+    PURCHASE_BILL:             '/api/purchase-bill/',
+    PURCHASE_BILL_DETAIL:      (id) => `/api/purchase-bill/${encodeURIComponent(id)}/`,
 };
