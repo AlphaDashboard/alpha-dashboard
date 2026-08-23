@@ -1067,6 +1067,46 @@ class GatePassViewSet(viewsets.ModelViewSet):
 
 
 # ──────────────────────────────────────────────────────────────────
+# PO List for Purchase Challan PO No Dropdown
+# ──────────────────────────────────────────────────────────────────
+from rest_framework.views import APIView
+from rest_framework.response import Response as DRFResponse
+
+class POListForChallanDropdown(APIView):
+    """
+    Returns a simple list of Purchase Orders for the PO No smart dropdown
+    in Purchase Challan form. Returns: po_no, po_date, supplier_name.
+    """
+    pagination_class = None
+
+    def get(self, request):
+        try:
+            from .models.purchase_order import PurchaseOrder
+            q = request.query_params.get('q', '').strip()
+            qs = PurchaseOrder.objects.select_related('supplier').order_by('-po_date')
+            if q:
+                qs = qs.filter(
+                    Q(po_no__icontains=q) |
+                    Q(supplier__VendorSupplierName__icontains=q)
+                )
+            results = []
+            for po in qs[:100]:
+                supplier_name = ''
+                if po.supplier:
+                    supplier_name = getattr(po.supplier, 'VendorSupplierName', '') or str(po.supplier)
+                results.append({
+                    'po_no': po.po_no,
+                    'po_date': str(po.po_date)[:10] if po.po_date else '',
+                    'supplier_name': supplier_name,
+                })
+            return DRFResponse(results)
+        except Exception as e:
+            return DRFResponse([], status=200)
+
+
+
+
+# ──────────────────────────────────────────────────────────────────
 # Weighment ViewSet
 # ──────────────────────────────────────────────────────────────────
 from .models.weighment import Weighment

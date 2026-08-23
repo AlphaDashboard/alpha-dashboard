@@ -1,4 +1,4 @@
-import { apiClient } from '../api/client.js?v=148';
+import { apiClient } from '../api/client.js?v=149';
 import { notifications } from '../utils/notifications.js?v=147';
 
 // ─── Module state ────────────────────────────────────────────────────────────
@@ -8,6 +8,7 @@ const isEdit    = !!challanNo;
 
 let matRows = [];  // [{MaterialID, materialName, Bags, GrossWeight, NetWeight, Remarks}]
 let selectedGatePass = null;
+let selectedPO       = null;   // { po_no, po_date, supplier_name }
 let challanDatePicker = null;
 let poDatePicker = null;
 
@@ -348,6 +349,10 @@ function initGatePassDropdown() {
                 setVal('WeighmentDate',  gp.WeighmentDate ? gp.WeighmentDate.split('T')[0] : '');
                 setVal('Bags',           gp.Bags       || '');
                 setVal('NetWeight',      gp.NetWeight   || '');
+                // Auto-fill Supplier Name from Gate Entry linked to this Gate Pass
+                if (gp.supplier_name) {
+                    setVal('SupplierName', gp.supplier_name);
+                }
 
                 // Auto-populate Material rows from gate pass items
                 function getMaterialNameById(id) {
@@ -405,16 +410,135 @@ function initGatePassDropdown() {
     });
 }
 
+// ─── PO No Smart Dropdown ─────────────────────────────────────────────────────
+function initPODropdown() {
+    const poDisplayInput  = getEl('PONODisplay');
+    const poHiddenInput   = getEl('PONO');
+    const poDropdownPanel = getEl('poDropdownPanel');
+    const poDropdownList  = getEl('poDropdownList');
+    const poSearchInput   = getEl('poSearchInput');
+
+    if (!poDisplayInput || !poHiddenInput || !poDropdownPanel || !poDropdownList) return;
+
+    if (poDropdownPanel.parentNode !== document.body) {
+        document.body.appendChild(poDropdownPanel);
+    }
+
+    function openPoDropdown() {
+        const rect = poDisplayInput.getBoundingClientRect();
+        const panelWidth = Math.max(rect.width, 480);
+        poDropdownPanel.style.minWidth = '0px';
+        poDropdownPanel.style.width = panelWidth + 'px';
+        const spaceBelow = window.innerHeight - rect.bottom - 10;
+        const maxH = Math.max(spaceBelow, 200);
+        poDropdownPanel.style.maxHeight = maxH + 'px';
+        poDropdownPanel.style.display = 'flex';
+        poDropdownPanel.style.top  = (rect.bottom + 2) + 'px';
+        poDropdownPanel.style.left = rect.left + 'px';
+        poDropdownPanel.style.position = 'fixed';
+        poDropdownPanel.style.zIndex = '999999';
+        const closeBtn = getEl('poDropdownCloseBtn');
+        if (closeBtn) closeBtn.onclick = closePoDropdown;
+        renderPoDropdownRows('');
+    }
+
+    function closePoDropdown() {
+        poDropdownPanel.style.display = 'none';
+    }
+
+    let poEntries = [];
+
+    async function loadPOs() {
+        try {
+            const res = await fetch('/api/po-list-for-challan/');
+            if (!res.ok) return [];
+            return await res.json();
+        } catch { return []; }
+    }
+
+    async function renderPoDropdownRows(query) {
+        if (poEntries.length === 0) {
+            poEntries = await loadPOs();
+        }
+        const q = (query || '').toLowerCase().trim();
+        const filtered = poEntries.filter(po => {
+            return !q ||
+                (po.po_no || '').toLowerCase().includes(q) ||
+                (po.supplier_name || '').toLowerCase().includes(q) ||
+                (po.po_date || '').toLowerCase().includes(q);
+        });
+
+        const countEl = getEl('poDropdownCount');
+        if (countEl) countEl.textContent = `${filtered.length} records found`;
+
+        poDropdownList.innerHTML = '';
+        if (filtered.length === 0) {
+            poDropdownList.innerHTML = '<div style="padding:10px 12px; color:#6b7280; font-size:12px;">No records found</div>';
+            return;
+        }
+        filtered.forEach(po => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:grid; grid-template-columns:140px 110px 1fr; padding:6px 10px; font-size:12px; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#334155;';
+            row.innerHTML = `
+                <span style="font-weight:600; color:#2563eb;">${escHtml(po.po_no)}</span>
+                <span>${escHtml(po.po_date || '—')}</span>
+                <span>${escHtml(po.supplier_name || '—')}</span>
+            `;
+            row.addEventListener('mouseenter', () => row.style.backgroundColor = '#eff6ff');
+            row.addEventListener('mouseleave', () => row.style.backgroundColor = '');
+            row.addEventListener('click', () => {
+                selectedPO = po;
+                poHiddenInput.value    = po.po_no;
+                poDisplayInput.value   = po.po_no;
+                poDisplayInput.closest('.form-group')?.classList.add('has-value');
+                setVal('PODate',        po.po_date || '');
+                setVal('SupplierName',  po.supplier_name || '');
+                closePoDropdown();
+            });
+            poDropdownList.appendChild(row);
+        });
+    }
+
+    poDisplayInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (poDropdownPanel.style.display === 'flex') {
+            closePoDropdown();
+        } else {
+            openPoDropdown();
+        }
+    });
+
+    if (poSearchInput) {
+        poSearchInput.addEventListener('input', () => {
+            renderPoDropdownRows(poSearchInput.value);
+        });
+    }
+
+    poDropdownPanel.addEventListener('click', (e) => e.stopPropagation());
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#poDropdownGroup') && !e.target.closest('#poDropdownPanel')) {
+            closePoDropdown();
+        }
+    });
+}
+
 // ─── Populate form from API (Edit / View mode) ────────────────────────────────
 function populateForm(data) {
     setVal('ChallanNo',       data.ChallanNo);
     setVal('ChallanDate',     data.ChallanDate ? data.ChallanDate.split('T')[0] : '');
-    setVal('PONO',            data.PONO);
+    // PO No — restore both hidden and display inputs
+    if (data.PONO) {
+        setVal('PONO',         data.PONO);
+        const poDisp = getEl('PONODisplay');
+        if (poDisp) { poDisp.value = data.PONO; poDisp.closest('.form-group')?.classList.add('has-value'); }
+    }
     setVal('PODate',          data.PODate  ? data.PODate.split('T')[0] : '');
     const statusVal = data.StatusId || 1;
     setVal('StatusId',        statusVal);
     updateStatusStepper(statusVal);
     setVal('Notes',           data.Notes);
+    setVal('SupplierName',    data.SupplierName || '');
 
     // Gate Pass
     if (data.GPNo) {
@@ -458,16 +582,17 @@ function populateForm(data) {
 // ─── Save — routes through sp_manage_purchase_challan via API ─────────────────
 async function saveChallan() {
     const headerData = {
-        ChallanNo:   getVal('ChallanNo') ? getVal('ChallanNo') : '',
-        ChallanDate: getVal('ChallanDate') ? getVal('ChallanDate') : null,
-        TranType:    'RMPCH',
-        GPNo:        selectedGatePass ||
-                     parseInt(getVal('GatePassNo')) ||
-                     (parseInt(getVal('GatePassNoDisplay').replace(/[^0-9]/g, '')) - 10000) || null,
-        StatusId:    parseInt(getVal('StatusId')) || 1,
-        PONO:        getVal('PONO') ? getVal('PONO') : null,
-        PODate:      getVal('PODate') ? getVal('PODate') : null,
-        Notes:       getVal('Notes') ? getVal('Notes') : null,
+        ChallanNo:    getVal('ChallanNo') ? getVal('ChallanNo') : '',
+        ChallanDate:  getVal('ChallanDate') ? getVal('ChallanDate') : null,
+        TranType:     'RMPCH',
+        GPNo:         selectedGatePass ||
+                      parseInt(getVal('GatePassNo')) ||
+                      (parseInt(getVal('GatePassNoDisplay').replace(/[^0-9]/g, '')) - 10000) || null,
+        StatusId:     parseInt(getVal('StatusId')) || 1,
+        PONO:         getVal('PONO') ? getVal('PONO') : null,
+        PODate:       getVal('PODate') ? getVal('PODate') : null,
+        Notes:        getVal('Notes') ? getVal('Notes') : null,
+        SupplierName: getVal('SupplierName') ? getVal('SupplierName') : null,
     };
 
     const materials = collectMatRows();
@@ -527,6 +652,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Gate Pass dropdown (edit/create only)
     if (!isView) initGatePassDropdown();
+
+    // PO No smart dropdown (edit/create only)
+    if (!isView) initPODropdown();
 
     // Flatpickr for ChallanDate and PODate
     const challanDateEl = getEl('ChallanDate');

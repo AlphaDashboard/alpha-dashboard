@@ -121,7 +121,8 @@ CREATE TABLE IF NOT EXISTS public.tblSalePurchaseChallans (
     "SubmissionDate" TIMESTAMP,
     "approvedby" VARCHAR(100),
     "ApprovalDate" TIMESTAMP,
-    "Notes" VARCHAR(1000)
+    "Notes" VARCHAR(1000),
+    "SupplierName" VARCHAR(200)
 );
 
 CREATE TABLE IF NOT EXISTS public.tblSalePurchaseChallans_Tran (
@@ -147,7 +148,7 @@ CREATE TABLE IF NOT EXISTS public."tblGatePass" (
     "NetWeight" NUMERIC(18,2) DEFAULT 0
 );
 
--- Ensure Notes and GrossWeight columns exist on existing tables
+-- Ensure Notes, GrossWeight, and SupplierName columns exist on existing tables
 DO $$ 
 BEGIN
     IF EXISTS (
@@ -159,6 +160,13 @@ BEGIN
             WHERE table_name = 'tblsalepurchasechallans' AND column_name = 'Notes'
         ) THEN
             ALTER TABLE public.tblSalePurchaseChallans ADD COLUMN "Notes" VARCHAR(1000);
+        END IF;
+
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'tblsalepurchasechallans' AND column_name = 'SupplierName'
+        ) THEN
+            ALTER TABLE public.tblSalePurchaseChallans ADD COLUMN "SupplierName" VARCHAR(200);
         END IF;
     END IF;
 
@@ -187,7 +195,8 @@ CREATE OR REPLACE FUNCTION public.sp_manage_purchase_challan(
     p_po_date date DEFAULT NULL::date, 
     p_username character varying DEFAULT 'system'::character varying, 
     p_tran_items text DEFAULT '[]'::text,
-    p_notes character varying DEFAULT NULL::character varying
+    p_notes character varying DEFAULT NULL::character varying,
+    p_supplier_name character varying DEFAULT NULL::character varying
 )
  RETURNS character varying
  LANGUAGE plpgsql
@@ -234,12 +243,12 @@ BEGIN
             "ChallanNo", "ChallanDate", "TranType", "GPNo", "StatusId",
             "PONO", "PODate", "GatePassDate", "VehicleNo", "DriverName",
             "WeighmentSlipNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight",
-            "draftedby", "DraftedDate", "Notes"
+            "draftedby", "DraftedDate", "Notes", "SupplierName"
         ) VALUES (
             v_challan_no, p_challan_date, p_tran_type, p_gp_no, p_status_id,
             p_po_no, p_po_date, v_gp_date, v_veh_no, v_dr_name,
             v_weigh_no, v_weigh_date, v_bags, v_gross, v_tare, v_net,
-            p_username, NOW(), p_notes
+            p_username, NOW(), p_notes, p_supplier_name
         );
 
         FOR v_item IN SELECT * FROM JSONB_ARRAY_ELEMENTS(v_items)
@@ -278,6 +287,7 @@ BEGIN
             "TareWeight"      = v_tare,
             "NetWeight"       = v_net,
             "Notes"           = p_notes,
+            "SupplierName"    = p_supplier_name,
             "submittedby"     = CASE WHEN p_status_id = 2 AND "submittedby" IS NULL THEN p_username ELSE "submittedby" END,
             "SubmissionDate"  = CASE WHEN p_status_id = 2 AND "SubmissionDate" IS NULL THEN NOW() ELSE "SubmissionDate" END,
             "approvedby"      = CASE WHEN p_status_id = 4 THEN p_username ELSE "approvedby" END,

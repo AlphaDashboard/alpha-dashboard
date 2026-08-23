@@ -830,6 +830,20 @@ class GatePassTranSerializer(serializers.ModelSerializer):
 
 class GatePassSerializer(serializers.ModelSerializer):
     items = GatePassTranSerializer(many=True, read_only=True)
+    supplier_name = serializers.SerializerMethodField()
+
+    def get_supplier_name(self, obj):
+        """Fetch SupplierName from GateEntry linked to this GatePass via GatePassNo."""
+        try:
+            from .models.gate_entry import GateEntry
+            entry = GateEntry.objects.filter(
+                gate_pass_id__icontains=str(obj.GatePassNo + 10000)
+            ).select_related('supplier').first()
+            if entry and entry.supplier:
+                return getattr(entry.supplier, 'Account_Name', '') or str(entry.supplier)
+        except Exception:
+            pass
+        return ''
 
     class Meta:
         model = GatePass

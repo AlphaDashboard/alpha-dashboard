@@ -55,7 +55,8 @@ from .api_views import (
     GateEntryViewSet,
     GatePassViewSet,
     WeighmentViewSet,
-    PurchaseChallanViewSet
+    PurchaseChallanViewSet,
+    POListForChallanDropdown
 )
 
 router = DefaultRouter()
@@ -143,6 +144,7 @@ urlpatterns = [
     path('purchase-challan/', PurchaseChallanListView.as_view(), name='purchase_challan_list'),
     path('purchase-challan/create/', PurchaseChallanCreateView.as_view(), name='purchase_challan_create'),
     path('purchase-challan/<path:pk>/edit/', PurchaseChallanCreateView.as_view(), name='purchase_challan_edit'),
+    path('api/po-list-for-challan/', POListForChallanDropdown.as_view(), name='api_po_list_for_challan'),
 
     # User Master URLs
     path('settings/user-master/', UserMasterListView.as_view(), name='user_master_list'),

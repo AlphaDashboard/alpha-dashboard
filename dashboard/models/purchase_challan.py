@@ -70,6 +70,7 @@ class PurchaseChallan(models.Model):
     approvedby = models.CharField(max_length=100, null=True, blank=True, db_column='approvedby')
     ApprovalDate = models.DateTimeField(null=True, blank=True, db_column='ApprovalDate')
     Notes = models.CharField(max_length=1000, null=True, blank=True, db_column='Notes')
+    SupplierName = models.CharField(max_length=200, null=True, blank=True, db_column='SupplierName')
 
     class Meta:
         db_table = 'tblsalepurchasechallans'

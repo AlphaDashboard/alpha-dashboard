@@ -492,23 +492,58 @@
                 </div>
             </div><!-- /ROW 2 -->
 
-            <!-- ─── ROW 3: PO No | PO Date | Status | Notes / Remarks ─── -->
+            <!-- ─── ROW 3: PO No (Smart Dropdown) | PO Date | Supplier Name | Status ─── -->
             <div class="row g-2" style="margin-top: 1px;">
-                <!-- PO No -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <input id="PONO" type="text" class="form-control" placeholder=" "
-                               {% if is_view_mode %}readonly{% endif %} autocomplete="off">
-                        <label class="floating-label">PO No</label>
+                <!-- PO No — Smart Dropdown like Gate Pass -->
+                <div class="col-md-3" style="position:relative;">
+                    <div class="form-group mb-0" id="poDropdownGroup">
+                        <input type="hidden" id="PONO" name="PONO">
+                        <input type="text" id="PONODisplay" class="form-control" placeholder=" " autocomplete="off"
+                               style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
+                        <label for="PONODisplay" class="floating-label">PO No</label>
+
+                        <div id="poDropdownPanel" style="
+                            display:none; position:fixed; z-index:9999;
+                            background:#fff; border:1px solid #cbd5e1; border-radius:6px;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.15); max-width:95vw; max-height:300px;
+                            overflow:hidden; flex-direction:column;">
+                            <!-- Search box -->
+                            <div style="padding:8px 10px; border-bottom:1px solid #e2e8f0;">
+                                <input type="text" id="poSearchInput" placeholder="Search PO No or Supplier..." class="form-control"
+                                    style="height:28px; font-size:12px;">
+                            </div>
+                            <!-- Column headers -->
+                            <div style="display:grid; grid-template-columns:140px 110px 1fr;
+                                        background:#536479; color:#fff; font-size:10px; font-weight:700;
+                                        text-transform:uppercase; letter-spacing:0.5px; padding:5px 10px; flex-shrink:0;">
+                                <span>PO No</span>
+                                <span>PO Date</span>
+                                <span>Supplier Name</span>
+                            </div>
+                            <!-- Rows list -->
+                            <div id="poDropdownList" style="overflow-y:auto; flex:1 1 auto; max-height:220px;"></div>
+                            <!-- Footer -->
+                            <div style="padding:6px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; font-size:11px; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                                <span id="poDropdownCount">Select PO</span>
+                                <button type="button" id="poDropdownCloseBtn" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px; color:#64748b; font-weight:600;">Close</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- PO Date -->
+                <!-- PO Date (auto-filled from PO selection) -->
                 <div class="col-md-3">
                     <div class="form-group">
-                        <input id="PODate" type="text" class="form-control flatpickr-date" placeholder=" "
-                               {% if is_view_mode %}readonly{% endif %}>
+                        <input id="PODate" type="text" class="form-control" placeholder=" " readonly>
                         <label class="floating-label">PO Date</label>
+                    </div>
+                </div>
+
+                <!-- Supplier Name (auto-filled from Gate Pass or PO) -->
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input id="SupplierName" type="text" class="form-control" placeholder=" " readonly>
+                        <label class="floating-label">Supplier Name</label>
                     </div>
                 </div>
 
@@ -526,16 +561,19 @@
                         <label class="floating-label">Status</label>
                     </div>
                 </div>
+            </div><!-- /ROW 3 -->
 
+            <!-- ─── ROW 4: Notes / Remarks ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
                 <!-- Notes / Remarks -->
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group mb-0">
                         <input id="Notes" type="text" class="form-control" placeholder=" "
                                {% if is_view_mode %}readonly{% endif %}>
                         <label class="floating-label">Notes / Remarks</label>
                     </div>
                 </div>
-            </div><!-- /ROW 3 -->
+            </div><!-- /ROW 4 -->
 
         </div><!-- /HEADER CARD -->
 

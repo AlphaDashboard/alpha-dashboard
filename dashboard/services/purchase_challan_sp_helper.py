@@ -30,6 +30,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
     po_no         = _val(header_data.get('PONO'))
     po_date       = _val(header_data.get('PODate'))
     notes         = _val(header_data.get('Notes'))
+    supplier_name = _val(header_data.get('SupplierName'))
 
     # Normalize material rows
     normalized_tran = []
@@ -58,7 +59,8 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
                     p_po_date      := %s::date,
                     p_username     := %s::varchar,
                     p_tran_items   := %s::text,
-                    p_notes        := %s::varchar
+                    p_notes        := %s::varchar,
+                    p_supplier_name := %s::varchar
                 )
                 """,
                 [
@@ -73,6 +75,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
                     username,
                     json.dumps(normalized_tran),
                     notes,
+                    supplier_name,
                 ]
             )
             row = cursor.fetchone()
@@ -94,6 +97,7 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
             PONO=po_no,
             PODate=po_date,
             Notes=notes,
+            SupplierName=supplier_name,
             draftedby=username,
             DraftedDate=timezone.now(),
         )
@@ -105,13 +109,14 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
 
     elif operation == 'UPDATE':
         pc = PurchaseChallan.objects.get(ChallanNo=challan_no)
-        pc.ChallanDate  = challan_date
-        pc.TranType     = tran_type
-        pc.GPNo         = gp_no
-        pc.StatusId     = status_val
-        pc.PONO         = po_no
-        pc.PODate       = po_date
-        pc.Notes        = notes
+        pc.ChallanDate   = challan_date
+        pc.TranType      = tran_type
+        pc.GPNo          = gp_no
+        pc.StatusId      = status_val
+        pc.PONO          = po_no
+        pc.PODate        = po_date
+        pc.Notes         = notes
+        pc.SupplierName  = supplier_name
         if status_val == 2 and not pc.submittedby:
             pc.submittedby   = username
             pc.SubmissionDate = timezone.now()
