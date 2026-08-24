@@ -539,10 +539,10 @@
                     </div>
                 </div>
 
-                <!-- Supplier Name (auto-filled from Gate Pass or PO) -->
+                <!-- Supplier Name (auto-filled from Gate Pass or PO, or manual entry) -->
                 <div class="col-md-3">
-                    <div class="form-group has-value">
-                        <input id="SupplierName" type="text" class="form-control" placeholder=" " readonly>
+                    <div class="form-group">
+                        <input id="SupplierName" type="text" class="form-control" placeholder=" " {% if is_view_mode %}readonly disabled{% endif %}>
                         <label class="floating-label">Supplier Name</label>
                     </div>
                 </div>

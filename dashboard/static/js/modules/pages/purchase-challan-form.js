@@ -579,6 +579,72 @@ function populateForm(data) {
     updateTotals();
 }
 
+// ─── Reset form to blank after new entry save ────────────────────────────────
+function resetForm() {
+    selectedGatePass = null;
+    selectedPO = null;
+
+    // Reset Challan No
+    const cnInput = getEl('ChallanNo');
+    if (cnInput) {
+        cnInput.value = '';
+        cnInput.placeholder = '(Auto-Generated)';
+    }
+
+    // Reset Challan Date to today
+    const today = new Date().toISOString().split('T')[0];
+    setVal('ChallanDate', today);
+    if (challanDatePicker) {
+        challanDatePicker.setDate(new Date());
+    }
+
+    // Reset Gate Pass fields
+    setVal('GatePassNo', '');
+    setVal('GatePassNoDisplay', '');
+    setVal('GatePassDate', '');
+    setVal('VehicleNo', '');
+    setVal('DriverName', '');
+    setVal('WeighmentSlipNo', '');
+    setVal('WeighmentDate', '');
+
+    // Reset PO & Supplier fields
+    setVal('PONO', '');
+    setVal('PONODisplay', '');
+    setVal('PODate', '');
+    if (poDatePicker) {
+        poDatePicker.clear();
+    }
+    setVal('SupplierName', '');
+
+    // Reset Status to Draft (1)
+    setVal('StatusId', '1');
+    updateStatusStepper(1);
+
+    // Reset Notes
+    setVal('Notes', '');
+
+    // Reset material rows to 1 empty row
+    matRows = [{
+        MaterialID: '', materialName: '',
+        Bags: 0, GrossWeight: 0, NetWeight: 0, Remarks: ''
+    }];
+    renderMatTable();
+    updateTotals();
+
+    // Refresh floating label classes
+    document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(el => {
+        if (el.value !== '') {
+            el.closest('.form-group')?.classList.add('has-value');
+        } else {
+            el.closest('.form-group')?.classList.remove('has-value');
+        }
+    });
+    // Ensure ChallanNo, ChallanDate, and StatusId keep floating labels active
+    getEl('ChallanNo')?.closest('.form-group')?.classList.add('has-value');
+    getEl('ChallanDate')?.closest('.form-group')?.classList.add('has-value');
+    getEl('StatusId')?.closest('.form-group')?.classList.add('has-value');
+}
+
 // ─── Save — routes through sp_manage_purchase_challan via API ─────────────────
 async function saveChallan() {
     const headerData = {
@@ -609,13 +675,14 @@ async function saveChallan() {
         if (isEdit) {
             response = await apiClient.patch(`/api/purchase-challan/${encodeURIComponent(challanNo)}/`, payload);
             notifications.success(`Challan ${challanNo} updated successfully.`);
+            setTimeout(() => {
+                window.location.href = '/purchase-challan/';
+            }, 800);
         } else {
             response = await apiClient.post('/api/purchase-challan/', payload);
             const newChallan = response.ChallanNo || '';
             notifications.success(`Purchase Challan ${newChallan} created successfully.`);
-            setTimeout(() => {
-                window.location.href = `/purchase-challan/${encodeURIComponent(newChallan)}/edit/`;
-            }, 800);
+            resetForm();
         }
     } catch (err) {
         let detail = '';

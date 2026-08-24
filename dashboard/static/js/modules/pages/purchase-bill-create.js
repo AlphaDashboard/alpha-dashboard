@@ -1054,11 +1054,12 @@ class PurchaseBillForm {
             if (this.config.isEditMode) {
                 await PurchaseBillAPI.update(this.config.voucherNo, payload);
                 notifications.showSuccess('Purchase Bill updated successfully');
+                setTimeout(() => { window.location.href = '/purchase-bill/'; }, 800);
             } else {
                 await PurchaseBillAPI.create(payload);
                 notifications.showSuccess('Purchase Bill created successfully');
+                this.resetForm();
             }
-            setTimeout(() => { window.location.href = '/purchase-bill/'; }, 1000);
         } catch (err) {
             const errorMsg = err.message ||
                 (err.response?.data && typeof err.response.data === 'object'
@@ -1067,6 +1068,42 @@ class PurchaseBillForm {
             this.showErrors(errorMsg);
             notifications.showError('Form submission failed');
         }
+    }
+
+    resetForm() {
+        if (this.form) {
+            this.form.reset();
+        }
+        if (this.tbody) {
+            this.tbody.innerHTML = '';
+        }
+        this.selectedGP = null;
+        this.selectedPO = null;
+
+        const billDateInput = domUtils.getElement('#billDate');
+        if (billDateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            billDateInput.value = today;
+        }
+
+        if (this.billStatusSelect) {
+            this.billStatusSelect.value = 'Draft';
+        }
+
+        this.addRow();
+        this.updateTotals();
+        this.updateProgress();
+
+        document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(el => {
+            if (el.value !== '') {
+                el.closest('.form-group')?.classList.add('has-value');
+            } else {
+                el.closest('.form-group')?.classList.remove('has-value');
+            }
+        });
+        domUtils.getElement('#billNo')?.closest('.form-group')?.classList.add('has-value');
+        domUtils.getElement('#billDate')?.closest('.form-group')?.classList.add('has-value');
+        domUtils.getElement('#billStatus')?.closest('.form-group')?.classList.add('has-value');
     }
 
     async createNewMaterial() {
