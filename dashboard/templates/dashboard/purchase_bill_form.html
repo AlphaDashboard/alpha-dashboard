@@ -6,7 +6,91 @@
 {% block extra_css %}
 <link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
 <style>
-    body { background-color: #f4f6f9; color: #334155; }
+    body { background-color: #f4f6f9; color: #334155; overflow-y: auto !important; }
+
+    /* ── Flex container for the full page below the topbar ── */
+    .erp-container-flex {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 85px);
+        gap: 5px;
+        padding-bottom: 8px !important;
+    }
+
+    /* ── Middle section: header-card + table-card stacked ── */
+    .erp-form-flex {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+        gap: 5px;
+    }
+
+    /* ── Table card grows to fill remaining space ── */
+    .erp-card-table-flex {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 260px;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        overflow: hidden !important;
+    }
+    .erp-card-table-flex > .card-header { flex-shrink: 0; }
+    .erp-card-table-flex > .card-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+    .erp-card-table-flex .tab-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden !important;
+    }
+    /* Explicitly hide inactive tab panes so multi-tabs don't stack */
+    .erp-card-table-flex .tab-pane {
+        display: none !important;
+    }
+    .erp-card-table-flex .tab-pane.active {
+        display: flex !important;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden !important;
+    }
+    .erp-card-table-flex .erp-table-wrapper {
+        flex: 1 1 auto;
+        min-height: 180px;
+        max-height: 220px; /* Exactly 5 rows (34px each) + header (32px) */
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        position: relative;
+        background: #ffffff;
+    }
+
+    /* ── Custom Smooth Scrollbars ── */
+    .erp-table-wrapper::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .erp-table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
 
     /* ── Typography ── */
     .page-title { font-size: 1.05rem; font-weight: 700; color: #000000 !important; margin-bottom: 0; }
@@ -187,9 +271,9 @@
         height: 32px !important;
     }
     .erp-data-table .form-control, .erp-data-table .form-select {
-        height: 26px !important;
+        height: 28px !important;
         padding: 2px 6px !important;
-        font-size: 11.5px !important;
+        font-size: 12px !important;
         border-radius: 3px !important;
     }
 
@@ -209,11 +293,12 @@
     .erp-table-footer-bar {
         height: 38px !important;
         min-height: 38px !important;
+        max-height: 38px !important;
         background-color: #536479 !important;
         color: #ffffff;
         display: flex;
         align-items: center;
-        border-top: 1px solid #475569 !important;
+        border-top: 2px solid #475569 !important;
         margin: 0 !important;
         padding: 0 12px !important;
         box-sizing: border-box;
@@ -330,64 +415,65 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-2 py-1" style="max-width: 100% !important; margin: 0 auto; margin-top: -20px !important;">
-    <form id="purchaseBillForm" novalidate>
-        {% csrf_token %}
+<div class="erp-container-flex">
 
-        <!-- ══════════════════════════════════════════════════
-             PAGE HEADER
-        ══════════════════════════════════════════════════ -->
-        <div class="d-flex justify-content-between align-items-center mb-1" style="min-height: 32px;">
-            <div class="d-flex align-items-center gap-2">
-                <h1 class="page-title">
-                    {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
-                </h1>
-                <span class="badge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px;">RMPBL</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                {% if is_view_mode %}
-                    {% if prev_pk %}
-                        <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
-                           class="btn btn-sm btn-outline-secondary px-2 py-1"
-                           style="font-size:11px;font-weight:500;border-radius:4px;" title="Previous">
-                            <i class="bi bi-chevron-left"></i> Prev
-                        </a>
-                    {% endif %}
-                    {% if next_pk %}
-                        <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
-                           class="btn btn-sm btn-outline-secondary px-2 py-1"
-                           style="font-size:11px;font-weight:500;border-radius:4px;" title="Next">
-                            Next <i class="bi bi-chevron-right"></i>
-                        </a>
-                    {% endif %}
-                    {% if bill_status != 'Submitted' and bill_status != 'Approved' %}
-                        <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
-                           class="btn btn-sm btn-success px-2 py-1"
-                           style="font-size:11px;font-weight:600;border-radius:4px;background-color:#10b981;border-color:#10b981;color:white;">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-                    {% endif %}
+    <!-- ══════════════════════════════════════════════════
+         PAGE HEADER
+    ══════════════════════════════════════════════════ -->
+    <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 32px;">
+        <div class="d-flex align-items-center gap-2">
+            <h1 class="page-title">
+                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
+            </h1>
+            <span class="badge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px;">RMPBL</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            {% if is_view_mode %}
+                {% if prev_pk %}
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
+                       class="btn btn-sm btn-outline-secondary px-2 py-1"
+                       style="font-size:11px;font-weight:500;border-radius:4px;" title="Previous">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </a>
                 {% endif %}
-                <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
-                    <i class="bi bi-arrow-left me-1"></i> Back
-                </a>
-            </div>
+                {% if next_pk %}
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
+                       class="btn btn-sm btn-outline-secondary px-2 py-1"
+                       style="font-size:11px;font-weight:500;border-radius:4px;" title="Next">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                {% endif %}
+                {% if bill_status != 'Submitted' and bill_status != 'Approved' %}
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
+                       class="btn btn-sm btn-success px-2 py-1"
+                       style="font-size:11px;font-weight:600;border-radius:4px;background-color:#10b981;border-color:#10b981;color:white;">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
         </div>
+    </div>
 
-        <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-1"
-             style="border-radius:4px;font-size:12px;"></div>
+    <div id="validationAlert" class="alert alert-danger shadow-sm border-0 d-none p-2 mb-1 flex-shrink-0"
+         style="border-radius:4px;font-size:12px;"></div>
 
-        <!-- Bill Locked Banner -->
-        <div id="billLockedBanner" class="d-none mb-1 p-2 d-flex align-items-center gap-2"
-             style="border-radius:4px;font-size:12px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
-            <i class="bi bi-lock-fill" style="font-size:14px;flex-shrink:0;"></i>
-            <span id="billLockedBannerText">This Purchase Bill cannot be edited in its current state.</span>
-        </div>
+    <!-- Bill Locked Banner -->
+    <div id="billLockedBanner" class="d-none mb-1 p-2 d-flex align-items-center gap-2 flex-shrink-0"
+         style="border-radius:4px;font-size:12px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
+        <i class="bi bi-lock-fill" style="font-size:14px;flex-shrink:0;"></i>
+        <span id="billLockedBannerText">This Purchase Bill cannot be edited in its current state.</span>
+    </div>
+
+    <form id="purchaseBillForm" class="erp-form-flex" novalidate>
+        {% csrf_token %}
 
         <!-- ══════════════════════════════════════════════════
              HEADER CARD (Balanced 4 Columns Layout)
         ══════════════════════════════════════════════════ -->
-        <div class="card mb-1" id="billDetailsCard">
+        <div class="card flex-shrink-0" id="billDetailsCard">
             
             <!-- ── ROW 1: Bill No | Bill Date | Sales/Purchase Group | Bill Status ── -->
             <div class="row g-2">
@@ -603,12 +689,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div><!-- /HEADER CARD -->
 
         <!-- ══════════════════════════════════════════════════
              STATUS WORKFLOW STEPPER (Exact Challan Style)
         ══════════════════════════════════════════════════ -->
-        <div class="card mb-1 border-0 p-2" style="background: #f8fafc; border: 1px solid #cbd5e1 !important;">
+        <div class="card flex-shrink-0 border-0 p-2" style="background: #f8fafc; border: 1px solid #cbd5e1 !important;">
             <div class="progress-container px-4 py-1">
                 <div class="progress-line"><div class="progress-line-fill" id="statusProgressFill"></div></div>
                 <div class="progress-step active" id="step-Draft">
@@ -631,231 +717,238 @@
         </div>
 
         <!-- ══════════════════════════════════════════════════
-             TABS NAVIGATION
+             ITEMS TABLE CARD (Subsection B Style)
         ══════════════════════════════════════════════════ -->
-        <ul class="nav nav-tabs" id="billTabs" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" id="tab-items"
-                        data-bs-toggle="tab" data-bs-target="#panel-items"
-                        type="button">
-                    <i class="bi bi-list-ul me-1"></i>Items
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="tab-terms"
-                        data-bs-toggle="tab" data-bs-target="#panel-terms"
-                        type="button">
-                    <i class="bi bi-truck me-1"></i>Delivery and Payment Terms
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="tab-additional"
-                        data-bs-toggle="tab" data-bs-target="#panel-additional"
-                        type="button">
-                    <i class="bi bi-info-circle me-1"></i>Additional Information
-                </button>
-            </li>
-        </ul>
+        <div class="card erp-card-table-flex">
+            <!-- Tab nav in Card Header -->
+            <div class="card-header p-0 border-bottom" style="background:#fff; flex-shrink:0;">
+                <ul class="nav nav-tabs border-0" id="billTabs" role="tablist" style="padding: 0 10px; margin-bottom: 0;">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="tab-items"
+                                data-bs-toggle="tab" data-bs-target="#panel-items"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-list-ul me-1"></i>Items
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-terms"
+                                data-bs-toggle="tab" data-bs-target="#panel-terms"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-truck me-1"></i>Delivery and Payment Terms
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-additional"
+                                data-bs-toggle="tab" data-bs-target="#panel-additional"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-info-circle me-1"></i>Additional Information
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
-        <!-- ══════════════════════════════════════════════════
-             TAB PANES (Subsection B Style Table + Footer Card)
-        ══════════════════════════════════════════════════ -->
-        <div class="tab-content" id="billTabContent">
+            <div class="card-body">
+                <div class="tab-content" id="billTabContent">
 
-            <!-- ── TAB 1: Items Table Card ── -->
-            <div class="tab-pane fade show active" id="panel-items" role="tabpanel">
-                <div class="erp-table-card">
-                    <div style="max-height: 220px; overflow-y: auto;">
-                        <table class="table mb-0 erp-data-table" id="itemsTable">
-                            <thead>
-                                <tr>
-                                    <th style="width:5%;" class="text-center">#</th>
-                                    <th style="width:28%;">Item Name *</th>
-                                    <th style="width:11%;" class="text-end">Order Qty *</th>
-                                    <th style="width:9%;">UOM *</th>
-                                    <th style="width:11%;" class="text-end">Unit Rate *</th>
-                                    <th style="width:13%;" class="text-end">Amount</th>
-                                    <th style="width:15%;">Remarks</th>
-                                    <th style="width:8%;" class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemsTableBody">
-                                <!-- Injected by purchase-bill-create.js -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <!-- ── TAB 1: Items Tab ── -->
+                    <div class="tab-pane fade show active" id="panel-items" role="tabpanel">
+                        <div class="erp-table-wrapper">
+                            <table class="table table-bordered mb-0 erp-data-table" id="itemsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;" class="text-center">#</th>
+                                        <th style="width:28%;">Item Name *</th>
+                                        <th style="width:12%;" class="text-end">Order Qty *</th>
+                                        <th style="width:10%;">UOM *</th>
+                                        <th style="width:12%;" class="text-end">Unit Rate *</th>
+                                        <th style="width:13%;" class="text-end">Amount</th>
+                                        <th style="width:12%;">Remarks</th>
+                                        <th style="width:8%;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody">
+                                    <!-- Injected by purchase-bill-create.js -->
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <!-- ── Attached Footer Bar (Subsection B Style) ── -->
-                    <div class="erp-table-footer-bar">
-                        <div class="d-flex align-items-center justify-content-between w-100 px-2">
-                            <div class="d-flex align-items-center gap-4">
-                                <span class="erp-footer-label">TOTALS</span>
+                        <!-- ── Pinned Bottom Footer Bar (Subsection B Style) ── -->
+                        <div class="erp-table-footer-bar">
+                            <div class="d-flex align-items-center justify-content-between w-100 px-3">
                                 <div class="d-flex align-items-center gap-4">
-                                    <span class="erp-footer-item">Total Basic: <strong id="totalBasicAmountDisplay">0.00</strong></span>
-                                    <span class="erp-footer-item">Grand Total: <strong id="grandTotalDisplay">0.00</strong></span>
+                                    <span class="erp-footer-label">TOTALS</span>
+                                    <div class="d-flex align-items-center gap-4">
+                                        <span class="erp-footer-item">Total Basic: <strong id="totalBasicAmountDisplay">0.00</strong></span>
+                                        <span class="erp-footer-item">Grand Total: <strong id="grandTotalDisplay">0.00</strong></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2" id="actionButtonsContainer">
+                                    {% if not is_view_mode %}
+                                    <button type="button" class="erp-btn-secondary" id="saveDraftBtn">
+                                        <i class="bi bi-file-earmark"></i> Save Draft
+                                    </button>
+                                    <button type="button" class="erp-btn-submit" id="submitApprovalBtn">
+                                        <i class="bi bi-send-check"></i> Save and Submitted
+                                    </button>
+                                    <button type="submit" class="erp-btn-save shadow-sm" id="generateBillBtn">
+                                        <i class="bi bi-floppy"></i> Save Bill
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center gap-2" id="actionButtonsContainer">
+                        </div>
+                    </div><!-- /TAB 1 -->
+
+                    <!-- ── TAB 2: Delivery & Payment Terms Tab ── -->
+                    <div class="tab-pane fade" id="panel-terms" role="tabpanel">
+                        <div class="p-3" style="overflow-y: auto; flex: 1 1 auto; min-height: 0; background: #ffffff;">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="deliveryLocation" name="delivery_location" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
+                                            <option value=""></option>
+                                            <option value="Plant 1">Plant 1</option>
+                                            <option value="Plant 2">Plant 2</option>
+                                            <option value="Warehouse">Warehouse</option>
+                                        </select>
+                                        <label for="deliveryLocation" class="floating-label">Delivery Location *</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="deliveryTerms" name="delivery_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="Ex Works/Ex-Godown">Ex Works/Ex-Godown</option>
+                                            <option value="FOB">FOB</option>
+                                            <option value="Door Delivery">Door Delivery</option>
+                                            <option value="FOB-FOT-FOR">FOB-FOT-FOR</option>
+                                            <option value="CIF">CIF</option>
+                                            <option value="EXW">EXW</option>
+                                            <option value="DAP">DAP</option>
+                                        </select>
+                                        <label for="deliveryTerms" class="floating-label">Delivery Terms / Incoterms</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="paymentTerms" name="payment_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="Advance">Advance</option>
+                                            <option value="30 Days Credit">30 Days Credit</option>
+                                            <option value="45 Days Credit">45 Days Credit</option>
+                                            <option value="60 Days Credit">60 Days Credit</option>
+                                            <option value="Against Delivery">Against Delivery</option>
+                                        </select>
+                                        <label for="paymentTerms" class="floating-label">Payment Terms</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="freightTerms" name="freight_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="Paid by Us">Paid by Us</option>
+                                            <option value="To Pay (By Supplier)">To Pay (By Supplier)</option>
+                                            <option value="Included in Price">Included in Price</option>
+                                            <option value="Extra at Actuals">Extra at Actuals</option>
+                                        </select>
+                                        <label for="freightTerms" class="floating-label">Freight Terms</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="currency" name="currency" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="INR">INR (Indian Rupee)</option>
+                                            <option value="USD">USD (US Dollar)</option>
+                                            <option value="EUR">EUR (Euro)</option>
+                                            <option value="GBP">GBP (British Pound)</option>
+                                        </select>
+                                        <label for="currency" class="floating-label">Currency</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action buttons inside Terms Tab -->
+                            <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
                                 {% if not is_view_mode %}
-                                <button type="button" class="erp-btn-secondary" id="saveDraftBtn">
+                                <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
                                     <i class="bi bi-file-earmark"></i> Save Draft
                                 </button>
-                                <button type="button" class="erp-btn-submit" id="submitApprovalBtn">
+                                <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
                                     <i class="bi bi-send-check"></i> Save and Submitted
                                 </button>
-                                <button type="submit" class="erp-btn-save shadow-sm" id="generateBillBtn">
+                                <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
                                     <i class="bi bi-floppy"></i> Save Bill
                                 </button>
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </div><!-- /TAB 2 -->
+
+                    <!-- ── TAB 3: Additional Information Tab ── -->
+                    <div class="tab-pane fade" id="panel-additional" role="tabpanel">
+                        <div class="p-3" style="overflow-y: auto; flex: 1 1 auto; min-height: 0; background: #ffffff;">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="text" id="purchaserName" name="purchaser_name" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                        <label for="purchaserName" class="floating-label">Purchaser Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="department" name="department" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="Purchase">Purchase</option>
+                                            <option value="Production">Production</option>
+                                            <option value="Stores">Stores</option>
+                                        </select>
+                                        <label for="department" class="floating-label">Department</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-value">
+                                        <select id="costCenter" name="cost_center" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                                            <option value="Plant A">Plant A</option>
+                                            <option value="Plant B">Plant B</option>
+                                        </select>
+                                        <label for="costCenter" class="floating-label">Cost Center</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="text" id="specialInstructions" name="special_instructions" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                        <label for="specialInstructions" class="floating-label">Special Instructions</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="text" id="internalNotes" name="internal_notes" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                                        <label for="internalNotes" class="floating-label">Internal Notes</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action buttons inside Additional Info Tab -->
+                            <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                                {% if not is_view_mode %}
+                                <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
+                                    <i class="bi bi-file-earmark"></i> Save Draft
+                                </button>
+                                <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
+                                    <i class="bi bi-send-check"></i> Save and Submitted
+                                </button>
+                                <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
+                                    <i class="bi bi-floppy"></i> Save Bill
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div><!-- /TAB 3 -->
+
                 </div>
-            </div><!-- /TAB 1 -->
+            </div>
+        </div><!-- /TABLE CARD -->
 
-            <!-- ── TAB 2: Delivery & Payment Terms Card ── -->
-            <div class="tab-pane fade" id="panel-terms" role="tabpanel">
-                <div class="card p-3">
-                    <div class="row g-2">
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="deliveryLocation" name="delivery_location" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
-                                    <option value=""></option>
-                                    <option value="Plant 1">Plant 1</option>
-                                    <option value="Plant 2">Plant 2</option>
-                                    <option value="Warehouse">Warehouse</option>
-                                </select>
-                                <label for="deliveryLocation" class="floating-label">Delivery Location *</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="deliveryTerms" name="delivery_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="Ex Works/Ex-Godown">Ex Works/Ex-Godown</option>
-                                    <option value="FOB">FOB</option>
-                                    <option value="Door Delivery">Door Delivery</option>
-                                    <option value="FOB-FOT-FOR">FOB-FOT-FOR</option>
-                                    <option value="CIF">CIF</option>
-                                    <option value="EXW">EXW</option>
-                                    <option value="DAP">DAP</option>
-                                </select>
-                                <label for="deliveryTerms" class="floating-label">Delivery Terms / Incoterms</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="paymentTerms" name="payment_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="Advance">Advance</option>
-                                    <option value="30 Days Credit">30 Days Credit</option>
-                                    <option value="45 Days Credit">45 Days Credit</option>
-                                    <option value="60 Days Credit">60 Days Credit</option>
-                                </select>
-                                <label for="paymentTerms" class="floating-label">Payment Terms</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-2 mt-1">
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="freightTerms" name="freight_terms" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="Supplier Paid">Supplier Paid</option>
-                                    <option value="Buyer Paid">Buyer Paid</option>
-                                </select>
-                                <label for="freightTerms" class="floating-label">Freight Terms</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="currency" name="currency" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="INR">INR</option>
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                </select>
-                                <label for="currency" class="floating-label">Currency</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action buttons inside Terms Tab -->
-                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                        {% if not is_view_mode %}
-                        <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
-                            <i class="bi bi-file-earmark"></i> Save Draft
-                        </button>
-                        <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
-                            <i class="bi bi-send-check"></i> Save and Submitted
-                        </button>
-                        <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
-                            <i class="bi bi-floppy"></i> Save Bill
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div><!-- /TAB 2 -->
-
-            <!-- ── TAB 3: Additional Information Card ── -->
-            <div class="tab-pane fade" id="panel-additional" role="tabpanel">
-                <div class="card p-3">
-                    <div class="row g-2">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <input type="text" id="purchaserName" name="purchaser_name" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
-                                <label for="purchaserName" class="floating-label">Purchaser Name</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="department" name="department" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="Purchase">Purchase</option>
-                                    <option value="Production">Production</option>
-                                    <option value="Stores">Stores</option>
-                                </select>
-                                <label for="department" class="floating-label">Department</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group has-value">
-                                <select id="costCenter" name="cost_center" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                                    <option value="Plant A">Plant A</option>
-                                    <option value="Plant B">Plant B</option>
-                                </select>
-                                <label for="costCenter" class="floating-label">Cost Center</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-2 mt-1">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" id="specialInstructions" name="special_instructions" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
-                                <label for="specialInstructions" class="floating-label">Special Instructions</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" id="internalNotes" name="internal_notes" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
-                                <label for="internalNotes" class="floating-label">Internal Notes</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action buttons inside Additional Info Tab -->
-                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                        {% if not is_view_mode %}
-                        <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
-                            <i class="bi bi-file-earmark"></i> Save Draft
-                        </button>
-                        <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
-                            <i class="bi bi-send-check"></i> Save and Submitted
-                        </button>
-                        <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
-                            <i class="bi bi-floppy"></i> Save Bill
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div><!-- /TAB 3 -->
-
-        </div>
     </form>
 </div>
 
@@ -865,7 +958,7 @@
         <td class="row-num text-center align-middle fw-semibold text-secondary">1</td>
         <td class="align-middle">
             <select class="form-select row-item" required>
-                <option value="">Select Item</option>
+                <option value="">-- Select Item --</option>
                 <option value="add_new" class="text-primary fw-bold">+ Add New Item</option>
                 {% for item in items %}
                 <option value="{{ item.id }}" data-name="{{ item.material_name }}">
@@ -875,31 +968,34 @@
             </select>
         </td>
         <td class="align-middle">
-            <input type="number" step="0.0001" min="0" class="form-control text-end row-qty" required>
+            <input type="number" step="0.01" min="0" class="form-control text-end row-qty" placeholder="0" required>
         </td>
         <td class="align-middle">
             <select class="form-select row-uom" required>
                 <option value="MT">MT</option>
                 <option value="KG">KG</option>
                 <option value="TON">TON</option>
+                <option value="BAGS">BAGS</option>
             </select>
         </td>
         <td class="align-middle">
-            <input type="number" step="0.0001" min="0" class="form-control text-end row-rate" required>
+            <input type="number" step="0.01" min="0" class="form-control text-end row-rate" placeholder="0.00" required>
         </td>
         <td class="align-middle">
             <input type="number" class="form-control text-end row-amount bg-light" readonly value="0.00">
         </td>
         <td class="align-middle">
-            <input type="text" class="form-control row-remarks" maxlength="200">
+            <input type="text" class="form-control row-remarks" maxlength="200" placeholder="Remarks">
         </td>
-        <td class="text-center align-middle" style="white-space:nowrap; padding: 2px 4px !important;">
-            <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row">
-                <i class="bi bi-plus-lg"></i>
-            </button>
-            <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1" title="Delete Row">
-                <i class="bi bi-trash"></i>
-            </button>
+        <td class="text-center align-middle" style="white-space:nowrap;">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+                <button type="button" class="erp-action-btn erp-btn-add add-row-btn" title="Add Row">
+                    <i class="bi bi-plus-lg" style="font-size:15px; font-weight:bold;"></i>
+                </button>
+                <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" title="Delete Row" style="display:none;">
+                    <i class="bi bi-trash" style="font-size:14px;"></i>
+                </button>
+            </div>
         </td>
     </tr>
 </template>
