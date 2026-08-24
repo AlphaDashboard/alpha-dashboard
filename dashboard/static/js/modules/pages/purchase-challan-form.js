@@ -17,13 +17,28 @@ function getEl(id) { return document.getElementById(id); }
 function getVal(id) { const el = getEl(id); return el ? el.value.trim() : ''; }
 function setVal(id, v) {
     const el = getEl(id);
-    if (el) {
-        el.value = (v != null ? v : '');
-        if (el.value !== '') {
-            el.closest('.form-group')?.classList.add('has-value');
+    if (!el) return;
+
+    if (el.tagName === 'SELECT' && id === 'SupplierName') {
+        const valStr = (v != null ? String(v).trim() : '');
+        if (valStr) {
+            let found = Array.from(el.options).some(opt => opt.value === valStr);
+            if (!found) {
+                const newOpt = new Option(valStr, valStr, true, true);
+                el.add(newOpt);
+            }
+            el.value = valStr;
         } else {
-            el.closest('.form-group')?.classList.remove('has-value');
+            el.value = '';
         }
+    } else {
+        el.value = (v != null ? v : '');
+    }
+
+    if (el.value !== '') {
+        el.closest('.form-group')?.classList.add('has-value');
+    } else {
+        el.closest('.form-group')?.classList.remove('has-value');
     }
 }
 function getNumVal(id) { const v = parseFloat(getVal(id)); return isNaN(v) ? 0 : v; }
@@ -645,8 +660,88 @@ function resetForm() {
     getEl('StatusId')?.closest('.form-group')?.classList.add('has-value');
 }
 
+// ─── Supplier Modal Handler ──────────────────────────────────────────────────
+function initSupplierModal() {
+    const supplierSelect = getEl('SupplierName');
+    const modalEl = getEl('createSupplierModal');
+    if (!supplierSelect || !modalEl) return;
+
+    const modal = (window.bootstrap && bootstrap.Modal) ? bootstrap.Modal.getOrCreateInstance(modalEl) : null;
+    const form = getEl('createSupplierForm');
+    const errorEl = getEl('supplierModalError');
+
+    supplierSelect.addEventListener('change', () => {
+        if (supplierSelect.value === 'add_new') {
+            supplierSelect.value = '';
+            if (errorEl) {
+                errorEl.classList.add('d-none');
+                errorEl.textContent = '';
+            }
+            if (form) form.reset();
+            if (modal) modal.show();
+        }
+    });
+
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (errorEl) {
+                errorEl.classList.add('d-none');
+                errorEl.textContent = '';
+            }
+            const nameInput = getEl('newSupplierName');
+            const supplierName = nameInput ? nameInput.value.trim() : '';
+            if (!supplierName) {
+                if (errorEl) {
+                    errorEl.textContent = 'Supplier Name is required.';
+                    errorEl.classList.remove('d-none');
+                }
+                return;
+            }
+
+            const formData = new FormData(form);
+            try {
+                const res = await fetch('/api/supplier/create/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    notifications.success('Supplier created successfully!');
+                    if (modal) modal.hide();
+                    const sName = data.name || supplierName;
+                    const newOpt = new Option(sName, sName, true, true);
+                    supplierSelect.add(newOpt);
+                    supplierSelect.value = sName;
+                    supplierSelect.closest('.form-group')?.classList.add('has-value');
+                } else {
+                    const errStr = data.errors ? Object.values(data.errors).join(' ') : 'Failed to create supplier.';
+                    if (errorEl) {
+                        errorEl.textContent = errStr;
+                        errorEl.classList.remove('d-none');
+                    }
+                }
+            } catch (err) {
+                if (errorEl) {
+                    errorEl.textContent = 'Server error. Please try again.';
+                    errorEl.classList.remove('d-none');
+                }
+            }
+        });
+    }
+}
+
 // ─── Save — routes through sp_manage_purchase_challan via API ─────────────────
 async function saveChallan() {
+    const rawMaterials = collectMatRows();
+    const validMaterials = rawMaterials.filter(m => m.MaterialID && String(m.MaterialID).trim() !== '');
+
+    if (validMaterials.length === 0) {
+        notifications.error('Please select a Material for at least one row in the table.');
+        return;
+    }
+
     const headerData = {
         ChallanNo:    getVal('ChallanNo') ? getVal('ChallanNo') : '',
         ChallanDate:  getVal('ChallanDate') ? getVal('ChallanDate') : null,
@@ -661,8 +756,7 @@ async function saveChallan() {
         SupplierName: getVal('SupplierName') ? getVal('SupplierName') : null,
     };
 
-    const materials = collectMatRows();
-    const payload   = { ...headerData, materials };
+    const payload = { ...headerData, materials: validMaterials };
 
     const saveBtns = document.querySelectorAll('.save-btn');
     saveBtns.forEach(btn => {
@@ -703,7 +797,7 @@ async function saveChallan() {
             detail = err.message;
         }
         if (!detail) {
-            detail = 'Server error. Please run sp_manage_purchase_challan_backup.sql on database.';
+            detail = 'Server error. Please check required fields.';
         }
         notifications.error(`Save failed: ${detail}`);
     } finally {
@@ -722,6 +816,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // PO No smart dropdown (edit/create only)
     if (!isView) initPODropdown();
+
+    // Supplier modal & dropdown handler
+    if (!isView) initSupplierModal();
 
     // Flatpickr for ChallanDate and PODate
     const challanDateEl = getEl('ChallanDate');

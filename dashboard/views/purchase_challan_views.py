@@ -27,6 +27,13 @@ class PurchaseChallanCreateView(TemplateView):
         except Exception:
             context['materials'] = []
 
+        # Pass active suppliers to template context
+        try:
+            from dashboard.models import VendorSupplier
+            context['suppliers'] = VendorSupplier.objects.filter(is_active=True).order_by('VendorSupplierName')
+        except Exception:
+            context['suppliers'] = []
+
         # Pagination: prev / next record navigation
         try:
             from dashboard.models.purchase_challan import PurchaseChallan
