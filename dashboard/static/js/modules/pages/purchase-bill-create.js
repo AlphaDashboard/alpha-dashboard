@@ -366,8 +366,26 @@ class PurchaseBillForm {
             }
         });
 
+        gpDisplayInput.addEventListener('focus', () => {
+            if (gpDropdownPanel.style.display !== 'flex') {
+                openGpDropdown();
+            }
+        });
+
+        gpDisplayInput.addEventListener('input', () => {
+            if (gpDropdownPanel.style.display !== 'flex') {
+                openGpDropdown();
+            }
+            if (gpSearchInput) gpSearchInput.value = gpDisplayInput.value;
+            gpHiddenInput.value = gpDisplayInput.value;
+            renderGpDropdownRows(gpDisplayInput.value);
+        });
+
         if (gpSearchInput) {
             gpSearchInput.addEventListener('input', () => {
+                gpDisplayInput.value = gpSearchInput.value;
+                gpHiddenInput.value = gpSearchInput.value;
+                gpDisplayInput.closest('.form-group')?.classList.toggle('has-value', gpSearchInput.value !== '');
                 renderGpDropdownRows(gpSearchInput.value);
             });
         }
@@ -410,7 +428,7 @@ class PurchaseBillForm {
             poDropdownPanel.style.zIndex = '999999';
             const closeBtn = domUtils.getElement('#poDropdownCloseBtn');
             if (closeBtn) closeBtn.onclick = closePoDropdown;
-            renderPoDropdownRows('');
+            renderPoDropdownRows(poDisplayInput.value || '');
         };
 
         const closePoDropdown = () => {
@@ -488,8 +506,26 @@ class PurchaseBillForm {
             }
         });
 
+        poDisplayInput.addEventListener('focus', () => {
+            if (poDropdownPanel.style.display !== 'flex') {
+                openPoDropdown();
+            }
+        });
+
+        poDisplayInput.addEventListener('input', () => {
+            if (poDropdownPanel.style.display !== 'flex') {
+                openPoDropdown();
+            }
+            if (poSearchInput) poSearchInput.value = poDisplayInput.value;
+            poHiddenInput.value = poDisplayInput.value;
+            renderPoDropdownRows(poDisplayInput.value);
+        });
+
         if (poSearchInput) {
             poSearchInput.addEventListener('input', () => {
+                poDisplayInput.value = poSearchInput.value;
+                poHiddenInput.value = poSearchInput.value;
+                poDisplayInput.closest('.form-group')?.classList.toggle('has-value', poSearchInput.value !== '');
                 renderPoDropdownRows(poSearchInput.value);
             });
         }
