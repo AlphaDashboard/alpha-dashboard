@@ -146,6 +146,16 @@
     }
     .form-control::placeholder { color: #94a3b8 !important; font-size: 11px !important; }
 
+    /* ── Dropdown chevron arrow styling matching form-select ── */
+    .erp-dropdown-arrow {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.65rem center !important;
+        background-size: 14px 10px !important;
+        padding-right: 2rem !important;
+        cursor: pointer;
+    }
+
     /* ── ERP Data Table ── */
     .erp-data-table {
         border-collapse: collapse;
@@ -413,7 +423,7 @@
                 <div class="col-md-3" style="position:relative;">
                     <div class="form-group mb-0" id="gpDropdownGroup">
                         <input type="hidden" id="GatePassNo" name="GatePassNo">
-                        <input type="text" id="GatePassNoDisplay" class="form-control" placeholder=" " autocomplete="off" readonly
+                        <input type="text" id="GatePassNoDisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
                         <label for="GatePassNoDisplay" class="floating-label">Gate Pass No</label>
 
@@ -498,7 +508,7 @@
                 <div class="col-md-3" style="position:relative;">
                     <div class="form-group mb-0" id="poDropdownGroup">
                         <input type="hidden" id="PONO" name="PONO">
-                        <input type="text" id="PONODisplay" class="form-control" placeholder=" " autocomplete="off"
+                        <input type="text" id="PONODisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
                         <label for="PONODisplay" class="floating-label">PO No</label>
 
