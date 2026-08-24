@@ -262,7 +262,7 @@ class PurchaseChallanList {
 
         try {
             const params = this.buildParams();
-            const response = await apiClient.get('/api/purchase-challan/', { params });
+            const response = await apiClient.get('/api/purchase-challan/', params);
             const data = response;
 
             const results    = data.results || [];

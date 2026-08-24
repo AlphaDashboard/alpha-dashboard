@@ -1363,31 +1363,64 @@ class PurchaseChallanViewSet(viewsets.ModelViewSet):
         try:
             queryset = PurchaseChallan.objects.all().order_by('-ChallanDate', '-ChallanNo')
 
-            # Generic search
+            # Generic search across all relevant fields
             search = self.request.query_params.get('search', None)
             if search:
-                queryset = queryset.filter(
-                    Q(ChallanNo__icontains=search) |
-                    Q(VehicleNo__icontains=search) |
-                    Q(WeighmentSlipNo__icontains=search)
+                term = search.strip()
+                search_q = (
+                    Q(ChallanNo__icontains=term) |
+                    Q(VehicleNo__icontains=term) |
+                    Q(DriverName__icontains=term) |
+                    Q(WeighmentSlipNo__icontains=term) |
+                    Q(SupplierName__icontains=term) |
+                    Q(PONO__icontains=term) |
+                    Q(Notes__icontains=term)
                 )
+                clean_num = ''.join(filter(str.isdigit, term))
+                if clean_num:
+                    num_val = int(clean_num)
+                    search_q |= Q(GPNo=num_val)
+                    if num_val > 10000:
+                        search_q |= Q(GPNo=num_val - 10000)
+                queryset = queryset.filter(search_q)
 
             # Field-specific filters
             challan_filter  = self.request.query_params.get('challan_no', None)
             gatepass_filter = self.request.query_params.get('gatepass_no', None)
+            supplier_filter = self.request.query_params.get('supplier_name', None)
+            po_filter       = self.request.query_params.get('po_no', None)
+            vehicle_filter  = self.request.query_params.get('vehicle_no', None)
             status_filter   = self.request.query_params.get('status', None)
             date_after      = self.request.query_params.get('date_after', None)
             date_before     = self.request.query_params.get('date_before', None)
 
             if challan_filter:
-                queryset = queryset.filter(ChallanNo__icontains=challan_filter)
+                queryset = queryset.filter(ChallanNo__icontains=challan_filter.strip())
+
             if gatepass_filter:
-                queryset = queryset.filter(GPNo__icontains=gatepass_filter)
+                clean_gp = ''.join(filter(str.isdigit, gatepass_filter))
+                if clean_gp:
+                    gp_val = int(clean_gp)
+                    gp_q = Q(GPNo=gp_val)
+                    if gp_val > 10000:
+                        gp_q |= Q(GPNo=gp_val - 10000)
+                    queryset = queryset.filter(gp_q)
+
+            if supplier_filter:
+                queryset = queryset.filter(SupplierName__icontains=supplier_filter.strip())
+
+            if po_filter:
+                queryset = queryset.filter(PONO__icontains=po_filter.strip())
+
+            if vehicle_filter:
+                queryset = queryset.filter(VehicleNo__icontains=vehicle_filter.strip())
+
             if status_filter is not None and status_filter != '':
                 try:
                     queryset = queryset.filter(StatusId=int(status_filter))
                 except ValueError:
                     pass
+
             if date_after:
                 queryset = queryset.filter(ChallanDate__gte=date_after)
             if date_before:
@@ -1400,7 +1433,8 @@ class PurchaseChallanViewSet(viewsets.ModelViewSet):
 
             return queryset
 
-        except Exception:
+        except Exception as e:
+            print("PurchaseChallanViewSet get_queryset error:", e)
             return PurchaseChallan.objects.none()
 
     def destroy(self, request, *args, **kwargs):
