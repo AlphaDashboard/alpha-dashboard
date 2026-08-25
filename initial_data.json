@@ -1,0 +1,6244 @@
+[
+{
+  "model": "dashboard.category",
+  "pk": 4,
+  "fields": {
+    "categoryName": "Bank Accounts",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.category",
+  "pk": 5,
+  "fields": {
+    "categoryName": "Revenue Accounts",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.category",
+  "pk": 6,
+  "fields": {
+    "categoryName": "Expense Accounts",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.category",
+  "pk": 7,
+  "fields": {
+    "categoryName": "Asset Accounts",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.category",
+  "pk": 8,
+  "fields": {
+    "categoryName": "Seeded Test Accounts",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.category",
+  "pk": 9,
+  "fields": {
+    "categoryName": "Test Category",
+    "categoryType": "A"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 8,
+  "fields": {
+    "groupID": 8,
+    "Account_Name": "bvb",
+    "display_name": "bbh",
+    "category": 4,
+    "cl_bal": "4961.93",
+    "is_active": false,
+    "created_at": "2026-05-29T08:24:40.252Z",
+    "updated_at": "2026-06-03T13:17:44.702Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 9,
+  "fields": {
+    "groupID": 9,
+    "Account_Name": "General",
+    "display_name": "huhi",
+    "category": 4,
+    "cl_bal": "2288.42",
+    "is_active": true,
+    "created_at": "2026-05-29T16:40:32.936Z",
+    "updated_at": "2026-06-03T13:17:44.702Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 10,
+  "fields": {
+    "groupID": 10,
+    "Account_Name": "DFHG",
+    "display_name": "HGHH",
+    "category": 5,
+    "cl_bal": "12553.66",
+    "is_active": true,
+    "created_at": "2026-05-29T16:40:58.160Z",
+    "updated_at": "2026-06-03T13:17:44.702Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 11,
+  "fields": {
+    "groupID": 11,
+    "Account_Name": "Validation Account 99",
+    "display_name": "Validation Account 99",
+    "category": 4,
+    "cl_bal": "9025.27",
+    "is_active": true,
+    "created_at": "2026-06-01T10:56:34.404Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 12,
+  "fields": {
+    "groupID": 12,
+    "Account_Name": "sd",
+    "display_name": "ds",
+    "category": 7,
+    "cl_bal": "12192.46",
+    "is_active": true,
+    "created_at": "2026-06-01T11:26:14.507Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 13,
+  "fields": {
+    "groupID": 13,
+    "Account_Name": "ds",
+    "display_name": "ds",
+    "category": 4,
+    "cl_bal": "4884.93",
+    "is_active": true,
+    "created_at": "2026-06-02T08:02:39.497Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 14,
+  "fields": {
+    "groupID": 14,
+    "Account_Name": "zz",
+    "display_name": "sds",
+    "category": 4,
+    "cl_bal": "508.63",
+    "is_active": true,
+    "created_at": "2026-06-02T08:02:56.422Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 15,
+  "fields": {
+    "groupID": 15,
+    "Account_Name": "sd",
+    "display_name": "sd",
+    "category": 4,
+    "cl_bal": "6389.81",
+    "is_active": true,
+    "created_at": "2026-06-02T08:03:08.103Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 16,
+  "fields": {
+    "groupID": 16,
+    "Account_Name": "Seeded HDFC Current Account",
+    "display_name": "Seeded HDFC",
+    "category": 8,
+    "cl_bal": "6539.56",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.203Z",
+    "updated_at": "2026-06-03T13:17:44.698Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 17,
+  "fields": {
+    "groupID": 17,
+    "Account_Name": "Seeded Expenses",
+    "display_name": "Seeded Exp",
+    "category": 8,
+    "cl_bal": "10923.30",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.212Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 18,
+  "fields": {
+    "groupID": 18,
+    "Account_Name": "Seeded Alpha Group 1",
+    "display_name": "Seeded Alpha 1",
+    "category": 4,
+    "cl_bal": "3676.64",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.645Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 19,
+  "fields": {
+    "groupID": 19,
+    "Account_Name": "Seeded Alpha Group 2",
+    "display_name": "Seeded Alpha 2",
+    "category": 4,
+    "cl_bal": "9331.93",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.671Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 20,
+  "fields": {
+    "groupID": 20,
+    "Account_Name": "Seeded Alpha Group 3",
+    "display_name": "Seeded Alpha 3",
+    "category": 4,
+    "cl_bal": "1633.92",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.671Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 21,
+  "fields": {
+    "groupID": 21,
+    "Account_Name": "Seeded Alpha Group 4",
+    "display_name": "Seeded Alpha 4",
+    "category": 4,
+    "cl_bal": "6284.11",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.678Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 22,
+  "fields": {
+    "groupID": 22,
+    "Account_Name": "Seeded Alpha Group 5",
+    "display_name": "Seeded Alpha 5",
+    "category": 4,
+    "cl_bal": "9473.11",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.678Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 23,
+  "fields": {
+    "groupID": 23,
+    "Account_Name": "Seeded Alpha Group 6",
+    "display_name": "Seeded Alpha 6",
+    "category": 4,
+    "cl_bal": "1273.13",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.686Z",
+    "updated_at": "2026-06-03T13:17:44.693Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 24,
+  "fields": {
+    "groupID": 24,
+    "Account_Name": "Seeded Alpha Group 7",
+    "display_name": "Seeded Alpha 7",
+    "category": 4,
+    "cl_bal": "1748.78",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.686Z",
+    "updated_at": "2026-06-03T13:17:44.691Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 25,
+  "fields": {
+    "groupID": 25,
+    "Account_Name": "Seeded Alpha Group 8",
+    "display_name": "Seeded Alpha 8",
+    "category": 4,
+    "cl_bal": "5943.61",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.686Z",
+    "updated_at": "2026-06-03T13:17:44.690Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 26,
+  "fields": {
+    "groupID": 26,
+    "Account_Name": "Seeded Alpha Group 9",
+    "display_name": "Seeded Alpha 9",
+    "category": 4,
+    "cl_bal": "6086.62",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.686Z",
+    "updated_at": "2026-06-03T13:17:44.690Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 27,
+  "fields": {
+    "groupID": 27,
+    "Account_Name": "Seeded Alpha Group 10",
+    "display_name": "Seeded Alpha 10",
+    "category": 4,
+    "cl_bal": "6385.49",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.686Z",
+    "updated_at": "2026-06-03T13:17:44.690Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 28,
+  "fields": {
+    "groupID": 28,
+    "Account_Name": "Seeded Alpha Group 11",
+    "display_name": "Seeded Alpha 11",
+    "category": 4,
+    "cl_bal": "4496.09",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.694Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 29,
+  "fields": {
+    "groupID": 29,
+    "Account_Name": "Seeded Alpha Group 12",
+    "display_name": "Seeded Alpha 12",
+    "category": 4,
+    "cl_bal": "5158.00",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.694Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 30,
+  "fields": {
+    "groupID": 30,
+    "Account_Name": "Seeded Alpha Group 13",
+    "display_name": "Seeded Alpha 13",
+    "category": 4,
+    "cl_bal": "10238.65",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.694Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 31,
+  "fields": {
+    "groupID": 31,
+    "Account_Name": "Seeded Alpha Group 14",
+    "display_name": "Seeded Alpha 14",
+    "category": 4,
+    "cl_bal": "7129.94",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.701Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 32,
+  "fields": {
+    "groupID": 32,
+    "Account_Name": "Seeded Alpha Group 15",
+    "display_name": "Seeded Alpha 15",
+    "category": 4,
+    "cl_bal": "2318.65",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.702Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 33,
+  "fields": {
+    "groupID": 33,
+    "Account_Name": "Seeded Alpha Group 16",
+    "display_name": "Seeded Alpha 16",
+    "category": 4,
+    "cl_bal": "12099.72",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.706Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 34,
+  "fields": {
+    "groupID": 34,
+    "Account_Name": "Seeded Alpha Group 17",
+    "display_name": "Seeded Alpha 17",
+    "category": 4,
+    "cl_bal": "14612.58",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.706Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 35,
+  "fields": {
+    "groupID": 35,
+    "Account_Name": "Seeded Alpha Group 18",
+    "display_name": "Seeded Alpha 18",
+    "category": 4,
+    "cl_bal": "12485.12",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.711Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 36,
+  "fields": {
+    "groupID": 36,
+    "Account_Name": "Seeded Alpha Group 19",
+    "display_name": "Seeded Alpha 19",
+    "category": 4,
+    "cl_bal": "12447.98",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.711Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 37,
+  "fields": {
+    "groupID": 37,
+    "Account_Name": "Seeded Alpha Group 20",
+    "display_name": "Seeded Alpha 20",
+    "category": 4,
+    "cl_bal": "3657.32",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.711Z",
+    "updated_at": "2026-06-03T13:17:44.682Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 38,
+  "fields": {
+    "groupID": 38,
+    "Account_Name": "Seeded Alpha Group 21",
+    "display_name": "Seeded Alpha 21",
+    "category": 4,
+    "cl_bal": "12150.22",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.719Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 39,
+  "fields": {
+    "groupID": 39,
+    "Account_Name": "Seeded Alpha Group 22",
+    "display_name": "Seeded Alpha 22",
+    "category": 4,
+    "cl_bal": "6765.07",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.719Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 40,
+  "fields": {
+    "groupID": 40,
+    "Account_Name": "Seeded Alpha Group 23",
+    "display_name": "Seeded Alpha 23",
+    "category": 4,
+    "cl_bal": "5176.39",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.719Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 41,
+  "fields": {
+    "groupID": 41,
+    "Account_Name": "Seeded Alpha Group 24",
+    "display_name": "Seeded Alpha 24",
+    "category": 4,
+    "cl_bal": "10866.11",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.719Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 42,
+  "fields": {
+    "groupID": 42,
+    "Account_Name": "Seeded Alpha Group 25",
+    "display_name": "Seeded Alpha 25",
+    "category": 4,
+    "cl_bal": "9832.96",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.728Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 43,
+  "fields": {
+    "groupID": 43,
+    "Account_Name": "Seeded Alpha Group 26",
+    "display_name": "Seeded Alpha 26",
+    "category": 4,
+    "cl_bal": "4172.60",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.728Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 44,
+  "fields": {
+    "groupID": 44,
+    "Account_Name": "Seeded Alpha Group 27",
+    "display_name": "Seeded Alpha 27",
+    "category": 4,
+    "cl_bal": "1390.37",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.728Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 45,
+  "fields": {
+    "groupID": 45,
+    "Account_Name": "Seeded Alpha Group 28",
+    "display_name": "Seeded Alpha 28",
+    "category": 4,
+    "cl_bal": "3056.97",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.736Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 46,
+  "fields": {
+    "groupID": 46,
+    "Account_Name": "Seeded Alpha Group 29",
+    "display_name": "Seeded Alpha 29",
+    "category": 4,
+    "cl_bal": "12457.86",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.736Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 47,
+  "fields": {
+    "groupID": 47,
+    "Account_Name": "Seeded Alpha Group 30",
+    "display_name": "Seeded Alpha 30",
+    "category": 4,
+    "cl_bal": "3792.64",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.744Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 48,
+  "fields": {
+    "groupID": 48,
+    "Account_Name": "Seeded Alpha Group 31",
+    "display_name": "Seeded Alpha 31",
+    "category": 4,
+    "cl_bal": "11805.55",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.744Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 49,
+  "fields": {
+    "groupID": 49,
+    "Account_Name": "Seeded Alpha Group 32",
+    "display_name": "Seeded Alpha 32",
+    "category": 4,
+    "cl_bal": "10260.77",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.750Z",
+    "updated_at": "2026-06-03T13:17:44.673Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 50,
+  "fields": {
+    "groupID": 50,
+    "Account_Name": "Seeded Alpha Group 33",
+    "display_name": "Seeded Alpha 33",
+    "category": 4,
+    "cl_bal": "14773.10",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.752Z",
+    "updated_at": "2026-06-03T13:17:44.672Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 51,
+  "fields": {
+    "groupID": 51,
+    "Account_Name": "Seeded Alpha Group 34",
+    "display_name": "Seeded Alpha 34",
+    "category": 4,
+    "cl_bal": "5869.12",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.752Z",
+    "updated_at": "2026-06-03T13:17:44.665Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 53,
+  "fields": {
+    "groupID": 53,
+    "Account_Name": "Seeded Alpha Group 36",
+    "display_name": "Seeded Alpha 36",
+    "category": 4,
+    "cl_bal": "7321.78",
+    "is_active": true,
+    "created_at": "2026-06-02T08:21:48.752Z",
+    "updated_at": "2026-06-03T13:17:44.665Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 54,
+  "fields": {
+    "groupID": 54,
+    "Account_Name": "sddddddddddddddddd",
+    "display_name": "dsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "category": 4,
+    "cl_bal": "1222.00",
+    "is_active": true,
+    "created_at": "2026-06-04T04:39:57.939Z",
+    "updated_at": "2026-06-04T04:39:57.939Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 55,
+  "fields": {
+    "groupID": 55,
+    "Account_Name": "State Bank",
+    "display_name": "State BBB",
+    "category": 5,
+    "cl_bal": "1244.00",
+    "is_active": true,
+    "created_at": "2026-06-04T04:41:26.116Z",
+    "updated_at": "2026-06-04T04:41:26.116Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 57,
+  "fields": {
+    "groupID": 999990,
+    "Account_Name": "Test Cash Account",
+    "display_name": "Test Cash Account",
+    "category": 9,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-07T10:26:52.902Z",
+    "updated_at": "2026-06-11T02:32:47.413Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 58,
+  "fields": {
+    "groupID": 23,
+    "Account_Name": "rd",
+    "display_name": "weer",
+    "category": 5,
+    "cl_bal": "344.00",
+    "is_active": true,
+    "created_at": "2026-06-07T10:49:03.546Z",
+    "updated_at": "2026-06-07T10:49:03.546Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 60,
+  "fields": {
+    "groupID": 9,
+    "Account_Name": "hgf",
+    "display_name": "fuj",
+    "category": 6,
+    "cl_bal": "766.00",
+    "is_active": true,
+    "created_at": "2026-06-09T04:44:39.367Z",
+    "updated_at": "2026-06-09T04:44:39.367Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 61,
+  "fields": {
+    "groupID": 6555,
+    "Account_Name": "hhghgk",
+    "display_name": "mjhghfhf",
+    "category": 7,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:12:06.233Z",
+    "updated_at": "2026-06-13T07:12:06.233Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 62,
+  "fields": {
+    "groupID": 6555,
+    "Account_Name": "hhghgk",
+    "display_name": "mjhghfhf",
+    "category": 7,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:12:21.716Z",
+    "updated_at": "2026-06-13T07:12:21.716Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 63,
+  "fields": {
+    "groupID": 556,
+    "Account_Name": "jhgj",
+    "display_name": "bbhjj",
+    "category": 8,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:28:48.236Z",
+    "updated_at": "2026-06-13T07:28:48.237Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 64,
+  "fields": {
+    "groupID": 54,
+    "Account_Name": "bgh",
+    "display_name": "bvgh",
+    "category": 5,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:30:08.394Z",
+    "updated_at": "2026-06-13T07:30:08.394Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 65,
+  "fields": {
+    "groupID": 77,
+    "Account_Name": "jvgk",
+    "display_name": "vjj",
+    "category": 5,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:46:56.100Z",
+    "updated_at": "2026-06-13T07:46:56.100Z"
+  }
+},
+{
+  "model": "dashboard.accountmaster",
+  "pk": 66,
+  "fields": {
+    "groupID": 43,
+    "Account_Name": "jgjh",
+    "display_name": "hgjvb",
+    "category": 8,
+    "cl_bal": "0.00",
+    "is_active": true,
+    "created_at": "2026-06-13T07:53:07.985Z",
+    "updated_at": "2026-06-13T07:53:07.985Z"
+  }
+},
+{
+  "model": "dashboard.broker",
+  "pk": 0,
+  "fields": {
+    "BrokerName": "Broker1",
+    "BrokerAddress": "Broker1 Address",
+    "ContactNo": "Broker1 Contact No",
+    "PANo": "Broker1 PANo",
+    "UserCreated": "usercreated",
+    "DateCreated": "2026-01-03T18:30:00Z",
+    "UserModified": "Usermodified",
+    "DateModified": "2026-01-03T18:30:00Z"
+  }
+},
+{
+  "model": "dashboard.broker",
+  "pk": 2,
+  "fields": {
+    "BrokerName": "Broker2",
+    "BrokerAddress": "Broker2 Address",
+    "ContactNo": "Broker2 Contact No",
+    "PANo": "Broker2 PANo",
+    "UserCreated": "usercreated",
+    "DateCreated": "2026-01-03T18:30:00Z",
+    "UserModified": "Usermodified",
+    "DateModified": "2026-01-03T18:30:00Z"
+  }
+},
+{
+  "model": "dashboard.broker",
+  "pk": 3,
+  "fields": {
+    "BrokerName": "Broker3",
+    "BrokerAddress": "Broker3 Address",
+    "ContactNo": "Broker3 Contact No",
+    "PANo": "Broker3 PANo",
+    "UserCreated": "usercreated",
+    "DateCreated": "2026-01-03T18:30:00Z",
+    "UserModified": "Usermodified",
+    "DateModified": "2026-01-03T18:30:00Z"
+  }
+},
+{
+  "model": "dashboard.broker",
+  "pk": 4,
+  "fields": {
+    "BrokerName": "hgy",
+    "BrokerAddress": null,
+    "ContactNo": null,
+    "PANo": null,
+    "UserCreated": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 0,
+  "fields": {
+    "VendorSupplierName": "supplier1",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN1",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 2,
+  "fields": {
+    "VendorSupplierName": "supplier2",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN1",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 3,
+  "fields": {
+    "VendorSupplierName": "supplier3",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN1",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 4,
+  "fields": {
+    "VendorSupplierName": "supplier4",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN1",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 5,
+  "fields": {
+    "VendorSupplierName": "Vendor",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN4",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 6,
+  "fields": {
+    "VendorSupplierName": "Vendor2",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN4",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.vendorsupplier",
+  "pk": 7,
+  "fields": {
+    "VendorSupplierName": "Vendor3",
+    "Address1": "address",
+    "Address2": null,
+    "ContactNo": null,
+    "GSTNo": "GST",
+    "PANo": "PAN4",
+    "UserCreted": null,
+    "DateCreated": null,
+    "UserModified": null,
+    "DateModified": null
+  }
+},
+{
+  "model": "dashboard.zone",
+  "pk": 0,
+  "fields": {
+    "ZoneName": "East"
+  }
+},
+{
+  "model": "dashboard.zone",
+  "pk": 1,
+  "fields": {
+    "ZoneName": "West"
+  }
+},
+{
+  "model": "dashboard.zone",
+  "pk": 2,
+  "fields": {
+    "ZoneName": "Central"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "12",
+  "fields": {
+    "voucher_date": "2026-06-08",
+    "remarks": "",
+    "is_active": true,
+    "created_at": "2026-06-02T08:03:45.424Z",
+    "updated_at": "2026-06-02T08:03:45.424Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "123",
+  "fields": {
+    "voucher_date": "2026-05-10",
+    "remarks": "",
+    "is_active": true,
+    "created_at": "2026-05-29T16:48:15.921Z",
+    "updated_at": "2026-06-01T11:49:17.414Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "40000015",
+  "fields": {
+    "voucher_date": "2026-05-04",
+    "remarks": "sa",
+    "is_active": true,
+    "created_at": "2026-05-29T16:46:35.366Z",
+    "updated_at": "2026-05-29T16:46:35.366Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-001",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 1",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.221Z",
+    "updated_at": "2026-06-02T08:15:25.221Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-002",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 2",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.221Z",
+    "updated_at": "2026-06-02T08:15:25.221Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-003",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 3",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.221Z",
+    "updated_at": "2026-06-02T08:15:25.221Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-004",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 4",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.228Z",
+    "updated_at": "2026-06-02T08:15:25.228Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-005",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 5",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.228Z",
+    "updated_at": "2026-06-02T08:15:25.228Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-006",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 6",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.233Z",
+    "updated_at": "2026-06-02T08:15:25.233Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-007",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 7",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.237Z",
+    "updated_at": "2026-06-02T08:15:25.237Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-008",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 8",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.237Z",
+    "updated_at": "2026-06-02T08:15:25.237Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-009",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 9",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.237Z",
+    "updated_at": "2026-06-02T08:15:25.237Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-010",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 10",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.237Z",
+    "updated_at": "2026-06-02T08:15:25.237Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-011",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 11",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.237Z",
+    "updated_at": "2026-06-02T08:15:25.237Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-012",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 12",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.245Z",
+    "updated_at": "2026-06-02T08:15:25.245Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-013",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 13",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.248Z",
+    "updated_at": "2026-06-02T08:15:25.248Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-014",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 14",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.249Z",
+    "updated_at": "2026-06-02T08:15:25.249Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-015",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 15",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.249Z",
+    "updated_at": "2026-06-02T08:15:25.249Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-016",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 16",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.249Z",
+    "updated_at": "2026-06-02T08:15:25.249Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-017",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 17",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.249Z",
+    "updated_at": "2026-06-02T08:15:25.249Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-018",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 18",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.254Z",
+    "updated_at": "2026-06-02T08:15:25.254Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-019",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 19",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.254Z",
+    "updated_at": "2026-06-02T08:15:25.254Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-020",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 20",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.254Z",
+    "updated_at": "2026-06-02T08:15:25.254Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-021",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 21",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.254Z",
+    "updated_at": "2026-06-02T08:15:25.254Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-022",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 22",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.261Z",
+    "updated_at": "2026-06-02T08:15:25.261Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-023",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 23",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.261Z",
+    "updated_at": "2026-06-02T08:15:25.261Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-024",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 24",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.261Z",
+    "updated_at": "2026-06-02T08:15:25.261Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-025",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 25",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.271Z",
+    "updated_at": "2026-06-02T08:15:25.271Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-026",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 26",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.271Z",
+    "updated_at": "2026-06-02T08:15:25.271Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-027",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 27",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.271Z",
+    "updated_at": "2026-06-02T08:15:25.271Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-028",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 28",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.271Z",
+    "updated_at": "2026-06-02T08:15:25.271Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-029",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 29",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.278Z",
+    "updated_at": "2026-06-02T08:15:25.278Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-030",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 30",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.278Z",
+    "updated_at": "2026-06-02T08:15:25.278Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-031",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 31",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.278Z",
+    "updated_at": "2026-06-02T08:15:25.278Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-032",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 32",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.278Z",
+    "updated_at": "2026-06-02T08:15:25.278Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-033",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 33",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.278Z",
+    "updated_at": "2026-06-02T08:15:25.278Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-034",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 34",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.285Z",
+    "updated_at": "2026-06-02T08:15:25.285Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-035",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 35",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.285Z",
+    "updated_at": "2026-06-02T08:15:25.285Z"
+  }
+},
+{
+  "model": "dashboard.voucher",
+  "pk": "V-SEED-036",
+  "fields": {
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 36",
+    "is_active": true,
+    "created_at": "2026-06-02T08:15:25.285Z",
+    "updated_at": "2026-06-02T08:15:25.285Z"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 1,
+  "fields": {
+    "voucher": 1,
+    "row_type": "A",
+    "account_master": 10,
+    "voucher_date": "2026-05-04",
+    "remarks": "sa",
+    "amount": "2333.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 2,
+  "fields": {
+    "voucher": 1,
+    "row_type": "B",
+    "account_master": 9,
+    "voucher_date": "2026-05-04",
+    "remarks": "sa",
+    "amount": "2333.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 7,
+  "fields": {
+    "voucher": 4,
+    "row_type": "A",
+    "account_master": 9,
+    "voucher_date": "2026-05-10",
+    "remarks": "",
+    "amount": "122.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 8,
+  "fields": {
+    "voucher": 4,
+    "row_type": "B",
+    "account_master": 8,
+    "voucher_date": "2026-05-10",
+    "remarks": "",
+    "amount": "122.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 9,
+  "fields": {
+    "voucher": 5,
+    "row_type": "A",
+    "account_master": 15,
+    "voucher_date": "2026-06-08",
+    "remarks": "",
+    "amount": "333.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 10,
+  "fields": {
+    "voucher": 5,
+    "row_type": "B",
+    "account_master": 14,
+    "voucher_date": "2026-06-08",
+    "remarks": "",
+    "amount": "333.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 11,
+  "fields": {
+    "voucher": 6,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 1",
+    "amount": "100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 12,
+  "fields": {
+    "voucher": 6,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 1",
+    "amount": "100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 13,
+  "fields": {
+    "voucher": 7,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 2",
+    "amount": "200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 14,
+  "fields": {
+    "voucher": 7,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 2",
+    "amount": "200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 15,
+  "fields": {
+    "voucher": 8,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 3",
+    "amount": "300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 16,
+  "fields": {
+    "voucher": 8,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 3",
+    "amount": "300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 17,
+  "fields": {
+    "voucher": 9,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 4",
+    "amount": "400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 18,
+  "fields": {
+    "voucher": 9,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 4",
+    "amount": "400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 19,
+  "fields": {
+    "voucher": 10,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 5",
+    "amount": "500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 20,
+  "fields": {
+    "voucher": 10,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 5",
+    "amount": "500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 21,
+  "fields": {
+    "voucher": 11,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 6",
+    "amount": "600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 22,
+  "fields": {
+    "voucher": 11,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 6",
+    "amount": "600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 23,
+  "fields": {
+    "voucher": 12,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 7",
+    "amount": "700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 24,
+  "fields": {
+    "voucher": 12,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 7",
+    "amount": "700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 25,
+  "fields": {
+    "voucher": 13,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 8",
+    "amount": "800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 26,
+  "fields": {
+    "voucher": 13,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 8",
+    "amount": "800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 27,
+  "fields": {
+    "voucher": 14,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 9",
+    "amount": "900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 28,
+  "fields": {
+    "voucher": 14,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 9",
+    "amount": "900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 29,
+  "fields": {
+    "voucher": 15,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 10",
+    "amount": "1000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 30,
+  "fields": {
+    "voucher": 15,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 10",
+    "amount": "1000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 31,
+  "fields": {
+    "voucher": 16,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 11",
+    "amount": "1100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 32,
+  "fields": {
+    "voucher": 16,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 11",
+    "amount": "1100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 33,
+  "fields": {
+    "voucher": 17,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 12",
+    "amount": "1200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 34,
+  "fields": {
+    "voucher": 17,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 12",
+    "amount": "1200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 35,
+  "fields": {
+    "voucher": 18,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 13",
+    "amount": "1300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 36,
+  "fields": {
+    "voucher": 18,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 13",
+    "amount": "1300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 37,
+  "fields": {
+    "voucher": 19,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 14",
+    "amount": "1400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 38,
+  "fields": {
+    "voucher": 19,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 14",
+    "amount": "1400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 39,
+  "fields": {
+    "voucher": 20,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 15",
+    "amount": "1500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 40,
+  "fields": {
+    "voucher": 20,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 15",
+    "amount": "1500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 41,
+  "fields": {
+    "voucher": 21,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 16",
+    "amount": "1600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 42,
+  "fields": {
+    "voucher": 21,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 16",
+    "amount": "1600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 43,
+  "fields": {
+    "voucher": 22,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 17",
+    "amount": "1700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 44,
+  "fields": {
+    "voucher": 22,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 17",
+    "amount": "1700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 45,
+  "fields": {
+    "voucher": 23,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 18",
+    "amount": "1800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 46,
+  "fields": {
+    "voucher": 23,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 18",
+    "amount": "1800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 47,
+  "fields": {
+    "voucher": 24,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 19",
+    "amount": "1900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 48,
+  "fields": {
+    "voucher": 24,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 19",
+    "amount": "1900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 49,
+  "fields": {
+    "voucher": 25,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 20",
+    "amount": "2000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 50,
+  "fields": {
+    "voucher": 25,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 20",
+    "amount": "2000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 51,
+  "fields": {
+    "voucher": 26,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 21",
+    "amount": "2100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 52,
+  "fields": {
+    "voucher": 26,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 21",
+    "amount": "2100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 53,
+  "fields": {
+    "voucher": 27,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 22",
+    "amount": "2200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 54,
+  "fields": {
+    "voucher": 27,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 22",
+    "amount": "2200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 55,
+  "fields": {
+    "voucher": 28,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 23",
+    "amount": "2300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 56,
+  "fields": {
+    "voucher": 28,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 23",
+    "amount": "2300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 57,
+  "fields": {
+    "voucher": 29,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 24",
+    "amount": "2400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 58,
+  "fields": {
+    "voucher": 29,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 24",
+    "amount": "2400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 59,
+  "fields": {
+    "voucher": 30,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 25",
+    "amount": "2500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 60,
+  "fields": {
+    "voucher": 30,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 25",
+    "amount": "2500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 61,
+  "fields": {
+    "voucher": 31,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 26",
+    "amount": "2600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 62,
+  "fields": {
+    "voucher": 31,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 26",
+    "amount": "2600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 63,
+  "fields": {
+    "voucher": 32,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 27",
+    "amount": "2700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 64,
+  "fields": {
+    "voucher": 32,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 27",
+    "amount": "2700.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 65,
+  "fields": {
+    "voucher": 33,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 28",
+    "amount": "2800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 66,
+  "fields": {
+    "voucher": 33,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 28",
+    "amount": "2800.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 67,
+  "fields": {
+    "voucher": 34,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 29",
+    "amount": "2900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 68,
+  "fields": {
+    "voucher": 34,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 29",
+    "amount": "2900.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 69,
+  "fields": {
+    "voucher": 35,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 30",
+    "amount": "3000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 70,
+  "fields": {
+    "voucher": 35,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 30",
+    "amount": "3000.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 71,
+  "fields": {
+    "voucher": 36,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 31",
+    "amount": "3100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 72,
+  "fields": {
+    "voucher": 36,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 31",
+    "amount": "3100.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 73,
+  "fields": {
+    "voucher": 37,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 32",
+    "amount": "3200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 74,
+  "fields": {
+    "voucher": 37,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 32",
+    "amount": "3200.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 75,
+  "fields": {
+    "voucher": 38,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 33",
+    "amount": "3300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 76,
+  "fields": {
+    "voucher": 38,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 33",
+    "amount": "3300.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 77,
+  "fields": {
+    "voucher": 39,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 34",
+    "amount": "3400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 78,
+  "fields": {
+    "voucher": 39,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 34",
+    "amount": "3400.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 79,
+  "fields": {
+    "voucher": 40,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 35",
+    "amount": "3500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 80,
+  "fields": {
+    "voucher": 40,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 35",
+    "amount": "3500.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 81,
+  "fields": {
+    "voucher": 41,
+    "row_type": "A",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 36",
+    "amount": "3600.00"
+  }
+},
+{
+  "model": "dashboard.voucherfact",
+  "pk": 82,
+  "fields": {
+    "voucher": 41,
+    "row_type": "B",
+    "account_master": 17,
+    "voucher_date": "2026-06-02",
+    "remarks": "Seeded voucher remark 36",
+    "amount": "3600.00"
+  }
+},
+{
+  "model": "dashboard.cashbank",
+  "pk": "1",
+  "fields": {
+    "date": "2026-06-12T10:00:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "amount": "666.00",
+    "narration": "Test narrative",
+    "bank_account": null,
+    "status": true,
+    "module_type": "Y",
+    "posting_status": null,
+    "ref_voucher_no": null,
+    "user_created": "",
+    "date_created": "2026-06-12T11:02:55.325Z",
+    "user_modified": "",
+    "date_modified": "2026-06-12T11:02:55.325Z"
+  }
+},
+{
+  "model": "dashboard.cashbank",
+  "pk": "2",
+  "fields": {
+    "date": "2026-06-12T16:34:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "amount": "765.00",
+    "narration": "mn",
+    "bank_account": 54,
+    "status": true,
+    "module_type": "Y",
+    "posting_status": null,
+    "ref_voucher_no": null,
+    "user_created": "",
+    "date_created": "2026-06-12T11:04:25.650Z",
+    "user_modified": "",
+    "date_modified": "2026-06-12T11:04:25.650Z"
+  }
+},
+{
+  "model": "dashboard.cashbank",
+  "pk": "3",
+  "fields": {
+    "date": "2026-06-13T08:18:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "amount": "87.00",
+    "narration": "ghhjg",
+    "bank_account": 57,
+    "status": true,
+    "module_type": "Y",
+    "posting_status": null,
+    "ref_voucher_no": null,
+    "user_created": "",
+    "date_created": "2026-06-13T02:48:32.936Z",
+    "user_modified": "",
+    "date_modified": "2026-06-13T02:48:32.936Z"
+  }
+},
+{
+  "model": "dashboard.cashbank",
+  "pk": "6545",
+  "fields": {
+    "date": "2026-06-15T12:29:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "amount": "988.00",
+    "narration": "kjo",
+    "bank_account": 63,
+    "status": true,
+    "module_type": "",
+    "posting_status": null,
+    "ref_voucher_no": null,
+    "user_created": "",
+    "date_created": "2026-06-15T07:00:01.180Z",
+    "user_modified": "",
+    "date_modified": "2026-06-15T07:00:01.180Z"
+  }
+},
+{
+  "model": "dashboard.cashbank",
+  "pk": "8754",
+  "fields": {
+    "date": "2026-06-08T00:00:00Z",
+    "tran_type": "J000",
+    "rpid": null,
+    "amount": "866.00",
+    "narration": "JHU",
+    "bank_account": null,
+    "status": true,
+    "module_type": "",
+    "posting_status": null,
+    "ref_voucher_no": null,
+    "user_created": "",
+    "date_created": "2026-06-13T06:52:01.959Z",
+    "user_modified": "",
+    "date_modified": "2026-06-13T06:52:01.959Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 135,
+  "fields": {
+    "voucher": "1",
+    "date": "2026-06-12T10:00:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "account_master": null,
+    "amount": "666.00",
+    "remarks": "test remarks",
+    "cost_center": "",
+    "chq_no": "",
+    "chq_date": null,
+    "payee_bank": "",
+    "user_created": "",
+    "date_created": "2026-06-12T11:02:55.325Z",
+    "user_modified": "",
+    "date_modified": "2026-06-12T11:02:55.325Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 136,
+  "fields": {
+    "voucher": "2",
+    "date": "2026-06-12T16:34:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "account_master": 55,
+    "amount": "765.00",
+    "remarks": "jvhj",
+    "cost_center": "",
+    "chq_no": "auto",
+    "chq_date": null,
+    "payee_bank": "D",
+    "user_created": "",
+    "date_created": "2026-06-12T11:04:25.650Z",
+    "user_modified": "",
+    "date_modified": "2026-06-12T11:04:25.650Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 137,
+  "fields": {
+    "voucher": "3",
+    "date": "2026-06-13T08:18:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "account_master": 58,
+    "amount": "87.00",
+    "remarks": "hg",
+    "cost_center": "",
+    "chq_no": "auto",
+    "chq_date": null,
+    "payee_bank": "D",
+    "user_created": "",
+    "date_created": "2026-06-13T02:48:32.936Z",
+    "user_modified": "",
+    "date_modified": "2026-06-13T02:48:32.936Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 138,
+  "fields": {
+    "voucher": "8754",
+    "date": "2026-06-08T00:00:00Z",
+    "tran_type": "J000",
+    "rpid": "A",
+    "account_master": 58,
+    "amount": "866.00",
+    "remarks": "",
+    "cost_center": "",
+    "chq_no": "",
+    "chq_date": null,
+    "payee_bank": "",
+    "user_created": "",
+    "date_created": "2026-06-13T06:52:01.959Z",
+    "user_modified": "",
+    "date_modified": "2026-06-13T06:52:01.959Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 139,
+  "fields": {
+    "voucher": "8754",
+    "date": "2026-06-08T00:00:00Z",
+    "tran_type": "J000",
+    "rpid": "B",
+    "account_master": 54,
+    "amount": "866.00",
+    "remarks": "",
+    "cost_center": "",
+    "chq_no": "",
+    "chq_date": null,
+    "payee_bank": "",
+    "user_created": "",
+    "date_created": "2026-06-13T06:52:01.959Z",
+    "user_modified": "",
+    "date_modified": "2026-06-13T06:52:01.959Z"
+  }
+},
+{
+  "model": "dashboard.cashbanktran",
+  "pk": 140,
+  "fields": {
+    "voucher": "6545",
+    "date": "2026-06-15T12:29:00Z",
+    "tran_type": "J001",
+    "rpid": "I",
+    "account_master": 62,
+    "amount": "988.00",
+    "remarks": "",
+    "cost_center": "",
+    "chq_no": "jij",
+    "chq_date": "2026-06-10",
+    "payee_bank": "",
+    "user_created": "",
+    "date_created": "2026-06-15T07:00:01.180Z",
+    "user_modified": "",
+    "date_modified": "2026-06-15T07:00:01.180Z"
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 0,
+  "fields": {
+    "material_code": "M-000",
+    "material_name": "Material1",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 1,
+  "fields": {
+    "material_code": "M-001",
+    "material_name": "Wheat",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 2,
+  "fields": {
+    "material_code": "M-002",
+    "material_name": "Rice",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 3,
+  "fields": {
+    "material_code": "M-003",
+    "material_name": "Grains",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 4,
+  "fields": {
+    "material_code": "M-004",
+    "material_name": "Sugar",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 5,
+  "fields": {
+    "material_code": "M-005",
+    "material_name": "Salt",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 6,
+  "fields": {
+    "material_code": "M-006",
+    "material_name": "Iron",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 7,
+  "fields": {
+    "material_code": "M-007",
+    "material_name": "Coal",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 8,
+  "fields": {
+    "material_code": "M-109",
+    "material_name": "SDD",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 9,
+  "fields": {
+    "material_code": "M-110",
+    "material_name": "SSSS",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 10,
+  "fields": {
+    "material_code": "M-111",
+    "material_name": "HVH",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 12,
+  "fields": {
+    "material_code": "M-008",
+    "material_name": "Maize",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.material",
+  "pk": 13,
+  "fields": {
+    "material_code": "M-009",
+    "material_name": "Gram",
+    "is_active": true,
+    "PurchaseGST": null,
+    "SalesGST": null,
+    "unit_weight": null,
+    "Auto1_Manual0_calc": null,
+    "IsRateInclGSTY1N0": null
+  }
+},
+{
+  "model": "dashboard.gateentry",
+  "pk": 1,
+  "fields": {
+    "gate_pass_id": "GP-10001",
+    "entry_datetime": "2026-05-29T22:29:17Z",
+    "supplier": 8,
+    "vehicle_number": "355",
+    "material_type": 3,
+    "driver_name": "gvh",
+    "photo": "data:image/jpeg;base64,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",
+    "created_by": null,
+    "created_at": "2026-05-29T17:01:07.652Z"
+  }
+},
+{
+  "model": "dashboard.gateentry",
+  "pk": 2,
+  "fields": {
+    "gate_pass_id": "GP-10002",
+    "entry_datetime": "2026-05-29T22:32:40Z",
+    "supplier": 9,
+    "vehicle_number": "355",
+    "material_type": 3,
+    "driver_name": "df",
+    "photo": "",
+    "created_by": null,
+    "created_at": "2026-05-29T17:03:00.476Z"
+  }
+},
+{
+  "model": "dashboard.gateentry",
+  "pk": 3,
+  "fields": {
+    "gate_pass_id": "GP-10003",
+    "entry_datetime": "2026-06-02T15:22:59Z",
+    "supplier": 9,
+    "vehicle_number": "090",
+    "material_type": 7,
+    "driver_name": "gvh",
+    "photo": "data:image/jpeg;base64,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",
+    "created_by": null,
+    "created_at": "2026-06-02T09:54:02.412Z"
+  }
+},
+{
+  "model": "dashboard.gateentry",
+  "pk": 4,
+  "fields": {
+    "gate_pass_id": "GP-10004",
+    "entry_datetime": "2026-06-09T12:54:20Z",
+    "supplier": 13,
+    "vehicle_number": "355",
+    "material_type": 3,
+    "driver_name": "df",
+    "photo": "data:image/jpeg;base64,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",
+    "created_by": null,
+    "created_at": "2026-06-09T07:24:41.494Z"
+  }
+},
+{
+  "model": "dashboard.gateentry",
+  "pk": 5,
+  "fields": {
+    "gate_pass_id": "GP-10005",
+    "entry_datetime": "2026-06-19T15:44:11Z",
+    "supplier": 62,
+    "vehicle_number": "65362",
+    "material_type": 0,
+    "driver_name": "Chetan Chavan",
+    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAsICAoIBwsKCQoNDAsNERwSEQ8PESIZGhQcKSQrKigkJyctMkA3LTA9MCcnOEw5PUNFSElIKzZPVU5GVEBHSEX/2wBDAQwNDREPESESEiFFLicuRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUX/wAARCADwAUADASIAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAAAAECAwQFBgf/xAAxEAACAgEDAwMCBgEFAQEAAAAAAQIRAwQhMQUSQVFhcRMiBhQyQoGRUhUjM6GxwdH/xAAYAQEBAQEBAAAAAAAAAAAAAAABAAIDBP/EAB4RAQEBAQADAQEBAQAAAAAAAAABEQISITEDQVFh/9oADAMBAAIRAxEAPwD0CpsVUA68gS5DyMHswtagSAaWwqMnRVMOWD4GiQGBKiJDBIdChQ/AIaW3BJGgZIKJIgNrcPJIeR0JDoidbgOg8CBQBwMsSIDoCAFQwEUn6AMCCL8DSAaSEI+aD+BtAQqDW+xGizyJoFqA/A69iLXFIRSv3FsSrci+eBAr2DgdWOjDaNASrfnYKAwqAdBREgWw/kKIhDCh0SCW4xoKLCBgMsJBsMCRCJBRIgGFCgNcBWweCQCg5GKIKJICCNbhRIjW7ICwdAgQgqAkImSEMVECoTJCJIb3QXTqyTQqEItbi8knYq2skBkq3FRlov8AwdBXkK2IgKGFWgMRoaHQfJEh0OhpbkQlSChodCka3JUMDJLwC4GFEURrYYiQAGxEj2Q/BFDsgYyIxR1QAmMZUQDoW4ggGgIATQ0gJlFoVEhCMIi9xsCBfwJkmiJJFi5G9mC49iCdCGFb8AQCChk0QBQfwDQChgRCHQUOiIQ63HQeQRIB+QAlQwAiQmxsqy5YYYOc5KMVy2STbI9yPO9R/FMMNw0kVN/5y4/hHAzfiDXZm288or0hsM51i9PoPcDmly0vk+aZOp6mezz5H8zZRLVyfMm/lj4wbX1GGWE/0yUvh2TUj5di12TDPuxTlCXrF0dbSfinWYmlklHLFcqSp/2XivL/AF71MaZxOn/iPSayoTl9HI/EuH/J2ItNJr+y+H6mOyN7DJDwIdifuIp2FiGTJPciyXKE0IRDyMTIExMfImyCL3+Adp8beoeQdCKtE+Rh8mWwIlt4ERLwNBQE1AFB8DS2ImlsCQ+A5YE6AOAAgKAEwRbIAbItgUcuSOODnOVRirb9Dw/WutT1+Xtg3HBF7L192dL8R9Y3lpMMqS2ySXn2PJZZ7WbkYtQyT7m22Uyn6BNtoqb9zQOU3/BHuItivgAn3v0JqdFNj7tyTXDN2vnc7/SvxHm0NY8l5cP+Le6+DyymyyGVxYh9S0PVtProXjlv6Pkszal45wf7W6+GfNdNqZQmpwk1Je53un9VyZ5xjlk3Uk7DDr2WPL3bWW+OTn6TJ9Wbkt1e5vvyBO6GhbsjbXAixNoTI36h3eBZNkWO/wCxN/2CHHJGwbtj/kWQ9vBH3G1TsS3RalwefQPIImjrYKC/UOSagEgTHQEIF7jAiF8ACGBFX5Dh8EkvUVASbHwiMthoCjJ+xk6hrFotFlzPmK+358GyXB578WT7enY4Ll5P/jGT2LfTx2pzOc3KTtt2zFPJsXZItqzLNO0aYw1O9qFOO23Jbj08prZFj0mRLaEqDY341hewqVe5sekyPmLCOgnLw/gNi8KxC3/g3y6dkXCK3o5xf3IvKLwsZUS3Lnh7SMoDKLzUYyalae50dDqeyatX6nNVWbNNcckXF07Fzx9B6TkhPCpY7jKt1XJ1LVbHI0c8mDT43CLyQavdbo6EHOa7mqT8cBTPjTF7DdChHySrYkixVZOgqhxlW16AlZY0RJI1a3C63ZIjJ3sQHIq+6xpDNBP5Eq8AMK3B4ALEBFkk6RGnToL9SKQciT3HRGC6JJiSsaVMCnQeRN0gT3IhpMEtxt3VBVFiQlbPNfi2F4MDr9zPTNbHD/E0e7pydcTRCvHw0icbl6EPyEL8s6U4pR9kYsuo+6oX8mNtdZJIvw6ZUklsbFp127o5f+oPH4ZKPWo3TVBZWp1G94I+EgjgjXCK8OthmWz3LnlSXJysdJVeTDFGPLit8FubVwjab4Odk6krdJjObRepPp5cNcGWUP7JS13d4IQzKTqXk6SWOdsqp463N3TsLzaiFRummRjiU1t5O9+GtEnjnllVd6S/g6Rw6j1GKHZjhH0S4NK4M/cTWQA0J7bDsqUySmmaZTsER7h2IDfgj5JJULySF+xGq4JiIEIYmLKV34JEa2JJWgbKxcsdBVATQNb2NL+xvcSj54JfBGqGnewNJokiBJerInVvcdULZsZIVYUNMTJIuvk5PX4KfTJ3ypRa/s60uTkdex3pYSvia2BPM6jhqzF2xXg3ZY3d8mDNCaf2be5zjrix9qx7RMGTt7v0oWbT5J7wk/dNijppNRV2/LNYvrXpIRfGxszwlHHZDT4lFRS8GzP/AMBzrrzHm8zf1GuS3BpoN3JNsllxtZu5JfA3hUsE1OX3tfbL0NSufUunljijt9NGRwg39qoqjhlGVzlt7MlGMr34GRnd+xs0/FHp+h1j0L35m2eYxJxS32Ot0ueX8xJKT+mlbXgYzY9J9UlHLwYlIlGe/IsWOjHJsWRn7mCOUtjkLWWxTJ95kjkJqZoNSbGVQn6liewg0Ll8ABACb8cjE0i1lKLslwxdtNEq8E2Pdg9yVCbFDwH8Ahk0guRrkETVMEaob9hLZDJoLYB0HwSFbie7HwHgCi79Tl9ajejv0kjqM5nWn26GT8KSsjrzModzK5YXWysubp7Ek7ONd4yfl4r9US2GGPpSL3G1ZXkyKC+3ktawJJOkqJZv+KhY4NU2yzM8aw/qt+TFajizrvadE447XFoU8ayTbTNGnnGce113LlBqsZpaWL3SRH8skro2zSjujPknWzNS1m8xT2KOyOp0tV9R+tHLcrZ1OmP7Jv3o3NcenSXA7IKxmoxU1KiayNMqJbMWV8chYshkv0JqW5DG7HkZphO0c6EjXjnsMYrTbb9h/wAkU7oae5oGLyO7B7EF3gPIlyM0RYemwcisCb4FTXIWFXQoVZKLI1TJRW5GJUCCgXIE2JX4H4B7g0EFgLckGczrsXLpWeuUk/8As6bexj6hD6ukyQfEk0SeNx5O6C9fJan6HPxZXDI4mtTOXUyu/F2L3P7SpRc5W/BCeVJehhz9S+k+2G9/9GM1u9Yt1OfPHL2vKscPi7KM2sm8NwXcmuUc7Ply55OUtvRFuLTZvpv712v3Nzn17Y8rb6RhqMiltkd3ujfp1kWVTfk42XHPHNu7ouxa/JClLdF1z/Yp+n+u9Oe3JkyT3KsOrWRc7hOVs5+271sDl2pyOv0tduki/Wzhzl3OMNt3R6HSwcIJL9Pg7SenDq+2pMkmQRIGUkxpkUO/QcCQ0yNjT9yS6DZpxy3McXsasfAxit0P0pk0VY+CxCylXsHgQCyvFe4xVbNk/Aci3vkfkCVDsS4Gl6ET8ko/BHzuNCkuRMBA1p8BeweACnTTEIG7ZREyrJbTROUlFNydI52s6h9NPs29yzVbjxfU8MtF1DJjfF2n7MhDNstw63rFqtQpJ3Jcs5uLP9ytmeoeOsbNfncYKK8nNgp5JWlaRo1b7+134NGkUY4lwYnqOv2ow0U8qT7436E/yedqk4pFj1EcLspl1OCfEi3fjc8Z9VZtHkgrc4tmCcJXVcG2esWayqS7uEMZ6kvxTgk4yNcstR3M6ShK/JHJkt0VmsS5GzRQlqdZFJWk7Z6mC7VSON0PB24HlfMtkdlNjf8AjETQ7/sQAkgvcVjJJJjtkVyNEFkfc2Yl9qMcd/Bvwr7UMYq/Hsi1clcVsTXIspAxN15D5FloTsBAm0baOvIME2LwBDBciD0sUlY0QtSGnRFPu8Csh3K2RlkUOWl8ssWrU9gbKfzGNL9aKsmtUV9q/llOVrU36Ccklu6OZPPPM6U3v4WxZDTxik3u/Vm5+do8k9Tlfa1Z5rqmo7YyVnc1Uu2Ls8h1rM33e+w9TFLrkqX18/sVZ8TwztfpL9JFd5vniU4NSVpnnvXt3nPpyI5rpM345QlGlsc/U6aWCTaX23yQhma8hZonWX27EseNx3nZzMuB26eyIfmG3ux/maCTD5SrMONRinInLsW6d+xmlmv4K3kfqXjafOSYnkyb7bkYXOVFVtyLYLtmkbkxyt16jp+RLBHHt9qpG9PY42heyOop1SYWGVoTHe5Qs0E/1JMkssP8kGLVyY/ghHfhIlTviiyrUrJIgntuSS3BLsa+46OBXFHPwrdUdLBwaYq5IaTSEFiyHTBAxWTLQF0JgbKViYnwL4DTpjI2QyZFHZcmpNWpTmo/JnyapxuiEpffu+TNnl2nXxxjy1Z+YnJ8lUnKT8kcVy3ZHU6hY41HkMaTlOMEre/oVZMksiXoU4YSy/fLj0OjgxJq2tjUi1LTY+2KlI0N0C2QM6SYxa5+vl242zyPUvvUj1nUov6Mvg8xr4Vgiq3k7OPbrw52kjWQ6PbXJRp8Vmp4nVPg8V+vXGfNhWSDi+GcbPo8mKbpWjvSi0Vyh3co1LjPU15t2nuqFds7ObQwnvwzJPQuJvY5XisV+B9rlRoeBrnYFBodXhVaxqO5bpod+amPHhnkn2pHU02gx45Rcpdsn/k+Rk0XI0aXG00q3Ohn08ni91ujRptKscFJq5LwQfVNHNvHKbhJbVKLRvxY1zlDuklNGqGllGn2txLpYIZVcJJrw0b8CqCT5SNTnWb1iOCChC1HcvTT8ITVEbRvP4xtSnjjLekZ5Ltm0jTbfJRqLhKOTxxI59cRqdLMJ0cWyRzYtxaaezN2KdI5ZjW61WHkrjO9/BO/QmQ93sHnxQWKyVX3SHZC9uKDuRrUlYmK99iM59qvkpPfojJLtWzM8p27YpzcnuyFno55xzt0skvuoo1LXarJ5HU0U6x0kaqiqWoWOFIyx7s+VJsg7nOkbtNh7I+7OeN7i2KUaXCRrhlxxjbkqKo4095cFGp1HZHtj/RuTGVmfrGlwJ1KU2vEUcfP+IdVkn24McYJva1bL8ej+rL6mRX7M1Y9BiU4/YubNZotxpzY5dkVOTkv3WuTh9TwNvvW8OFXg9FkdfBkzY/tfYk0+YvhmeudPNx53S6fJf6Nvc1SxSivuTo2QeCGSv8Ahm/2TfPwy+Si1Tpnnv5R3n62ONKKqkUS2Z1M2htd2J0/R8HOyweOfbONP3OPX52O3Pcqp8lc4poslF+LI0zDTNPCnxyXaLpE9VK3Ucae79S3FjUpru480rZ6PFjWPHGMY9sUuH4PR+XG+64fp3nqMeDpeHDGoR+Sz/T9NhyPPOCtb3LhF+bU4tOrnJX6LlnL1OoyavZqoeI//p39T44ffp6nqznP6enTS47nyc/V6KbnHK0/u5Or07p1P6uRX6I2azD34uN0WYtZumY4Sw321WxPLDV4Ml4pRnjb37lui/RpRxJLY1qKZqe2dUY25xt1uDjTvwGTC8b7sfHmJLHkU0WAkOUfqQcZeSLXZK/2/wDhYWBmwy2eKX6o7GjHlcdpeDNmj2ZY5Vw/tlRY9nx/KMdc61OmuOUujk8Wc9SaWxbDK75OFmN7rddkkzPDJZapqgS5+AIW/wCAtm0s7kluZp5O4eSdOihs7fnznusddJN2KyNis6Moyd5EZtZK5GhP/ctvZGWcHmybFWkNNittnRxwUVbI4sSxxSrclOfb8hItQ1GZQjyYcUHqMtvhEtVkcpUadNjUI0H9Mq6MElRbjhcheht0OO8ttbR3OkjNUT0uVq+2vkzvS5a/Tde51tTIyxlXJjqtSOXm0Es2Nwy4XKL9rPP6jDm6dmax5J9ifD8HvINPZmHqvSoazFJxSWRLZ+pfV8cXDPJLBHIpKSa+AzY454duSKd8LyXdPxSwY3imku3aieXTx71JJOt6YZKNscDUYpaWdPeD4ZLHD6tKKtvijqarBDPFwltfBRpMMem4pZtTvO6hFeTh1+Pt35/X004NHh0kFly13re2+DFq+p5ck1j0q7U/3Nbliw6jXzWTUP6cP2wN/TtBihqW6vtjas65npy3fbJoeh5csfqambTe++7Z0l0hRr6dOvU6GO5v2NMYpNGozWbB09qN5NvZCz6LG4NJP+zpNbFWRKjpZMZn157FgeOUo70n6GiMWjVL/Zy9y4fJpi04po5ytWOd9Ob3UW/4Kp6PK3344O//AE7Mci4fkTfY/Y1WI4cZdzcJqn5TIxbhLsfHhm7X6VZP9zFtkW/yYE/qwaaqS8ejM6UssVODi+GVY5d+KnzHZlsZdy7X+pFNqGor/NUVETW8BO1uhK0mq4dBLwZs077W48vjyaI5LXJgbreJZDLucOucdNf/2Q==",
+    "created_by": null,
+    "created_at": "2026-06-19T10:14:53.406Z"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 1,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "KA01/1234",
+    "DriverName": "Ram",
+    "WeighmentNo": "12",
+    "WeighmentDate": "2026-03-01",
+    "Bags": "100.00",
+    "GrossWeight": "123.00",
+    "TareWeight": "23.00",
+    "NetWeight": "100.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 2,
+  "fields": {
+    "GatePassdate": "2026-04-02",
+    "VehicleNo": "KA00/1234",
+    "DriverName": "Shyam",
+    "WeighmentNo": "23",
+    "WeighmentDate": "2026-03-02",
+    "Bags": "101.00",
+    "GrossWeight": "134.00",
+    "TareWeight": "34.00",
+    "NetWeight": "100.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 3,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "HR09",
+    "DriverName": "Mohan",
+    "WeighmentNo": "4",
+    "WeighmentDate": "2026-03-03",
+    "Bags": "98.00",
+    "GrossWeight": "212.00",
+    "TareWeight": "33.00",
+    "NetWeight": "179.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 4,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "DL06",
+    "DriverName": "Kamal",
+    "WeighmentNo": "5",
+    "WeighmentDate": "2026-03-04",
+    "Bags": "102.00",
+    "GrossWeight": "334.00",
+    "TareWeight": "25.00",
+    "NetWeight": "309.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 5,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "PB25/2300",
+    "DriverName": "Aman",
+    "WeighmentNo": "5",
+    "WeighmentDate": "2026-03-05",
+    "Bags": "104.00",
+    "GrossWeight": "334.00",
+    "TareWeight": "32.00",
+    "NetWeight": "302.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 6,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "KA00/098",
+    "DriverName": "Raman",
+    "WeighmentNo": "23",
+    "WeighmentDate": "2026-03-06",
+    "Bags": "101.00",
+    "GrossWeight": "221.00",
+    "TareWeight": "35.00",
+    "NetWeight": "186.00"
+  }
+},
+{
+  "model": "dashboard.gatepass",
+  "pk": 7,
+  "fields": {
+    "GatePassdate": "2026-06-01",
+    "VehicleNo": "KL03/234",
+    "DriverName": "Kamat",
+    "WeighmentNo": "21",
+    "WeighmentDate": "2026-03-07",
+    "Bags": "102.00",
+    "GrossWeight": "234.00",
+    "TareWeight": "32.00",
+    "NetWeight": "202.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 1,
+  "fields": {
+    "GatePassNo": 1,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 1,
+    "Bags": "20.00",
+    "GrossWeight": "12.00",
+    "NetWeight": "11.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 2,
+  "fields": {
+    "GatePassNo": 2,
+    "GatePassDate": "2026-04-02",
+    "MaterialID": 12,
+    "Bags": "50.00",
+    "GrossWeight": "21.00",
+    "NetWeight": "21.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 3,
+  "fields": {
+    "GatePassNo": 3,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "GrossWeight": "23.00",
+    "NetWeight": "23.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 4,
+  "fields": {
+    "GatePassNo": 4,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 1,
+    "Bags": "20.00",
+    "GrossWeight": "45.00",
+    "NetWeight": "45.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 5,
+  "fields": {
+    "GatePassNo": 5,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 1,
+    "Bags": "30.00",
+    "GrossWeight": "43.00",
+    "NetWeight": "43.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 6,
+  "fields": {
+    "GatePassNo": 6,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 13,
+    "Bags": "40.00",
+    "GrossWeight": "34.00",
+    "NetWeight": "33.00"
+  }
+},
+{
+  "model": "dashboard.gatepasstran",
+  "pk": 7,
+  "fields": {
+    "GatePassNo": 7,
+    "GatePassDate": "2026-06-01",
+    "MaterialID": 2,
+    "Bags": "30.00",
+    "GrossWeight": "32.00",
+    "NetWeight": "31.00"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0002",
+  "fields": {
+    "po_date": "2026-06-18T00:00:00Z",
+    "expected_delivery_date": "2026-06-24",
+    "po_status": "Submitted",
+    "sal_pur_group": null,
+    "broker": 9,
+    "zone_name": "East Region",
+    "supplier": 60,
+    "supplier_contact": "9887884",
+    "supplier_address": "Tokyo, Japan",
+    "gst_number": "763",
+    "delivery_location": "Plant 1",
+    "delivery_terms": "FOB-FOT-FOR",
+    "payment_terms": "30 Days Credit",
+    "freight_terms": "Supplier Paid",
+    "currency": "EUR",
+    "purchaser_name": "Mahesh Patil",
+    "department": "Production",
+    "cost_center": "Plant A",
+    "special_instructions": "Everything is ohk",
+    "internal_notes": "No need any changes",
+    "total_basic_amount": "83384.00",
+    "taxes": "15009.12",
+    "grand_total": "98393.12",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-09T07:52:27.125Z",
+    "user_modified": null,
+    "date_modified": "2026-06-09T07:52:27.125Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0003",
+  "fields": {
+    "po_date": "2026-06-18T00:00:00Z",
+    "expected_delivery_date": "2026-06-23",
+    "po_status": "Submitted",
+    "sal_pur_group": null,
+    "broker": 2,
+    "zone_name": "West Region",
+    "supplier": 3,
+    "supplier_contact": "wdds",
+    "supplier_address": "sads",
+    "gst_number": "8665",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "",
+    "internal_notes": "",
+    "total_basic_amount": "764712.00",
+    "taxes": "137648.16",
+    "grand_total": "902360.16",
+    "status": false,
+    "user_created": "",
+    "date_created": "2026-06-18T06:15:59.976Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:09:54.014Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0004",
+  "fields": {
+    "po_date": "2026-06-18T00:00:00Z",
+    "expected_delivery_date": "2026-06-30",
+    "po_status": "Submitted",
+    "sal_pur_group": null,
+    "broker": null,
+    "zone_name": "South Region",
+    "supplier": 2,
+    "supplier_contact": "73663",
+    "supplier_address": "nkhkf",
+    "gst_number": "636",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "lkrf",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "kfdng",
+    "internal_notes": "knjfk",
+    "total_basic_amount": "68324.00",
+    "taxes": "0.00",
+    "grand_total": "68324.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-18T11:33:29.834Z",
+    "user_modified": "",
+    "date_modified": "2026-06-18T11:33:29.834Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0005",
+  "fields": {
+    "po_date": "2026-06-19T00:00:00Z",
+    "expected_delivery_date": null,
+    "po_status": "Submitted",
+    "sal_pur_group": 15,
+    "broker": 4,
+    "zone_name": "South Region",
+    "supplier": 2,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "kjh",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "hkl",
+    "internal_notes": "mnbj",
+    "total_basic_amount": "5829.00",
+    "taxes": "0.00",
+    "grand_total": "5829.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-19T04:09:44.278Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:09:44.278Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0006",
+  "fields": {
+    "po_date": "2026-06-19T00:00:00Z",
+    "expected_delivery_date": "2026-06-10",
+    "po_status": "Submitted",
+    "sal_pur_group": 15,
+    "broker": 0,
+    "zone_name": "West Region",
+    "supplier": 4,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "hghj",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "mb",
+    "internal_notes": "nbj",
+    "total_basic_amount": "5655.00",
+    "taxes": "0.00",
+    "grand_total": "5655.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-19T04:11:08.074Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:11:08.074Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0007",
+  "fields": {
+    "po_date": "2026-06-19T00:00:00Z",
+    "expected_delivery_date": null,
+    "po_status": "Approved",
+    "sal_pur_group": 5,
+    "broker": 0,
+    "zone_name": "West Region",
+    "supplier": 2,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 1",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "jhgj",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "ghjjk",
+    "internal_notes": "hjgjfc",
+    "total_basic_amount": "4940.00",
+    "taxes": "0.00",
+    "grand_total": "4940.00",
+    "status": false,
+    "user_created": "",
+    "date_created": "2026-06-19T04:14:39.379Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:15:14.765Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0008",
+  "fields": {
+    "po_date": "2026-06-19T00:00:00Z",
+    "expected_delivery_date": "2026-06-10",
+    "po_status": "Submitted",
+    "sal_pur_group": 15,
+    "broker": 0,
+    "zone_name": "West Region",
+    "supplier": 4,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "lkrfdd",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "sa",
+    "internal_notes": "dfsa",
+    "total_basic_amount": "1024.00",
+    "taxes": "0.00",
+    "grand_total": "1024.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-19T11:40:58.953Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T11:40:58.953Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0009",
+  "fields": {
+    "po_date": "2026-06-22T10:00:00Z",
+    "expected_delivery_date": null,
+    "po_status": "Draft",
+    "sal_pur_group": 1,
+    "broker": 0,
+    "zone_name": "",
+    "supplier": 0,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "",
+    "delivery_terms": "",
+    "payment_terms": "",
+    "freight_terms": "",
+    "currency": "INR",
+    "purchaser_name": "Test",
+    "department": "Test",
+    "cost_center": "Test",
+    "special_instructions": "",
+    "internal_notes": "",
+    "total_basic_amount": "1000.00",
+    "taxes": "0.00",
+    "grand_total": "1000.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-22T13:21:30.237Z",
+    "user_modified": "",
+    "date_modified": "2026-06-22T13:21:30.237Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorder",
+  "pk": "PO-202606-0010",
+  "fields": {
+    "po_date": "2026-06-23T00:00:00Z",
+    "expected_delivery_date": "2026-06-25",
+    "po_status": "Draft",
+    "sal_pur_group": 5,
+    "broker": 2,
+    "zone_name": "East Region",
+    "supplier": 3,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 1",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "vfds",
+    "department": "Purchase",
+    "cost_center": "Plant A",
+    "special_instructions": "gsgg",
+    "internal_notes": "kjghl",
+    "total_basic_amount": "1849.00",
+    "taxes": "0.00",
+    "grand_total": "1849.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-06-23T10:37:44.754Z",
+    "user_modified": "",
+    "date_modified": "2026-06-23T10:37:44.754Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 3,
+  "fields": {
+    "purchase_order": "PO-202606-0002",
+    "item": 3,
+    "order_qty": "54.0000",
+    "uom": "KG",
+    "unit_rate": "766.0000",
+    "amount": "41364.00",
+    "remarks": "good services",
+    "user_created": "",
+    "date_created": "2026-06-09T07:52:27.125Z",
+    "user_modified": null,
+    "date_modified": "2026-06-09T07:52:27.125Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 4,
+  "fields": {
+    "purchase_order": "PO-202606-0002",
+    "item": 6,
+    "order_qty": "55.0000",
+    "uom": "MT",
+    "unit_rate": "764.0000",
+    "amount": "42020.00",
+    "remarks": "good services",
+    "user_created": "",
+    "date_created": "2026-06-09T07:52:27.132Z",
+    "user_modified": null,
+    "date_modified": "2026-06-09T07:52:27.132Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 22,
+  "fields": {
+    "purchase_order": "PO-202606-0003",
+    "item": 4,
+    "order_qty": "2223.0000",
+    "uom": "KG",
+    "unit_rate": "344.0000",
+    "amount": "764712.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-18T06:16:13.951Z",
+    "user_modified": "",
+    "date_modified": "2026-06-18T06:16:13.951Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 23,
+  "fields": {
+    "purchase_order": "PO-202606-0004",
+    "item": 10,
+    "order_qty": "76.0000",
+    "uom": "MT",
+    "unit_rate": "899.0000",
+    "amount": "68324.00",
+    "remarks": "kjrh",
+    "user_created": "",
+    "date_created": "2026-06-18T11:33:29.834Z",
+    "user_modified": "",
+    "date_modified": "2026-06-18T11:33:29.834Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 24,
+  "fields": {
+    "purchase_order": "PO-202606-0005",
+    "item": 8,
+    "order_qty": "87.0000",
+    "uom": "MT",
+    "unit_rate": "67.0000",
+    "amount": "5829.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-19T04:09:44.278Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:09:44.278Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 25,
+  "fields": {
+    "purchase_order": "PO-202606-0006",
+    "item": 5,
+    "order_qty": "65.0000",
+    "uom": "MT",
+    "unit_rate": "87.0000",
+    "amount": "5655.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-19T04:11:08.074Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:11:08.074Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 26,
+  "fields": {
+    "purchase_order": "PO-202606-0007",
+    "item": 2,
+    "order_qty": "65.0000",
+    "uom": "MT",
+    "unit_rate": "76.0000",
+    "amount": "4940.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-19T04:14:39.379Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T04:14:39.379Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 27,
+  "fields": {
+    "purchase_order": "PO-202606-0008",
+    "item": 5,
+    "order_qty": "32.0000",
+    "uom": "MT",
+    "unit_rate": "32.0000",
+    "amount": "1024.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-19T11:40:58.953Z",
+    "user_modified": "",
+    "date_modified": "2026-06-19T11:40:58.953Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 30,
+  "fields": {
+    "purchase_order": "PO-202606-0009",
+    "item": 7,
+    "order_qty": "10.0000",
+    "uom": "MT",
+    "unit_rate": "100.0000",
+    "amount": "1000.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-06-22T13:21:30.237Z",
+    "user_modified": "",
+    "date_modified": "2026-06-22T13:21:30.237Z"
+  }
+},
+{
+  "model": "dashboard.purchaseorderitem",
+  "pk": 32,
+  "fields": {
+    "purchase_order": "PO-202606-0010",
+    "item": 2,
+    "order_qty": "43.0000",
+    "uom": "MT",
+    "unit_rate": "43.0000",
+    "amount": "1849.00",
+    "remarks": "fffffffffg",
+    "user_created": "",
+    "date_created": "2026-06-23T10:37:44.754Z",
+    "user_modified": "",
+    "date_modified": "2026-06-23T10:37:44.754Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-001",
+  "fields": {
+    "date": "2026-06-03T11:17:54.129Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "520.00",
+    "narration": "Seed Section C Transaction 1",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.129Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.129Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-002",
+  "fields": {
+    "date": "2026-06-03T11:17:54.140Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "540.00",
+    "narration": "Seed Section C Transaction 2",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.140Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.140Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-003",
+  "fields": {
+    "date": "2026-06-03T11:17:54.140Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "560.00",
+    "narration": "Seed Section C Transaction 3",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.140Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.140Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-004",
+  "fields": {
+    "date": "2026-06-03T11:17:54.144Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "580.00",
+    "narration": "Seed Section C Transaction 4",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.144Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.144Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-005",
+  "fields": {
+    "date": "2026-06-03T11:17:54.148Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "600.00",
+    "narration": "Seed Section C Transaction 5",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.148Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.148Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-006",
+  "fields": {
+    "date": "2026-06-03T11:17:54.151Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "620.00",
+    "narration": "Seed Section C Transaction 6",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.151Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.151Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-007",
+  "fields": {
+    "date": "2026-06-03T11:17:54.154Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "640.00",
+    "narration": "Seed Section C Transaction 7",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.154Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.154Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-008",
+  "fields": {
+    "date": "2026-06-03T11:17:54.154Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "660.00",
+    "narration": "Seed Section C Transaction 8",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.156Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.156Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-009",
+  "fields": {
+    "date": "2026-06-03T11:17:54.156Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "680.00",
+    "narration": "Seed Section C Transaction 9",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.156Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.156Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-010",
+  "fields": {
+    "date": "2026-06-03T11:17:54.156Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "700.00",
+    "narration": "Seed Section C Transaction 10",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.156Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.156Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-011",
+  "fields": {
+    "date": "2026-06-03T11:17:54.164Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "720.00",
+    "narration": "Seed Section C Transaction 11",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.164Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.164Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-012",
+  "fields": {
+    "date": "2026-06-03T11:17:54.164Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "740.00",
+    "narration": "Seed Section C Transaction 12",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.164Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.164Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-013",
+  "fields": {
+    "date": "2026-06-03T11:17:54.169Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "760.00",
+    "narration": "Seed Section C Transaction 13",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.169Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.169Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-014",
+  "fields": {
+    "date": "2026-06-03T11:17:54.169Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "780.00",
+    "narration": "Seed Section C Transaction 14",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.169Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.169Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-015",
+  "fields": {
+    "date": "2026-06-03T11:17:54.174Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "800.00",
+    "narration": "Seed Section C Transaction 15",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.174Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.174Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-016",
+  "fields": {
+    "date": "2026-06-03T11:17:54.177Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "820.00",
+    "narration": "Seed Section C Transaction 16",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.177Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.177Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-017",
+  "fields": {
+    "date": "2026-06-03T11:17:54.179Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "840.00",
+    "narration": "Seed Section C Transaction 17",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.179Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.179Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-018",
+  "fields": {
+    "date": "2026-06-03T11:17:54.181Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "860.00",
+    "narration": "Seed Section C Transaction 18",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.181Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.181Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-019",
+  "fields": {
+    "date": "2026-06-03T11:17:54.184Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "880.00",
+    "narration": "Seed Section C Transaction 19",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.184Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.184Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-020",
+  "fields": {
+    "date": "2026-06-03T11:17:54.184Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "900.00",
+    "narration": "Seed Section C Transaction 20",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.184Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.184Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-021",
+  "fields": {
+    "date": "2026-06-03T11:17:54.184Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "920.00",
+    "narration": "Seed Section C Transaction 21",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.184Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.184Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-022",
+  "fields": {
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "940.00",
+    "narration": "Seed Section C Transaction 22",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-023",
+  "fields": {
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "960.00",
+    "narration": "Seed Section C Transaction 23",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-024",
+  "fields": {
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "980.00",
+    "narration": "Seed Section C Transaction 24",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-025",
+  "fields": {
+    "date": "2026-06-03T11:17:54.195Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1000.00",
+    "narration": "Seed Section C Transaction 25",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.196Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.196Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-026",
+  "fields": {
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "1020.00",
+    "narration": "Seed Section C Transaction 26",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-027",
+  "fields": {
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1040.00",
+    "narration": "Seed Section C Transaction 27",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-028",
+  "fields": {
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "1060.00",
+    "narration": "Seed Section C Transaction 28",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-029",
+  "fields": {
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1080.00",
+    "narration": "Seed Section C Transaction 29",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-030",
+  "fields": {
+    "date": "2026-06-03T11:17:54.204Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "1100.00",
+    "narration": "Seed Section C Transaction 30",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-031",
+  "fields": {
+    "date": "2026-06-03T11:17:54.206Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1120.00",
+    "narration": "Seed Section C Transaction 31",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-032",
+  "fields": {
+    "date": "2026-06-03T11:17:54.206Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "1140.00",
+    "narration": "Seed Section C Transaction 32",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-033",
+  "fields": {
+    "date": "2026-06-03T11:17:54.213Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1160.00",
+    "narration": "Seed Section C Transaction 33",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.213Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.213Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-034",
+  "fields": {
+    "date": "2026-06-03T11:17:54.214Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "amount": "1180.00",
+    "narration": "Seed Section C Transaction 34",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.214Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.214Z"
+  }
+},
+{
+  "model": "dashboard.sectionc",
+  "pk": "C-SEED-035",
+  "fields": {
+    "date": "2026-06-03T11:17:54.218Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "amount": "1200.00",
+    "narration": "Seed Section C Transaction 35",
+    "bank_account": 50,
+    "status": true,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.218Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.218Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 1,
+  "fields": {
+    "voucher": "C-SEED-001",
+    "date": "2026-06-03T11:17:54.132Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "520.00",
+    "remarks": "Remarks for C-SEED-001",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.132Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.132Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 2,
+  "fields": {
+    "voucher": "C-SEED-002",
+    "date": "2026-06-03T11:17:54.140Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "540.00",
+    "remarks": "Remarks for C-SEED-002",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.140Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.140Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 3,
+  "fields": {
+    "voucher": "C-SEED-003",
+    "date": "2026-06-03T11:17:54.144Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "560.00",
+    "remarks": "Remarks for C-SEED-003",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.144Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.144Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 4,
+  "fields": {
+    "voucher": "C-SEED-004",
+    "date": "2026-06-03T11:17:54.144Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "580.00",
+    "remarks": "Remarks for C-SEED-004",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.144Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.144Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 5,
+  "fields": {
+    "voucher": "C-SEED-005",
+    "date": "2026-06-03T11:17:54.148Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "600.00",
+    "remarks": "Remarks for C-SEED-005",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.148Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.148Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 6,
+  "fields": {
+    "voucher": "C-SEED-006",
+    "date": "2026-06-03T11:17:54.151Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "620.00",
+    "remarks": "Remarks for C-SEED-006",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.151Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.151Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 7,
+  "fields": {
+    "voucher": "C-SEED-007",
+    "date": "2026-06-03T11:17:54.154Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "640.00",
+    "remarks": "Remarks for C-SEED-007",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.154Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.154Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 8,
+  "fields": {
+    "voucher": "C-SEED-008",
+    "date": "2026-06-03T11:17:54.156Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "660.00",
+    "remarks": "Remarks for C-SEED-008",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.156Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.156Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 9,
+  "fields": {
+    "voucher": "C-SEED-009",
+    "date": "2026-06-03T11:17:54.156Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "680.00",
+    "remarks": "Remarks for C-SEED-009",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.156Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.156Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 10,
+  "fields": {
+    "voucher": "C-SEED-010",
+    "date": "2026-06-03T11:17:54.162Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "700.00",
+    "remarks": "Remarks for C-SEED-010",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.162Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.162Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 11,
+  "fields": {
+    "voucher": "C-SEED-011",
+    "date": "2026-06-03T11:17:54.164Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "720.00",
+    "remarks": "Remarks for C-SEED-011",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.164Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.164Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 12,
+  "fields": {
+    "voucher": "C-SEED-012",
+    "date": "2026-06-03T11:17:54.164Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "740.00",
+    "remarks": "Remarks for C-SEED-012",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.164Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.164Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 13,
+  "fields": {
+    "voucher": "C-SEED-013",
+    "date": "2026-06-03T11:17:54.169Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "760.00",
+    "remarks": "Remarks for C-SEED-013",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.169Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.169Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 14,
+  "fields": {
+    "voucher": "C-SEED-014",
+    "date": "2026-06-03T11:17:54.172Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "780.00",
+    "remarks": "Remarks for C-SEED-014",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.172Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.172Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 15,
+  "fields": {
+    "voucher": "C-SEED-015",
+    "date": "2026-06-03T11:17:54.174Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "800.00",
+    "remarks": "Remarks for C-SEED-015",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.174Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.174Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 16,
+  "fields": {
+    "voucher": "C-SEED-016",
+    "date": "2026-06-03T11:17:54.177Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "820.00",
+    "remarks": "Remarks for C-SEED-016",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.177Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.177Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 17,
+  "fields": {
+    "voucher": "C-SEED-017",
+    "date": "2026-06-03T11:17:54.179Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "840.00",
+    "remarks": "Remarks for C-SEED-017",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.181Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.181Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 18,
+  "fields": {
+    "voucher": "C-SEED-018",
+    "date": "2026-06-03T11:17:54.181Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "860.00",
+    "remarks": "Remarks for C-SEED-018",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.181Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.181Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 19,
+  "fields": {
+    "voucher": "C-SEED-019",
+    "date": "2026-06-03T11:17:54.184Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "880.00",
+    "remarks": "Remarks for C-SEED-019",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.184Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.184Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 20,
+  "fields": {
+    "voucher": "C-SEED-020",
+    "date": "2026-06-03T11:17:54.184Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "900.00",
+    "remarks": "Remarks for C-SEED-020",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.184Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.184Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 21,
+  "fields": {
+    "voucher": "C-SEED-021",
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "920.00",
+    "remarks": "Remarks for C-SEED-021",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 22,
+  "fields": {
+    "voucher": "C-SEED-022",
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "940.00",
+    "remarks": "Remarks for C-SEED-022",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 23,
+  "fields": {
+    "voucher": "C-SEED-023",
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "960.00",
+    "remarks": "Remarks for C-SEED-023",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 24,
+  "fields": {
+    "voucher": "C-SEED-024",
+    "date": "2026-06-03T11:17:54.189Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "980.00",
+    "remarks": "Remarks for C-SEED-024",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.189Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.189Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 25,
+  "fields": {
+    "voucher": "C-SEED-025",
+    "date": "2026-06-03T11:17:54.196Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1000.00",
+    "remarks": "Remarks for C-SEED-025",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.196Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.196Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 26,
+  "fields": {
+    "voucher": "C-SEED-026",
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "1020.00",
+    "remarks": "Remarks for C-SEED-026",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 27,
+  "fields": {
+    "voucher": "C-SEED-027",
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1040.00",
+    "remarks": "Remarks for C-SEED-027",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 28,
+  "fields": {
+    "voucher": "C-SEED-028",
+    "date": "2026-06-03T11:17:54.197Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "1060.00",
+    "remarks": "Remarks for C-SEED-028",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.197Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.197Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 29,
+  "fields": {
+    "voucher": "C-SEED-029",
+    "date": "2026-06-03T11:17:54.204Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1080.00",
+    "remarks": "Remarks for C-SEED-029",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.204Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.204Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 30,
+  "fields": {
+    "voucher": "C-SEED-030",
+    "date": "2026-06-03T11:17:54.206Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "1100.00",
+    "remarks": "Remarks for C-SEED-030",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 31,
+  "fields": {
+    "voucher": "C-SEED-031",
+    "date": "2026-06-03T11:17:54.206Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1120.00",
+    "remarks": "Remarks for C-SEED-031",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 32,
+  "fields": {
+    "voucher": "C-SEED-032",
+    "date": "2026-06-03T11:17:54.206Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "1140.00",
+    "remarks": "Remarks for C-SEED-032",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.206Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.206Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 33,
+  "fields": {
+    "voucher": "C-SEED-033",
+    "date": "2026-06-03T11:17:54.214Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1160.00",
+    "remarks": "Remarks for C-SEED-033",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.214Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.214Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 34,
+  "fields": {
+    "voucher": "C-SEED-034",
+    "date": "2026-06-03T11:17:54.214Z",
+    "tran_type": "CASH",
+    "rpid": "R",
+    "account_master": 50,
+    "amount": "1180.00",
+    "remarks": "Remarks for C-SEED-034",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.214Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.214Z"
+  }
+},
+{
+  "model": "dashboard.sectionctran",
+  "pk": 35,
+  "fields": {
+    "voucher": "C-SEED-035",
+    "date": "2026-06-03T11:17:54.218Z",
+    "tran_type": "CASH",
+    "rpid": "P",
+    "account_master": 50,
+    "amount": "1200.00",
+    "remarks": "Remarks for C-SEED-035",
+    "chq_no": null,
+    "chq_date": null,
+    "payee_bank": null,
+    "user_created": null,
+    "date_created": "2026-06-03T11:17:54.218Z",
+    "user_modified": null,
+    "date_modified": "2026-06-03T11:17:54.218Z"
+  }
+},
+{
+  "model": "dashboard.transactiontype",
+  "pk": 1,
+  "fields": {
+    "TransactionTypeName": "Purchase",
+    "TransactionType": "PUR",
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T11:49:20.107Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T11:49:20.107Z"
+  }
+},
+{
+  "model": "dashboard.transactiontype",
+  "pk": 2,
+  "fields": {
+    "TransactionTypeName": "Sales",
+    "TransactionType": "SAL",
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T11:49:20.113Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T11:49:20.113Z"
+  }
+},
+{
+  "model": "dashboard.transactiontype",
+  "pk": 3,
+  "fields": {
+    "TransactionTypeName": "Store material Purchase",
+    "TransactionType": "SPUR",
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T11:49:20.115Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T11:49:20.115Z"
+  }
+},
+{
+  "model": "dashboard.transactiontype",
+  "pk": 4,
+  "fields": {
+    "TransactionTypeName": "Store material Sales",
+    "TransactionType": "SSAL",
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T11:49:20.115Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T11:49:20.115Z"
+  }
+},
+{
+  "model": "dashboard.transactiontype",
+  "pk": 5,
+  "fields": {
+    "TransactionTypeName": "jb",
+    "TransactionType": "8746",
+    "UserCreated": "system",
+    "DateCreated": "2026-06-22T12:27:02.814Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T12:27:02.814Z"
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 1,
+  "fields": {
+    "SalPurGroupName": "test",
+    "GroupwiseAccounting": false,
+    "GroupwiseAccountID": null,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": null,
+    "GST_Applicable_Y_N": null,
+    "IsGSTApplicableY1N0": null,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T05:02:14.867Z",
+    "UserModified": null,
+    "DateModified": "2026-06-16T03:38:43.394Z",
+    "is_active": false
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 2,
+  "fields": {
+    "SalPurGroupName": "test",
+    "GroupwiseAccounting": false,
+    "GroupwiseAccountID": null,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": null,
+    "GST_Applicable_Y_N": null,
+    "IsGSTApplicableY1N0": null,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T05:02:22.039Z",
+    "UserModified": null,
+    "DateModified": "2026-06-13T05:02:22.039Z",
+    "is_active": true
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 3,
+  "fields": {
+    "SalPurGroupName": "test",
+    "GroupwiseAccounting": true,
+    "GroupwiseAccountID": null,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": null,
+    "GST_Applicable_Y_N": null,
+    "IsGSTApplicableY1N0": null,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T05:08:59.378Z",
+    "UserModified": null,
+    "DateModified": "2026-06-13T05:08:59.378Z",
+    "is_active": true
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 5,
+  "fields": {
+    "SalPurGroupName": "hgjjmg,",
+    "GroupwiseAccounting": true,
+    "GroupwiseAccountID": 55,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": false,
+    "GST_Applicable_Y_N": false,
+    "IsGSTApplicableY1N0": null,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T05:13:36.510Z",
+    "UserModified": null,
+    "DateModified": "2026-06-13T05:13:36.510Z",
+    "is_active": true
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 6,
+  "fields": {
+    "SalPurGroupName": "hjgjj",
+    "GroupwiseAccounting": true,
+    "GroupwiseAccountID": 66,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": false,
+    "GST_Applicable_Y_N": false,
+    "IsGSTApplicableY1N0": null,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T07:53:32.304Z",
+    "UserModified": null,
+    "DateModified": "2026-06-16T03:38:30.439Z",
+    "is_active": false
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 15,
+  "fields": {
+    "SalPurGroupName": "dsc",
+    "GroupwiseAccounting": true,
+    "GroupwiseAccountID": 65,
+    "TransactionTypeID": null,
+    "Interstate_Y_WithinState_N": true,
+    "GST_Applicable_Y_N": false,
+    "IsGSTApplicableY1N0": false,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-16T06:48:47.751Z",
+    "UserModified": null,
+    "DateModified": "2026-06-16T06:48:47.751Z",
+    "is_active": true
+  }
+},
+{
+  "model": "dashboard.salpurgroup",
+  "pk": 16,
+  "fields": {
+    "SalPurGroupName": "ffads",
+    "GroupwiseAccounting": true,
+    "GroupwiseAccountID": 65,
+    "TransactionTypeID": 5,
+    "Interstate_Y_WithinState_N": true,
+    "GST_Applicable_Y_N": true,
+    "IsGSTApplicableY1N0": true,
+    "IGST1_CGST0": null,
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T12:27:30.867Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T12:27:30.867Z",
+    "is_active": true
+  }
+},
+{
+  "model": "dashboard.salpurgrouptran",
+  "pk": 2,
+  "fields": {
+    "ChargesName": "fgjuh",
+    "SalPurGroupID": 5,
+    "ChargeAccountID": 51,
+    "Auto_Y_Manual_N": true,
+    "Rate": "766.0000",
+    "Debit_D_Credit_C": "D",
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T05:13:36.534Z",
+    "UserModified": null,
+    "DateModified": "2026-06-13T05:13:36.534Z"
+  }
+},
+{
+  "model": "dashboard.salpurgrouptran",
+  "pk": 4,
+  "fields": {
+    "ChargesName": "mjg",
+    "SalPurGroupID": 6,
+    "ChargeAccountID": 51,
+    "Auto_Y_Manual_N": true,
+    "Rate": "877.0000",
+    "Debit_D_Credit_C": "D",
+    "UserCreated": null,
+    "DateCreated": "2026-06-13T07:53:46.883Z",
+    "UserModified": null,
+    "DateModified": "2026-06-13T07:53:46.883Z"
+  }
+},
+{
+  "model": "dashboard.salpurgrouptran",
+  "pk": 7,
+  "fields": {
+    "ChargesName": "fnf",
+    "SalPurGroupID": 15,
+    "ChargeAccountID": 65,
+    "Auto_Y_Manual_N": true,
+    "Rate": "455.0000",
+    "Debit_D_Credit_C": "D",
+    "UserCreated": null,
+    "DateCreated": "2026-06-16T06:48:47.751Z",
+    "UserModified": null,
+    "DateModified": "2026-06-16T06:48:47.751Z"
+  }
+},
+{
+  "model": "dashboard.salpurgrouptran",
+  "pk": 8,
+  "fields": {
+    "ChargesName": "fks",
+    "SalPurGroupID": 16,
+    "ChargeAccountID": 66,
+    "Auto_Y_Manual_N": true,
+    "Rate": "344.0000",
+    "Debit_D_Credit_C": "D",
+    "UserCreated": null,
+    "DateCreated": "2026-06-22T12:27:30.884Z",
+    "UserModified": null,
+    "DateModified": "2026-06-22T12:27:30.884Z"
+  }
+},
+{
+  "model": "dashboard.pursales",
+  "pk": "2123",
+  "fields": {
+    "VoucherNo": "32112",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "OrderDate": "2026-06-14",
+    "PurSalGroupID": 6,
+    "PartyID": 10,
+    "BrokerID": 2,
+    "ZoneID": 0,
+    "DeliveryLocation": "f,snkj",
+    "DelTermsID": 32667,
+    "PaymentTermsID": 3222,
+    "FreightTermID": 3442,
+    "CurrencyID": null,
+    "IncotermID": 323,
+    "CreditDays": 0,
+    "Purchaser_Saleman_ID": null,
+    "DepartmentID": null,
+    "CostCentrID": null,
+    "SpecialInstructions": "kjsdbj",
+    "InternalNotes": "m",
+    "UserCreated": "",
+    "DatdCreated": "2026-06-14",
+    "UserModified": "",
+    "DateModified": "2026-06-14",
+    "IGST0_SGST1": 1
+  }
+},
+{
+  "model": "dashboard.pursales",
+  "pk": "PO-NEW-001",
+  "fields": {
+    "VoucherNo": "V-NEW-001",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "OrderDate": "2026-06-14",
+    "PurSalGroupID": 1,
+    "PartyID": 66,
+    "BrokerID": null,
+    "ZoneID": null,
+    "DeliveryLocation": "Store-A",
+    "DelTermsID": null,
+    "PaymentTermsID": null,
+    "FreightTermID": null,
+    "CurrencyID": null,
+    "IncotermID": null,
+    "CreditDays": 0,
+    "Purchaser_Saleman_ID": null,
+    "DepartmentID": null,
+    "CostCentrID": null,
+    "SpecialInstructions": "Fragile",
+    "InternalNotes": "X",
+    "UserCreated": "",
+    "DatdCreated": "2026-06-14",
+    "UserModified": "",
+    "DateModified": "2026-06-14",
+    "IGST0_SGST1": 1
+  }
+},
+{
+  "model": "dashboard.pursales",
+  "pk": "PO-NEW-40022",
+  "fields": {
+    "VoucherNo": "V-NEW-40022",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "OrderDate": "2026-06-14",
+    "PurSalGroupID": 1,
+    "PartyID": 66,
+    "BrokerID": null,
+    "ZoneID": null,
+    "DeliveryLocation": "Store-A",
+    "DelTermsID": null,
+    "PaymentTermsID": null,
+    "FreightTermID": null,
+    "CurrencyID": null,
+    "IncotermID": null,
+    "CreditDays": 0,
+    "Purchaser_Saleman_ID": null,
+    "DepartmentID": null,
+    "CostCentrID": null,
+    "SpecialInstructions": "Fragile",
+    "InternalNotes": "X",
+    "UserCreated": "",
+    "DatdCreated": "2026-06-14",
+    "UserModified": "",
+    "DateModified": "2026-06-14",
+    "IGST0_SGST1": 1
+  }
+},
+{
+  "model": "dashboard.pursalestran",
+  "pk": 1,
+  "fields": {
+    "VoucherNo": "V-NEW-001",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "Item_ID": 7,
+    "Bag": 10,
+    "Weight": "100.000",
+    "unit_weight": "10.000",
+    "Unit_rate": "25.00",
+    "Amount": "2500.00",
+    "gst_rate": "18.00",
+    "IGST": "0.00",
+    "CGST": "225.00",
+    "SGST": "225.00",
+    "Total": "2950.00",
+    "IsRateIncludingGST": false,
+    "UserCreated": "",
+    "DateCreated": "2026-06-14T04:39:11.559Z",
+    "UserModified": "",
+    "DateModified": "2026-06-14T04:39:11.559Z"
+  }
+},
+{
+  "model": "dashboard.pursalestran",
+  "pk": 2,
+  "fields": {
+    "VoucherNo": "V-NEW-40022",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "Item_ID": 7,
+    "Bag": 10,
+    "Weight": "100.000",
+    "unit_weight": "10.000",
+    "Unit_rate": "25.00",
+    "Amount": "2500.00",
+    "gst_rate": "18.00",
+    "IGST": "0.00",
+    "CGST": "225.00",
+    "SGST": "225.00",
+    "Total": "2950.00",
+    "IsRateIncludingGST": false,
+    "UserCreated": "",
+    "DateCreated": "2026-06-14T04:39:42.648Z",
+    "UserModified": "",
+    "DateModified": "2026-06-14T04:39:42.648Z"
+  }
+},
+{
+  "model": "dashboard.pursalestran",
+  "pk": 3,
+  "fields": {
+    "VoucherNo": "32112",
+    "VoucherDate": "2026-06-14",
+    "TranType": "PUR",
+    "Item_ID": 6,
+    "Bag": 23,
+    "Weight": "7360.000",
+    "unit_weight": "320.000",
+    "Unit_rate": "32.00",
+    "Amount": "235520.00",
+    "gst_rate": "0.00",
+    "IGST": "0.00",
+    "CGST": "0.00",
+    "SGST": "0.00",
+    "Total": "235520.00",
+    "IsRateIncludingGST": false,
+    "UserCreated": "",
+    "DateCreated": "2026-06-14T09:58:02.295Z",
+    "UserModified": "",
+    "DateModified": "2026-06-14T09:58:02.295Z"
+  }
+},
+{
+  "model": "dashboard.usermaster",
+  "pk": "434",
+  "fields": {
+    "user_name": "BB",
+    "role": "Maker",
+    "empid": "876",
+    "is_active": true,
+    "user_created": null,
+    "date_created": "2026-06-19T05:21:39.795Z",
+    "user_modified": null,
+    "date_modified": "2026-06-19T05:21:39.795Z"
+  }
+},
+{
+  "model": "dashboard.usermaster",
+  "pk": "774",
+  "fields": {
+    "user_name": "JHGD",
+    "role": "Checker",
+    "empid": "874",
+    "is_active": true,
+    "user_created": null,
+    "date_created": "2026-06-19T05:51:31.105Z",
+    "user_modified": null,
+    "date_modified": "2026-06-19T05:51:31.105Z"
+  }
+},
+{
+  "model": "dashboard.usermaster",
+  "pk": "admin",
+  "fields": {
+    "user_name": "Admin User",
+    "role": "Admin",
+    "empid": "EMP-ADMIN",
+    "is_active": true,
+    "user_created": "system",
+    "date_created": "2026-07-01T05:24:58.003Z",
+    "user_modified": null,
+    "date_modified": "2026-07-01T05:24:58.003Z"
+  }
+},
+{
+  "model": "dashboard.usermaster",
+  "pk": "checker",
+  "fields": {
+    "user_name": "Checker User",
+    "role": "Checker",
+    "empid": "EMP-CHECKER",
+    "is_active": true,
+    "user_created": "system",
+    "date_created": "2026-07-01T05:24:58.001Z",
+    "user_modified": null,
+    "date_modified": "2026-07-01T05:24:58.001Z"
+  }
+},
+{
+  "model": "dashboard.usermaster",
+  "pk": "maker",
+  "fields": {
+    "user_name": "Maker User",
+    "role": "Maker",
+    "empid": "EMP-MAKER",
+    "is_active": true,
+    "user_created": "system",
+    "date_created": "2026-07-01T05:24:57.992Z",
+    "user_modified": null,
+    "date_modified": "2026-07-01T05:24:57.992Z"
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "3221",
+  "fields": {
+    "GrnDate": "2026-05-31T00:00:00",
+    "GatepassNo": 3,
+    "Netweight": "23.00",
+    "DeductedWeight": "5.00",
+    "Approvedweight": "18.00",
+    "status": 2,
+    "internalnotes": null,
+    "draftedby": "",
+    "DraftedDate": "2026-06-30T09:53:21.363",
+    "submittedby": "",
+    "SubmissionDate": "2026-06-30T09:53:21.363",
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "334",
+  "fields": {
+    "GrnDate": "2026-06-22T00:00:00",
+    "GatepassNo": 5,
+    "Netweight": "43.00",
+    "DeductedWeight": "54.00",
+    "Approvedweight": "-11.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "",
+    "DraftedDate": "2026-06-29T11:15:17.813",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": "",
+    "Referredbackdate": "2026-06-29T11:15:22.042",
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "4512",
+  "fields": {
+    "GrnDate": "2026-07-19T00:00:00",
+    "GatepassNo": 5,
+    "Netweight": "43.00",
+    "DeductedWeight": "32.00",
+    "Approvedweight": "11.00",
+    "status": 1,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-07-02T12:08:44.919",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "4563",
+  "fields": {
+    "GrnDate": "2026-07-26T00:00:00",
+    "GatepassNo": null,
+    "Netweight": "21.00",
+    "DeductedWeight": "43.00",
+    "Approvedweight": "-22.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-07-02T11:59:41.849",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "4567",
+  "fields": {
+    "GrnDate": "2026-07-27T00:00:00",
+    "GatepassNo": null,
+    "Netweight": "23.00",
+    "DeductedWeight": "54.00",
+    "Approvedweight": "-31.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-07-02T12:07:44.536",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "543",
+  "fields": {
+    "GrnDate": "2026-08-02T00:00:00",
+    "GatepassNo": null,
+    "Netweight": "23.00",
+    "DeductedWeight": "32.00",
+    "Approvedweight": "-9.00",
+    "status": 5,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-07-02T11:58:20.669",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "556",
+  "fields": {
+    "GrnDate": "2026-06-14T00:00:00",
+    "GatepassNo": 2,
+    "Netweight": "21.00",
+    "DeductedWeight": "5.00",
+    "Approvedweight": "16.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "",
+    "DraftedDate": "2026-06-30T09:43:40.419",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": "",
+    "Referredbackdate": "2026-06-30T09:43:42.514",
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "655",
+  "fields": {
+    "GrnDate": "2026-07-05T00:00:00",
+    "GatepassNo": 5,
+    "Netweight": "43.00",
+    "DeductedWeight": "9.00",
+    "Approvedweight": "34.00",
+    "status": 5,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-06-30T10:05:40.854",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "77",
+  "fields": {
+    "GrnDate": "2026-06-14T00:00:00",
+    "GatepassNo": 4,
+    "Netweight": "45.00",
+    "DeductedWeight": "8.00",
+    "Approvedweight": "37.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "",
+    "DraftedDate": "2026-06-30T09:59:32.034",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": "",
+    "Referredbackdate": "2026-06-30T09:59:35.367",
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "981",
+  "fields": {
+    "GrnDate": "2026-07-06T00:00:00",
+    "GatepassNo": 3,
+    "Netweight": "23.00",
+    "DeductedWeight": "4.00",
+    "Approvedweight": "19.00",
+    "status": 4,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-06-30T11:40:55.064",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": null,
+    "Referredbackdate": null,
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grn",
+  "pk": "987",
+  "fields": {
+    "GrnDate": "2026-06-15T00:00:00",
+    "GatepassNo": 7,
+    "Netweight": "31.00",
+    "DeductedWeight": "1.00",
+    "Approvedweight": "30.00",
+    "status": 3,
+    "internalnotes": null,
+    "draftedby": "BB",
+    "DraftedDate": "2026-06-30T10:09:53.209",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "referedbackby": "BB",
+    "Referredbackdate": "2026-06-30T10:09:56.900",
+    "approvedby": null,
+    "ApprovalDate": null
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 10,
+  "fields": {
+    "GrnNo": "334",
+    "GrnDate": "2026-06-22T00:00:00",
+    "MaterialID": 1,
+    "Bags": "30.00",
+    "Grossweight": "43.00",
+    "Netweight": "43.00",
+    "Remarks": "",
+    "usercreated": null,
+    "usermodified": "",
+    "datecreated": "2026-06-29T11:15:22.042",
+    "datemodified": "2026-06-29T11:15:22.042"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 17,
+  "fields": {
+    "GrnNo": "556",
+    "GrnDate": "2026-06-14T00:00:00",
+    "MaterialID": 12,
+    "Bags": "50.00",
+    "Grossweight": "21.00",
+    "Netweight": "21.00",
+    "Remarks": "",
+    "usercreated": null,
+    "usermodified": "",
+    "datecreated": "2026-06-30T09:43:42.514",
+    "datemodified": "2026-06-30T09:43:42.514"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 19,
+  "fields": {
+    "GrnNo": "3221",
+    "GrnDate": "2026-05-31T00:00:00",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "Grossweight": "23.00",
+    "Netweight": "23.00",
+    "Remarks": "",
+    "usercreated": null,
+    "usermodified": "",
+    "datecreated": "2026-06-30T09:53:24.709",
+    "datemodified": "2026-06-30T09:53:24.709"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 21,
+  "fields": {
+    "GrnNo": "77",
+    "GrnDate": "2026-06-14T00:00:00",
+    "MaterialID": 1,
+    "Bags": "20.00",
+    "Grossweight": "45.00",
+    "Netweight": "45.00",
+    "Remarks": "",
+    "usercreated": null,
+    "usermodified": "",
+    "datecreated": "2026-06-30T09:59:35.367",
+    "datemodified": "2026-06-30T09:59:35.367"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 22,
+  "fields": {
+    "GrnNo": "655",
+    "GrnDate": "2026-07-05T00:00:00",
+    "MaterialID": 1,
+    "Bags": "30.00",
+    "Grossweight": "43.00",
+    "Netweight": "43.00",
+    "Remarks": "",
+    "usercreated": "BB",
+    "usermodified": null,
+    "datecreated": "2026-06-30T10:05:40.854",
+    "datemodified": "2026-06-30T10:05:40.854"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 24,
+  "fields": {
+    "GrnNo": "987",
+    "GrnDate": "2026-06-15T00:00:00",
+    "MaterialID": 2,
+    "Bags": "30.00",
+    "Grossweight": "32.00",
+    "Netweight": "31.00",
+    "Remarks": "",
+    "usercreated": null,
+    "usermodified": "BB",
+    "datecreated": "2026-06-30T10:09:56.900",
+    "datemodified": "2026-06-30T10:09:56.900"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 33,
+  "fields": {
+    "GrnNo": "981",
+    "GrnDate": "2026-07-06T00:00:00",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "Grossweight": "23.00",
+    "Netweight": "23.00",
+    "Remarks": "",
+    "usercreated": "BB",
+    "usermodified": null,
+    "datecreated": "2026-06-30T11:40:55.064",
+    "datemodified": "2026-06-30T11:40:55.064"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 36,
+  "fields": {
+    "GrnNo": "543",
+    "GrnDate": "2026-08-02T00:00:00",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "Grossweight": "23.00",
+    "Netweight": "23.00",
+    "Remarks": "",
+    "usercreated": "BB",
+    "usermodified": null,
+    "datecreated": "2026-07-02T11:58:20.669",
+    "datemodified": "2026-07-02T11:58:20.669"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 40,
+  "fields": {
+    "GrnNo": "4563",
+    "GrnDate": "2026-07-26T00:00:00",
+    "MaterialID": 12,
+    "Bags": "50.00",
+    "Grossweight": "21.00",
+    "Netweight": "21.00",
+    "Remarks": "",
+    "usercreated": "BB",
+    "usermodified": null,
+    "datecreated": "2026-07-02T12:02:12.339",
+    "datemodified": "2026-07-02T12:02:12.339"
+  }
+},
+{
+  "model": "dashboard.grntranmat",
+  "pk": 42,
+  "fields": {
+    "GrnNo": "4567",
+    "GrnDate": "2026-07-27T00:00:00",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "Grossweight": "23.00",
+    "Netweight": "23.00",
+    "Remarks": "",
+    "usercreated": "BB",
+    "usermodified": null,
+    "datecreated": "2026-07-02T12:07:56.581",
+    "datemodified": "2026-07-02T12:07:56.581"
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 10,
+  "fields": {
+    "GrnNo": "334",
+    "GrnDate": "2026-06-22T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 2,
+    "Testresult": "65.00",
+    "deductedweight": "54.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 17,
+  "fields": {
+    "GrnNo": "556",
+    "GrnDate": "2026-06-14T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 1,
+    "Testresult": "7.00",
+    "deductedweight": "5.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 19,
+  "fields": {
+    "GrnNo": "3221",
+    "GrnDate": "2026-05-31T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 2,
+    "Testresult": "4.00",
+    "deductedweight": "5.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 21,
+  "fields": {
+    "GrnNo": "77",
+    "GrnDate": "2026-06-14T00:00:00",
+    "TestID": 2,
+    "Testmethodid": 1,
+    "Testresult": "6.00",
+    "deductedweight": "8.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 22,
+  "fields": {
+    "GrnNo": "655",
+    "GrnDate": "2026-07-05T00:00:00",
+    "TestID": 2,
+    "Testmethodid": 1,
+    "Testresult": "7.00",
+    "deductedweight": "9.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 24,
+  "fields": {
+    "GrnNo": "987",
+    "GrnDate": "2026-06-15T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 2,
+    "Testresult": "3.00",
+    "deductedweight": "1.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 33,
+  "fields": {
+    "GrnNo": "981",
+    "GrnDate": "2026-07-06T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 3,
+    "Testresult": "3.00",
+    "deductedweight": "4.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 36,
+  "fields": {
+    "GrnNo": "543",
+    "GrnDate": "2026-08-02T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 3,
+    "Testresult": "54.00",
+    "deductedweight": "32.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 40,
+  "fields": {
+    "GrnNo": "4563",
+    "GrnDate": "2026-07-26T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 3,
+    "Testresult": "43.00",
+    "deductedweight": "43.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.grntrantest",
+  "pk": 42,
+  "fields": {
+    "GrnNo": "4567",
+    "GrnDate": "2026-07-27T00:00:00",
+    "TestID": 1,
+    "Testmethodid": 2,
+    "Testresult": "43.00",
+    "deductedweight": "54.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.approvalstages",
+  "pk": "1",
+  "fields": {
+    "Status": "Draft"
+  }
+},
+{
+  "model": "dashboard.approvalstages",
+  "pk": "2",
+  "fields": {
+    "Status": "Submitted for approval"
+  }
+},
+{
+  "model": "dashboard.approvalstages",
+  "pk": "3",
+  "fields": {
+    "Status": "Referred Back"
+  }
+},
+{
+  "model": "dashboard.approvalstages",
+  "pk": "4",
+  "fields": {
+    "Status": "Approved"
+  }
+},
+{
+  "model": "dashboard.approvalstages",
+  "pk": "5",
+  "fields": {
+    "Status": "Released"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 3,
+  "fields": {
+    "GrnNo": "334",
+    "GrnDate": "2026-06-22",
+    "User": "",
+    "actiondate": "2026-06-29",
+    "actionid": "1"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 5,
+  "fields": {
+    "GrnNo": "556",
+    "GrnDate": "2026-06-14",
+    "User": "",
+    "actiondate": "2026-06-30",
+    "actionid": "1"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 7,
+  "fields": {
+    "GrnNo": "334",
+    "GrnDate": "2026-06-22",
+    "User": "",
+    "actiondate": "2026-06-29",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 8,
+  "fields": {
+    "GrnNo": "556",
+    "GrnDate": "2026-06-14",
+    "User": "",
+    "actiondate": "2026-06-30",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 9,
+  "fields": {
+    "GrnNo": "77",
+    "GrnDate": "2026-06-14",
+    "User": "",
+    "actiondate": "2026-06-30",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 11,
+  "fields": {
+    "GrnNo": "655",
+    "GrnDate": "2026-07-05",
+    "User": "BB",
+    "actiondate": "2026-06-30",
+    "actionid": "5"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 12,
+  "fields": {
+    "GrnNo": "987",
+    "GrnDate": "2026-06-15",
+    "User": "BB",
+    "actiondate": "2026-06-30",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 14,
+  "fields": {
+    "GrnNo": "981",
+    "GrnDate": "2026-07-06",
+    "User": "BB",
+    "actiondate": "2026-06-30",
+    "actionid": "4"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 16,
+  "fields": {
+    "GrnNo": "543",
+    "GrnDate": "2026-08-02",
+    "User": "BB",
+    "actiondate": "2026-07-02",
+    "actionid": "5"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 17,
+  "fields": {
+    "GrnNo": "4563",
+    "GrnDate": "2026-07-26",
+    "User": "BB",
+    "actiondate": "2026-07-02",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 18,
+  "fields": {
+    "GrnNo": "4567",
+    "GrnDate": "2026-07-27",
+    "User": "BB",
+    "actiondate": "2026-07-02",
+    "actionid": "3"
+  }
+},
+{
+  "model": "dashboard.grnuser",
+  "pk": 19,
+  "fields": {
+    "GrnNo": "4512",
+    "GrnDate": "2026-07-19",
+    "User": "BB",
+    "actiondate": "2026-07-02",
+    "actionid": "1"
+  }
+},
+{
+  "model": "dashboard.purchasechallan",
+  "pk": "PC-20260817-0001",
+  "fields": {
+    "ChallanDate": "2026-08-17",
+    "TranType": "RMPCH",
+    "GPNo": 2,
+    "StatusId": 4,
+    "PONO": null,
+    "PODate": "2026-08-06",
+    "GatePassDate": "2026-04-02",
+    "VehicleNo": "KA00/1234",
+    "DriverName": "Shyam",
+    "WeighmentSlipNo": "23",
+    "WeighmentDate": "2026-03-02",
+    "Bags": "101.00",
+    "GrossWeight": "134.00",
+    "TareWeight": "34.00",
+    "NetWeight": "100.00",
+    "draftedby": "BB",
+    "DraftedDate": "2026-08-17T05:58:10.020Z",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "approvedby": "BB",
+    "ApprovalDate": "2026-08-22T08:58:44.551Z",
+    "Notes": "aewe",
+    "SupplierName": null
+  }
+},
+{
+  "model": "dashboard.purchasechallan",
+  "pk": "PC-20260817-0002",
+  "fields": {
+    "ChallanDate": "2026-08-17",
+    "TranType": "RMPCH",
+    "GPNo": 2,
+    "StatusId": 5,
+    "PONO": "PO-06",
+    "PODate": "2026-08-01",
+    "GatePassDate": "2026-04-02",
+    "VehicleNo": "KA00/1234",
+    "DriverName": "Shyam",
+    "WeighmentSlipNo": "23",
+    "WeighmentDate": "2026-03-02",
+    "Bags": "101.00",
+    "GrossWeight": "134.00",
+    "TareWeight": "34.00",
+    "NetWeight": "100.00",
+    "draftedby": "system",
+    "DraftedDate": "2026-08-17T06:03:10.213Z",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "approvedby": null,
+    "ApprovalDate": null,
+    "Notes": null,
+    "SupplierName": null
+  }
+},
+{
+  "model": "dashboard.purchasechallan",
+  "pk": "PC-20260820-0001",
+  "fields": {
+    "ChallanDate": "2026-08-20",
+    "TranType": "RMPCH",
+    "GPNo": 3,
+    "StatusId": 2,
+    "PONO": null,
+    "PODate": "2026-08-04",
+    "GatePassDate": "2026-06-01",
+    "VehicleNo": "HR09",
+    "DriverName": "Mohan",
+    "WeighmentSlipNo": "4",
+    "WeighmentDate": "2026-03-03",
+    "Bags": "98.00",
+    "GrossWeight": "212.00",
+    "TareWeight": "33.00",
+    "NetWeight": "179.00",
+    "draftedby": "BB",
+    "DraftedDate": "2026-08-20T09:05:48.123Z",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "approvedby": null,
+    "ApprovalDate": null,
+    "Notes": null,
+    "SupplierName": null
+  }
+},
+{
+  "model": "dashboard.purchasechallan",
+  "pk": "PC-20260825-0001",
+  "fields": {
+    "ChallanDate": "2026-08-25",
+    "TranType": "RMPCH",
+    "GPNo": 3,
+    "StatusId": 3,
+    "PONO": "PO-202606-0009",
+    "PODate": "2026-06-22",
+    "GatePassDate": "2026-06-01",
+    "VehicleNo": "HR09",
+    "DriverName": "Mohan",
+    "WeighmentSlipNo": "4",
+    "WeighmentDate": "2026-03-03",
+    "Bags": "98.00",
+    "GrossWeight": "212.00",
+    "TareWeight": "33.00",
+    "NetWeight": "179.00",
+    "draftedby": "BB",
+    "DraftedDate": "2026-08-25T05:24:50.472Z",
+    "submittedby": null,
+    "SubmissionDate": null,
+    "approvedby": null,
+    "ApprovalDate": null,
+    "Notes": "aaa",
+    "SupplierName": "supplier1"
+  }
+},
+{
+  "model": "dashboard.purchasechallantran",
+  "pk": 5,
+  "fields": {
+    "ChallanNo": "PC-20260817-0002",
+    "MaterialID": 1,
+    "Bags": "50.00",
+    "GrossWeight": "0.00",
+    "NetWeight": "21.00",
+    "Remarks": "Remarks"
+  }
+},
+{
+  "model": "dashboard.purchasechallantran",
+  "pk": 14,
+  "fields": {
+    "ChallanNo": "PC-20260820-0001",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "GrossWeight": "23.00",
+    "NetWeight": "23.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.purchasechallantran",
+  "pk": 22,
+  "fields": {
+    "ChallanNo": "PC-20260817-0001",
+    "MaterialID": 12,
+    "Bags": "50.00",
+    "GrossWeight": "0.00",
+    "NetWeight": "21.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.purchasechallantran",
+  "pk": 24,
+  "fields": {
+    "ChallanNo": "PC-20260825-0001",
+    "MaterialID": 1,
+    "Bags": "40.00",
+    "GrossWeight": "23.00",
+    "NetWeight": "23.00",
+    "Remarks": ""
+  }
+},
+{
+  "model": "dashboard.purchasebill",
+  "pk": "PB-202608-0001",
+  "fields": {
+    "tran_type": "RMPBL",
+    "bill_date": "2026-08-23T00:00:00",
+    "expected_delivery_date": "2026-08-13",
+    "bill_status": "Submitted",
+    "gate_pass_no": "",
+    "gate_pass_date": null,
+    "po_no": "PO-202606-0009",
+    "po_date": "2026-06-22",
+    "sal_pur_group": 16,
+    "broker": 0,
+    "zone_name": "South Region",
+    "supplier": 0,
+    "supplier_contact": "",
+    "supplier_address": "",
+    "gst_number": "",
+    "delivery_location": "Plant 2",
+    "delivery_terms": "Ex Works/Ex-Godown",
+    "payment_terms": "Advance",
+    "freight_terms": "Supplier Paid",
+    "currency": "INR",
+    "purchaser_name": "jkbj",
+    "department": "Production",
+    "cost_center": "Plant B",
+    "special_instructions": "kjh",
+    "internal_notes": "mnb",
+    "total_basic_amount": "0.00",
+    "taxes": "0.00",
+    "grand_total": "0.00",
+    "status": true,
+    "user_created": "",
+    "date_created": "2026-08-23T12:34:53.536",
+    "user_modified": "",
+    "date_modified": "2026-08-23T12:34:53.536"
+  }
+},
+{
+  "model": "dashboard.purchasebillitem",
+  "pk": 1,
+  "fields": {
+    "purchase_bill": "PB-202608-0001",
+    "item": 8,
+    "order_qty": "77.0000",
+    "uom": "MT",
+    "unit_rate": "7.0000",
+    "amount": "539.00",
+    "remarks": "",
+    "user_created": "",
+    "date_created": "2026-08-23T12:34:53.536",
+    "user_modified": "",
+    "date_modified": "2026-08-23T12:34:53.536"
+  }
+}
+]
