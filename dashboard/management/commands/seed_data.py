@@ -98,15 +98,15 @@ class Command(BaseCommand):
             {'VendorSupplierID': 7, 'VendorSupplierName': 'Prime Minerals Corp', 'Address1': 'Hyderabad', 'ContactNo': '040-66554433', 'GSTNo': '36AAACP1122F1ZW'},
         ]
         for s in suppliers:
-            VendorSupplier.objects.update_or_create(
-                VendorSupplierID=s['VendorSupplierID'],
-                defaults={
-                    'VendorSupplierName': s['VendorSupplierName'],
-                    'Address1': s['Address1'],
-                    'ContactNo': s['ContactNo'],
-                    'GSTNo': s['GSTNo']
-                }
-            )
+            sup = VendorSupplier.objects.filter(VendorSupplierID=s['VendorSupplierID']).first()
+            if sup:
+                sup.VendorSupplierName = s['VendorSupplierName']
+                sup.Address1 = s['Address1']
+                sup.ContactNo = s['ContactNo']
+                sup.GSTNo = s['GSTNo']
+                sup.save()
+            else:
+                VendorSupplier.objects.create(**s)
         self.stdout.write(self.style.SUCCESS(f"  [OK] Suppliers seeded ({len(suppliers)} suppliers)"))
 
         # 5. Seed Brokers
@@ -117,10 +117,13 @@ class Command(BaseCommand):
             {'BrokerID': 4, 'BrokerName': 'Elite Metals Brokerage', 'ContactNo': '9840033445'},
         ]
         for b in brokers:
-            Broker.objects.update_or_create(
-                BrokerID=b['BrokerID'],
-                defaults={'BrokerName': b['BrokerName'], 'ContactNo': b['ContactNo']}
-            )
+            brk = Broker.objects.filter(BrokerID=b['BrokerID']).first()
+            if brk:
+                brk.BrokerName = b['BrokerName']
+                brk.ContactNo = b['ContactNo']
+                brk.save()
+            else:
+                Broker.objects.create(**b)
         self.stdout.write(self.style.SUCCESS(f"  [OK] Brokers seeded ({len(brokers)} brokers)"))
 
         # 6. Seed Zones
@@ -131,10 +134,12 @@ class Command(BaseCommand):
             {'ZoneID': 4, 'ZoneName': 'Central Zone'},
         ]
         for z in zones:
-            Zone.objects.update_or_create(
-                ZoneID=z['ZoneID'],
-                defaults={'ZoneName': z['ZoneName']}
-            )
+            zn = Zone.objects.filter(ZoneID=z['ZoneID']).first()
+            if zn:
+                zn.ZoneName = z['ZoneName']
+                zn.save()
+            else:
+                Zone.objects.create(**z)
         self.stdout.write(self.style.SUCCESS(f"  [OK] Zones seeded ({len(zones)} zones)"))
 
         # 7. Seed Materials
