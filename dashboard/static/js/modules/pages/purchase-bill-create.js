@@ -351,6 +351,17 @@ class PurchaseBillForm {
                         gpDateField.closest('.form-group')?.classList.add('has-value');
                     }
 
+                    if (gp.supplier_name) {
+                        const supSelect = domUtils.getElement('#supplier');
+                        if (supSelect) {
+                            const matchOpt = Array.from(supSelect.options).find(opt => opt.text.trim().toLowerCase() === gp.supplier_name.trim().toLowerCase());
+                            if (matchOpt) {
+                                supSelect.value = matchOpt.value;
+                                supSelect.closest('.form-group')?.classList.add('has-value');
+                            }
+                        }
+                    }
+
                     closeGpDropdown();
                 });
                 gpDropdownList.appendChild(row);
@@ -359,23 +370,15 @@ class PurchaseBillForm {
 
         gpDisplayInput.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (gpDropdownPanel.style.display === 'flex') {
-                closeGpDropdown();
-            } else {
-                openGpDropdown();
-            }
+            openGpDropdown();
         });
 
         gpDisplayInput.addEventListener('focus', () => {
-            if (gpDropdownPanel.style.display !== 'flex') {
-                openGpDropdown();
-            }
+            openGpDropdown();
         });
 
         gpDisplayInput.addEventListener('input', () => {
-            if (gpDropdownPanel.style.display !== 'flex') {
-                openGpDropdown();
-            }
+            openGpDropdown();
             if (gpSearchInput) gpSearchInput.value = gpDisplayInput.value;
             gpHiddenInput.value = gpDisplayInput.value;
             renderGpDropdownRows(gpDisplayInput.value);
@@ -394,6 +397,12 @@ class PurchaseBillForm {
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#gpDropdownGroup') && !e.target.closest('#gpDropdownPanel')) {
+                closeGpDropdown();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
                 closeGpDropdown();
             }
         });
@@ -480,7 +489,7 @@ class PurchaseBillForm {
                 `;
                 row.addEventListener('mouseenter', () => row.style.backgroundColor = '#eff6ff');
                 row.addEventListener('mouseleave', () => row.style.backgroundColor = '');
-                row.addEventListener('click', () => {
+                row.addEventListener('click', async () => {
                     poHiddenInput.value  = po.po_no;
                     poDisplayInput.value = po.po_no;
                     poDisplayInput.closest('.form-group')?.classList.add('has-value');
@@ -491,6 +500,96 @@ class PurchaseBillForm {
                         poDateField.closest('.form-group')?.classList.add('has-value');
                     }
 
+                    if (po.supplier_name) {
+                        const supSelect = domUtils.getElement('#supplier');
+                        if (supSelect) {
+                            const matchOpt = Array.from(supSelect.options).find(opt => opt.text.trim().toLowerCase() === po.supplier_name.trim().toLowerCase());
+                            if (matchOpt) {
+                                supSelect.value = matchOpt.value;
+                                supSelect.closest('.form-group')?.classList.add('has-value');
+                            }
+                        }
+                    }
+
+                    // Auto-fill additional fields from PO if available
+                    try {
+                        const poDetail = await apiClient.get(`/api/subsection-x/${encodeURIComponent(po.po_no)}/`);
+                        if (poDetail) {
+                            if (poDetail.broker) {
+                                const brokerSelect = domUtils.getElement('#broker');
+                                if (brokerSelect) {
+                                    brokerSelect.value = String(poDetail.broker);
+                                    brokerSelect.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.zone_name) {
+                                const zoneSelect = domUtils.getElement('#zoneName');
+                                if (zoneSelect) {
+                                    zoneSelect.value = poDetail.zone_name;
+                                    zoneSelect.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.sal_pur_group) {
+                                const salPurGroupSelect = domUtils.getElement('#salPurGroup');
+                                if (salPurGroupSelect) {
+                                    salPurGroupSelect.value = String(poDetail.sal_pur_group);
+                                    salPurGroupSelect.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.supplier_contact) {
+                                const supContact = domUtils.getElement('#supplierContact');
+                                if (supContact) {
+                                    supContact.value = poDetail.supplier_contact;
+                                    supContact.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.supplier_address) {
+                                const supAddr = domUtils.getElement('#supplierAddress');
+                                if (supAddr) {
+                                    supAddr.value = poDetail.supplier_address;
+                                    supAddr.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.gst_number) {
+                                const gstField = domUtils.getElement('#gstNumber');
+                                if (gstField) {
+                                    gstField.value = poDetail.gst_number;
+                                    gstField.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.delivery_location) {
+                                const delLoc = domUtils.getElement('#deliveryLocation');
+                                if (delLoc) {
+                                    delLoc.value = poDetail.delivery_location;
+                                    delLoc.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.delivery_terms) {
+                                const delTerms = domUtils.getElement('#deliveryTerms');
+                                if (delTerms) {
+                                    delTerms.value = poDetail.delivery_terms;
+                                    delTerms.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.payment_terms) {
+                                const payTerms = domUtils.getElement('#paymentTerms');
+                                if (payTerms) {
+                                    payTerms.value = poDetail.payment_terms;
+                                    payTerms.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                            if (poDetail.freight_terms) {
+                                const frtTerms = domUtils.getElement('#freightTerms');
+                                if (frtTerms) {
+                                    frtTerms.value = poDetail.freight_terms;
+                                    frtTerms.closest('.form-group')?.classList.add('has-value');
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('Could not load extra PO details:', err);
+                    }
+
                     closePoDropdown();
                 });
                 poDropdownList.appendChild(row);
@@ -499,23 +598,15 @@ class PurchaseBillForm {
 
         poDisplayInput.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (poDropdownPanel.style.display === 'flex') {
-                closePoDropdown();
-            } else {
-                openPoDropdown();
-            }
+            openPoDropdown();
         });
 
         poDisplayInput.addEventListener('focus', () => {
-            if (poDropdownPanel.style.display !== 'flex') {
-                openPoDropdown();
-            }
+            openPoDropdown();
         });
 
         poDisplayInput.addEventListener('input', () => {
-            if (poDropdownPanel.style.display !== 'flex') {
-                openPoDropdown();
-            }
+            openPoDropdown();
             if (poSearchInput) poSearchInput.value = poDisplayInput.value;
             poHiddenInput.value = poDisplayInput.value;
             renderPoDropdownRows(poDisplayInput.value);
@@ -534,6 +625,12 @@ class PurchaseBillForm {
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#poDropdownGroup') && !e.target.closest('#poDropdownPanel')) {
+                closePoDropdown();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
                 closePoDropdown();
             }
         });

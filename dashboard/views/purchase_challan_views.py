@@ -27,29 +27,31 @@ class PurchaseChallanCreateView(TemplateView):
         except Exception:
             context['materials'] = []
 
-        # Pass active suppliers to template context
+        # Pass suppliers to template context
         try:
             from dashboard.models import VendorSupplier
-            context['suppliers'] = VendorSupplier.objects.filter(is_active=True).order_by('VendorSupplierName')
+            context['suppliers'] = VendorSupplier.objects.all().order_by('VendorSupplierName')
         except Exception:
             context['suppliers'] = []
 
         # Pagination: prev / next record navigation
         try:
+            from django.db import transaction
             from dashboard.models.purchase_challan import PurchaseChallan
-            pks = list(
-                PurchaseChallan.objects.all()
-                .order_by('-ChallanDate', '-ChallanNo')
-                .values_list('ChallanNo', flat=True)
-            )
-            current_pk = self.kwargs.get('pk', '')
-            if current_pk:
-                try:
-                    idx = pks.index(current_pk)
-                    context['prev_pk'] = pks[idx - 1] if idx > 0 else None
-                    context['next_pk'] = pks[idx + 1] if idx < len(pks) - 1 else None
-                except (ValueError, IndexError):
-                    pass
+            with transaction.atomic():
+                pks = list(
+                    PurchaseChallan.objects.all()
+                    .order_by('-ChallanDate', '-ChallanNo')
+                    .values_list('ChallanNo', flat=True)
+                )
+                current_pk = self.kwargs.get('pk', '')
+                if current_pk:
+                    try:
+                        idx = pks.index(current_pk)
+                        context['prev_pk'] = pks[idx - 1] if idx > 0 else None
+                        context['next_pk'] = pks[idx + 1] if idx < len(pks) - 1 else None
+                    except (ValueError, IndexError):
+                        pass
         except Exception:
             # tblSalePurchaseChallans does not exist yet — page still loads safely
             pass

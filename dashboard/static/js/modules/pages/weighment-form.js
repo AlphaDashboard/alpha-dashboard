@@ -373,14 +373,14 @@ function initGatePassDropdown() {
         });
     }
 
-    // Toggle dropdown on display input click
+    // Open dropdown on display input click/focus
     gpDisplayInput.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (gpDropdownPanel.style.display === 'flex') {
-            closeGpDropdown();
-        } else {
-            openGpDropdown();
-        }
+        openGpDropdown();
+    });
+
+    gpDisplayInput.addEventListener('focus', () => {
+        openGpDropdown();
     });
 
     if (gpSearchInput) {
@@ -395,6 +395,12 @@ function initGatePassDropdown() {
     // Document click to close panel
     document.addEventListener('click', (e) => {
         if (!e.target.closest('#gpDropdownGroup') && !e.target.closest('#gpDropdownPanel')) {
+            closeGpDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             closeGpDropdown();
         }
     });

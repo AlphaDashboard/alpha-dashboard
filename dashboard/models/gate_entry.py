@@ -1,8 +1,10 @@
+import sys
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from .account_master import AccountMaster
 
+TESTING = 'test' in sys.argv
 User = get_user_model()
 
 class Material(models.Model):
@@ -192,7 +194,7 @@ class GatePass(models.Model):
 
     class Meta:
         db_table = 'tblGatePass'
-        managed = False
+        managed = TESTING
         verbose_name = _('Gate Pass')
         verbose_name_plural = _('Gate Passes')
 
@@ -237,6 +239,6 @@ class GatePassTran(models.Model):
 
     class Meta:
         db_table = 'tblGatePass_Tran'
-        managed = False
+        managed = TESTING
         verbose_name = _('Gate Pass Detail')
         verbose_name_plural = _('Gate Pass Details')

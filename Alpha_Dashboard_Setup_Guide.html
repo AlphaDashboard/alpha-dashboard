@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alpha Dashboard - Complete Setup Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Arial,sans-serif;font-size:13px;color:#1a1a2e;background:#fff;padding:40px;line-height:1.7}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);color:white;padding:36px 40px;border-radius:12px;margin-bottom:28px}
+.header h1{font-size:24px;font-weight:700}.header p{font-size:12px;opacity:.75;margin-top:6px}
+.badges{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600}
+.section{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:20px;overflow:hidden}
+.sh{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #e2e8f0}
+.sh.blue{background:#1e40af;color:white}.sh.green{background:#166534;color:white}
+.sh.purple{background:#6b21a8;color:white}.sh.orange{background:#c2410c;color:white}.sh.teal{background:#0f766e;color:white}
+.sn{width:28px;height:28px;background:rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.st{font-size:14px;font-weight:700}
+.sb{padding:18px 20px}
+pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px 16px;font-family:Consolas,monospace;font-size:11.5px;line-height:1.6;margin:10px 0;border-left:3px solid #3b82f6;white-space:pre-wrap;word-wrap:break-word}
+code{background:#e0f2fe;color:#0369a1;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:11.5px}
+.ib{border-radius:8px;padding:12px 15px;margin:10px 0;font-size:12px;display:flex;gap:10px;align-items:flex-start}
+.ib.note{background:#eff6ff;border-left:4px solid #3b82f6}.ib.warn{background:#fff7ed;border-left:4px solid #f97316}
+.ib.ok{background:#f0fdf4;border-left:4px solid #22c55e}.ib.red{background:#fef2f2;border-left:4px solid #ef4444}
+.ii{font-size:15px;flex-shrink:0}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+th{background:#1e40af;color:white;padding:9px 13px;text-align:left;font-weight:600}
+td{padding:8px 13px;border-bottom:1px solid #e2e8f0}
+tr:nth-child(even) td{background:#f1f5f9}
+h3{font-size:13px;color:#1e293b;margin:12px 0 6px}
+p{color:#475569;margin:5px 0}
+.footer{text-align:center;margin-top:28px;padding:18px;background:#f1f5f9;border-radius:10px;color:#64748b;font-size:11.5px}
+.footer strong{color:#1e293b}
+@media print{
+  body{padding:20px}
+  .header,.sh,.sn,th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .section{page-break-inside:avoid}
+  pre{font-size:10.5px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#x1F680; Alpha Dashboard &mdash; Complete Setup &amp; Handover Guide</h1>
+  <p>Step-by-step instructions for deploying the Alpha Dashboard application from scratch</p>
+  <div class="badges">
+    <span class="badge">Python 3.12</span>
+    <span class="badge">Django 6.0.3</span>
+    <span class="badge">PostgreSQL 18</span>
+    <span class="badge">GitHub: AlphaDashboard/alpha-dashboard</span>
+    <span class="badge">August 2026</span>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="section">
+  <div class="sh blue"><div class="sn">1</div><div class="st">Prerequisites &mdash; Install Required Software</div></div>
+  <div class="sb">
+    <p>Install the following software before proceeding. All are free to download.</p>
+    <table>
+      <tr><th>Software</th><th>Version</th><th>Download URL</th><th>Purpose</th></tr>
+      <tr><td><strong>Python</strong></td><td>3.12.x</td><td>python.org/downloads</td><td>Application runtime</td></tr>
+      <tr><td><strong>PostgreSQL</strong></td><td>18.x</td><td>postgresql.org/download</td><td>Database server</td></tr>
+      <tr><td><strong>Git</strong></td><td>Latest</td><td>git-scm.com</td><td>Clone the repository</td></tr>
+      <tr><td><strong>VS Code</strong></td><td>Latest</td><td>code.visualstudio.com</td><td>Code editor (optional)</td></tr>
+    </table>
+    <div class="ib warn"><span class="ii">&#x26A0;&#xFE0F;</span><div>During Python installation, check <strong>"Add Python to PATH"</strong>. During PostgreSQL installation, note the <strong>password</strong> you set for the <code>postgres</code> user.</div></div>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="section">
+  <div class="sh green"><div class="sn">2</div><div class="st">Clone the Code from GitHub</div></div>
+  <div class="sb">
+    <p>Open <strong>PowerShell</strong> and run:</p>
+    <pre># Clone the repository
+git clone https://github.com/AlphaDashboard/alpha-dashboard.git
+
+# Navigate into the project folder
+cd alpha-dashboard</pre>
+    <div class="ib note"><span class="ii">&#x2139;&#xFE0F;</span><div>Repository URL: <strong>https://github.com/AlphaDashboard/alpha-dashboard</strong></div></div>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="section">
+  <div class="sh purple"><div class="sn">3</div><div class="st">Create Python Virtual Environment &amp; Install Dependencies</div></div>
+  <div class="sb">
+    <pre># Create virtual environment
+python -m venv venv
+
+# Activate virtual environment (Windows PowerShell)
+.\venv\Scripts\Activate
+
+# Install all required packages
+pip install -r requirements.txt</pre>
+    <div class="ib ok"><span class="ii">&#x2705;</span><div>You should see <code>(venv)</code> at the start of your terminal prompt after activation.</div></div>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="section">
+  <div class="sh orange"><div class="sn">4</div><div class="st">PostgreSQL Database Setup &amp; Data Restore</div></div>
+  <div class="sb">
+    <h3>Step A &mdash; Create the Database</h3>
+    <pre>psql -U postgres -c "CREATE DATABASE alphadashboard;"</pre>
+    <h3>Step B &mdash; Restore the Database Backup</h3>
+    <p>The backup file <code>alpha_dashboard_backup.sql</code> is shared separately. Place it on your computer, then run:</p>
+    <pre>psql -U postgres -d alphadashboard -f "C:\path\to\alpha_dashboard_backup.sql"</pre>
+    <div class="ib warn"><span class="ii">&#x26A0;&#xFE0F;</span><div>If <code>psql</code> is not found, add PostgreSQL to PATH: <code>C:\Program Files\PostgreSQL\18\bin</code></div></div>
+    <h3>Step C &mdash; Verify the Restore</h3>
+    <pre>psql -U postgres -d alphadashboard -c "\dt"</pre>
+    <p>You should see tables like <code>tblAccountmaster</code>, <code>tblUserMaster</code>, <code>tblCASHBANK</code>, etc.</p>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="section">
+  <div class="sh teal"><div class="sn">5</div><div class="st">Configure Environment Variables (.env file)</div></div>
+  <div class="sb">
+    <p>Create a file named <strong><code>.env</code></strong> in the project root folder <code>alpha-dashboard\.env</code> with this content:</p>
+    <pre># Alpha Dashboard - Environment Configuration
+
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=alphadashboard
+DB_USER=postgres
+DB_PASSWORD=YOUR_POSTGRESQL_PASSWORD_HERE
+DB_HOST=localhost
+DB_PORT=5432</pre>
+    <div class="ib red"><span class="ii">&#x1F512;</span><div><strong>Important:</strong> Never share the <code>.env</code> file. It is in <code>.gitignore</code> and will never be pushed to GitHub.</div></div>
+    <div class="ib note"><span class="ii">&#x2139;&#xFE0F;</span><div>A template <code>.env.postgresql</code> is already in the repo. Copy it and rename to <code>.env</code>, then fill in your password.</div></div>
+  </div>
+</div>
+
+<!-- 6 -->
+<div class="section">
+  <div class="sh blue"><div class="sn">6</div><div class="st">Run Migrations &amp; Stored Procedures</div></div>
+  <div class="sb">
+    <pre># Apply database migrations
+python manage.py migrate
+
+# Install the stored procedure
+python update_sp.py</pre>
+    <div class="ib ok"><span class="ii">&#x2705;</span><div>Expected output: <code>PostgreSQL database detected...</code> then <code>SUCCESS: Stored Procedure updated!</code></div></div>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="section">
+  <div class="sh green"><div class="sn">7</div><div class="st">Start the Application Server</div></div>
+  <div class="sb">
+    <pre>python manage.py runserver</pre>
+    <p>Open your browser and go to: <strong>http://127.0.0.1:8000/</strong></p>
+    <h3>Default Login Users</h3>
+    <table>
+      <tr><th>Username</th><th>Role</th><th>Access Level</th></tr>
+      <tr><td><code>maker</code></td><td>Maker</td><td>Create &amp; edit records</td></tr>
+      <tr><td><code>checker</code></td><td>Checker</td><td>Review &amp; approve records</td></tr>
+      <tr><td><code>admin</code></td><td>Admin</td><td>Full access</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="section">
+  <div class="sh purple"><div class="sn">8</div><div class="st">Daily Usage &mdash; Quick Reference Commands</div></div>
+  <div class="sb">
+    <pre># Every day to start working:
+cd C:\path\to\alpha-dashboard
+.\venv\Scripts\Activate
+git pull origin main
+python manage.py runserver</pre>
+    <table>
+      <tr><th>Command</th><th>Purpose</th></tr>
+      <tr><td><code>git pull origin main</code></td><td>Get latest code from GitHub</td></tr>
+      <tr><td><code>pip install -r requirements.txt</code></td><td>Install/update packages</td></tr>
+      <tr><td><code>python manage.py migrate</code></td><td>Apply new database migrations</td></tr>
+      <tr><td><code>python update_sp.py</code></td><td>Update stored procedures</td></tr>
+      <tr><td><code>deactivate</code></td><td>Deactivate virtual environment</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 9 -->
+<div class="section">
+  <div class="sh orange"><div class="sn">9</div><div class="st">Database Backup &amp; Restore Guide</div></div>
+  <div class="sb">
+    <h3>Create a Backup (Export)</h3>
+    <pre>pg_dump -U postgres -d alphadashboard -f "alpha_dashboard_backup_20Aug2026.sql"</pre>
+    <h3>Restore a Backup (Import)</h3>
+    <pre>psql -U postgres -c "CREATE DATABASE alphadashboard;"
+psql -U postgres -d alphadashboard -f "alpha_dashboard_backup.sql"</pre>
+    <div class="ib note"><span class="ii">&#x1F4A1;</span><div>Take a backup before every major change. Store backups on Google Drive or OneDrive.</div></div>
+  </div>
+</div>
+
+<!-- 10 -->
+<div class="section">
+  <div class="sh teal"><div class="sn">10</div><div class="st">Troubleshooting Common Issues</div></div>
+  <div class="sb">
+    <table>
+      <tr><th>Error</th><th>Cause</th><th>Fix</th></tr>
+      <tr><td><code>psql: command not found</code></td><td>PostgreSQL not in PATH</td><td>Add <code>C:\Program Files\PostgreSQL\18\bin</code> to PATH</td></tr>
+      <tr><td><code>ModuleNotFoundError</code></td><td>venv not active or package missing</td><td>Run <code>.\venv\Scripts\Activate</code> then <code>pip install -r requirements.txt</code></td></tr>
+      <tr><td><code>could not connect to server</code></td><td>PostgreSQL not running</td><td>Run <code>Start-Service postgresql-x64-18</code></td></tr>
+      <tr><td><code>no such table</code></td><td>Migrations not applied</td><td>Run <code>python manage.py migrate</code></td></tr>
+      <tr><td><code>permission denied</code></td><td>Wrong DB password</td><td>Check <code>DB_PASSWORD</code> in your <code>.env</code> file</td></tr>
+      <tr><td>Empty login page</td><td>Database not restored</td><td>Re-run psql restore from Section 4</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="section">
+  <div class="sh green"><div class="sn">&#x2713;</div><div class="st">Complete Setup &mdash; All Commands in One Place</div></div>
+  <div class="sb">
+    <pre># STEP 1: Clone repository
+git clone https://github.com/AlphaDashboard/alpha-dashboard.git
+cd alpha-dashboard
+
+# STEP 2: Setup virtual environment
+python -m venv venv
+.\venv\Scripts\Activate
+
+# STEP 3: Install dependencies
+pip install -r requirements.txt
+
+# STEP 4: Create and restore database
+psql -U postgres -c "CREATE DATABASE alphadashboard;"
+psql -U postgres -d alphadashboard -f "C:\path\to\alpha_dashboard_backup.sql"
+
+# STEP 5: Create .env file with DB credentials (see Section 5)
+
+# STEP 6: Apply migrations and stored procedures
+python manage.py migrate
+python update_sp.py
+
+# STEP 7: Start server
+python manage.py runserver
+
+# STEP 8: Open browser -> http://127.0.0.1:8000/</pre>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>Alpha Dashboard</strong> &nbsp;|&nbsp; github.com/AlphaDashboard/alpha-dashboard &nbsp;|&nbsp; Django 6.0.3 + PostgreSQL 18 + Python 3.12 &nbsp;|&nbsp; August 2026<br><br>
+  <em>To save as PDF: Open this file in Chrome or Edge &rarr; Press Ctrl+P &rarr; Select "Save as PDF" &rarr; Click Save</em>
+</div>
+
+</body>
+</html>

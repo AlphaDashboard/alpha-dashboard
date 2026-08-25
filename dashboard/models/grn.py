@@ -1,5 +1,8 @@
+import sys
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+TESTING = 'test' in sys.argv
 
 
 # ─────────────────────────────────────────────────────────────
@@ -86,7 +89,7 @@ class GRN(models.Model):
 
     class Meta:
         db_table = 'tblGRN'     # ← exact table name from your Excel
-        managed = False          # ← Django will NOT create/delete this table
+        managed = TESTING
         verbose_name = _('GRN')
         verbose_name_plural = _('GRNs')
 
@@ -164,7 +167,7 @@ class GRNTranMat(models.Model):
 
     class Meta:
         db_table = 'tblGRN_TRAN_MAT'
-        managed = False
+        managed = TESTING
         verbose_name = _('GRN Material Detail')
         verbose_name_plural = _('GRN Material Details')
 
@@ -229,7 +232,7 @@ class GRNTranTest(models.Model):
 
     class Meta:
         db_table = 'tblGRN_TRAN_TEST'
-        managed = False
+        managed = TESTING
         verbose_name = _('GRN Test Detail')
         verbose_name_plural = _('GRN Test Details')
 
@@ -261,7 +264,7 @@ class ApprovalStages(models.Model):
 
     class Meta:
         db_table = 'tblApprovalStages'
-        managed = False
+        managed = TESTING
         verbose_name = _('Approval Stage')
         verbose_name_plural = _('Approval Stages')
 
@@ -314,7 +317,7 @@ class GRNUser(models.Model):
 
     class Meta:
         db_table = 'tblGRN_User'
-        managed = False
+        managed = TESTING
         verbose_name = _('GRN User Audit')
         verbose_name_plural = _('GRN User Audits')
 

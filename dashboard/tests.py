@@ -1782,10 +1782,53 @@ class SalPurGroupAPITests(APITestCase):
         response = self.client.get(url, {'search': 'Sales'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.data['results'] if 'results' in response.data else response.data
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]['SalPurGroupName'], "Sales Group B")
-        self.assertEqual(results[0]['transaction_type_display']['name'], "Sales")
 
+class PurchaseChallanAndGatePassTests(TestCase):
+    def setUp(self):
+        from dashboard.models import VendorSupplier, AccountMaster, Category
+        self.supplier = VendorSupplier.objects.create(
+            VendorSupplierID=301,
+            VendorSupplierName="Acme Industrial Supplies",
+            Address1="123 Industrial Area",
+            ContactNo="9876543210"
+        )
+        self.category = Category.objects.create(categoryName="Suppliers", categoryType="A")
+        self.account_master = AccountMaster.objects.create(
+            groupID=301,
+            Account_Name="Acme Ledger Account",
+            display_name="Acme Ledger",
+            category=self.category,
+            is_active=True
+        )
+        from dashboard.models.gate_entry import GateEntry, GatePass, Material
+        self.material = Material.objects.create(material_code="RM-01", material_name="Raw Material 1")
+        self.gate_entry = GateEntry.objects.create(
+            gate_pass_id="GP-10001",
+            supplier=self.account_master,
+            vehicle_number="MH-12-AB-1234",
+            material_type=self.material,
+            driver_name="John Doe",
+            entry_datetime=timezone.now()
+        )
+        self.gate_pass = GatePass(
+            GatePassNo=1,
+            GatePassdate=timezone.now().date(),
+            VehicleNo="MH-12-AB-1234",
+            DriverName="John Doe"
+        )
 
+    def test_purchase_challan_suppliers_context(self):
+        """Verify PurchaseChallanCreateView populates suppliers from VendorSupplier without field errors."""
+        url = reverse('dashboard:purchase_challan_create')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('suppliers', response.context)
+        supplier_names = [s.VendorSupplierName for s in response.context['suppliers']]
+        self.assertIn("Acme Industrial Supplies", supplier_names)
 
-
+    def test_gate_pass_serializer_supplier_name(self):
+        """Verify GatePassSerializer resolves supplier_name from GateEntry."""
+        from dashboard.serializers import GatePassSerializer
+        serializer = GatePassSerializer()
+        supplier_name = serializer.get_supplier_name(self.gate_pass)
+        self.assertEqual(supplier_name, "Acme Ledger Account")

@@ -1,5 +1,8 @@
+import sys
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+TESTING = 'test' in sys.argv
 
 
 # ─────────────────────────────────────────────────────────────
@@ -74,7 +77,7 @@ class PurchaseChallan(models.Model):
 
     class Meta:
         db_table = 'tblsalepurchasechallans'
-        managed = False
+        managed = TESTING
         verbose_name = _('Purchase Challan')
         verbose_name_plural = _('Purchase Challans')
 
@@ -115,7 +118,7 @@ class PurchaseChallanTran(models.Model):
 
     class Meta:
         db_table = 'tblsalepurchasechallans_tran'
-        managed = False
+        managed = TESTING
         verbose_name = _('Purchase Challan Tran')
         verbose_name_plural = _('Purchase Challan Trans')
 

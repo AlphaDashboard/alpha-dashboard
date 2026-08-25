@@ -403,23 +403,15 @@ function initGatePassDropdown() {
 
     gpDisplayInput.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (gpDropdownPanel.style.display === 'flex') {
-            closeGpDropdown();
-        } else {
-            openGpDropdown();
-        }
+        openGpDropdown();
     });
 
     gpDisplayInput.addEventListener('focus', () => {
-        if (gpDropdownPanel.style.display !== 'flex') {
-            openGpDropdown();
-        }
+        openGpDropdown();
     });
 
     gpDisplayInput.addEventListener('input', () => {
-        if (gpDropdownPanel.style.display !== 'flex') {
-            openGpDropdown();
-        }
+        openGpDropdown();
         if (gpSearchInput) gpSearchInput.value = gpDisplayInput.value;
         gpHiddenInput.value = gpDisplayInput.value;
         renderGpDropdownRows(gpDisplayInput.value);
@@ -438,6 +430,12 @@ function initGatePassDropdown() {
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('#gpDropdownGroup') && !e.target.closest('#gpDropdownPanel')) {
+            closeGpDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             closeGpDropdown();
         }
     });
@@ -534,23 +532,15 @@ function initPODropdown() {
 
     poDisplayInput.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (poDropdownPanel.style.display === 'flex') {
-            closePoDropdown();
-        } else {
-            openPoDropdown();
-        }
+        openPoDropdown();
     });
 
     poDisplayInput.addEventListener('focus', () => {
-        if (poDropdownPanel.style.display !== 'flex') {
-            openPoDropdown();
-        }
+        openPoDropdown();
     });
 
     poDisplayInput.addEventListener('input', () => {
-        if (poDropdownPanel.style.display !== 'flex') {
-            openPoDropdown();
-        }
+        openPoDropdown();
         if (poSearchInput) poSearchInput.value = poDisplayInput.value;
         poHiddenInput.value = poDisplayInput.value;
         renderPoDropdownRows(poDisplayInput.value);
@@ -569,6 +559,12 @@ function initPODropdown() {
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('#poDropdownGroup') && !e.target.closest('#poDropdownPanel')) {
+            closePoDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             closePoDropdown();
         }
     });

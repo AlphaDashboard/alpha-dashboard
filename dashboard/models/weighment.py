@@ -1,5 +1,8 @@
+import sys
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+TESTING = 'test' in sys.argv
 
 
 # ─────────────────────────────────────────────────────────────
@@ -96,7 +99,7 @@ class Weighment(models.Model):
 
     class Meta:
         db_table = 'tblWeighment'
-        managed = False
+        managed = TESTING
         verbose_name = _('Weighment')
         verbose_name_plural = _('Weighments')
 
@@ -137,7 +140,7 @@ class WeighmentTran(models.Model):
 
     class Meta:
         db_table = 'tblWeighment_Tran'
-        managed = False
+        managed = TESTING
         verbose_name = _('Weighment Tran')
         verbose_name_plural = _('Weighment Trans')
 

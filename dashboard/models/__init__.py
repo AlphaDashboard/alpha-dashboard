@@ -2,7 +2,7 @@ from .account_master import Category, AccountMaster, ActiveAccountMasterManager
 from .broker_supplier import Broker, VendorSupplier, Zone
 from .voucher import Voucher, VoucherFact
 from .cashbank import CashBank, CashBankTran
-from .gate_entry import Material, GateEntry
+from .gate_entry import Material, GateEntry, GatePass, GatePassTran
 from .purchase_order import PurchaseOrder, PurchaseOrderItem
 from .section_c import SectionC, SectionCTran
 from .subsection_b2 import SubsectionB2, SubsectionB2Tran
@@ -27,6 +27,8 @@ __all__ = [
     'CashBankTran',
     'Material',
     'GateEntry',
+    'GatePass',
+    'GatePassTran',
     'PurchaseOrder',
     'PurchaseOrderItem',
     'SectionC',

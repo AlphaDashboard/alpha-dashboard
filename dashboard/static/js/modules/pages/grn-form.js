@@ -272,13 +272,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Open panel on display input click
-    // stopPropagation prevents the document click handler firing at the same time
+    // Open panel on display input click/focus
     if (gpDisplayInput) {
         gpDisplayInput.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (gpDropdownPanel && gpDropdownPanel.style.display === 'flex') closeGpDropdown();
-            else openGpDropdown();
+            openGpDropdown();
+        });
+        gpDisplayInput.addEventListener('focus', () => {
+            openGpDropdown();
         });
     }
 
@@ -295,6 +296,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close dropdown when clicking anywhere outside the group or panel
     document.addEventListener('click', (e) => {
         if (!e.target.closest('#gpDropdownGroup') && !e.target.closest('#gpDropdownPanel')) {
+            closeGpDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             closeGpDropdown();
         }
     });
