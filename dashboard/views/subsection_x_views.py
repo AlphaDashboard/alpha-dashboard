@@ -19,9 +19,23 @@ class SubSectionXCreateView(TemplateView):
         context['voucher_no'] = self.kwargs.get('pk', '')
         context['is_view_mode'] = (self.request.GET.get('mode') == 'view')
 
-        # Dropdowns for form
-        context['brokers'] = Broker.objects.all().order_by('BrokerName')
-        context['suppliers'] = VendorSupplier.objects.all().order_by('VendorSupplierName')
+        # Dropdowns for form (Deduplicated)
+        seen_brokers = set()
+        unique_brokers = []
+        for b in Broker.objects.all().order_by('BrokerName'):
+            if b.BrokerName and b.BrokerName.strip() not in seen_brokers:
+                seen_brokers.add(b.BrokerName.strip())
+                unique_brokers.append(b)
+        context['brokers'] = unique_brokers
+
+        seen_suppliers = set()
+        unique_suppliers = []
+        for s in VendorSupplier.objects.all().order_by('VendorSupplierName'):
+            if s.VendorSupplierName and s.VendorSupplierName.strip() not in seen_suppliers:
+                seen_suppliers.add(s.VendorSupplierName.strip())
+                unique_suppliers.append(s)
+        context['suppliers'] = unique_suppliers
+
         context['items'] = Material.objects.filter(is_active=True).order_by('material_name')
         context['sal_pur_groups'] = SalPurGroup.objects.filter(is_active=True).order_by('SalPurGroupName')
 

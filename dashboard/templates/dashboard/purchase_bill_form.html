@@ -632,13 +632,9 @@
                     <div class="form-group has-value">
                         <select id="zoneName" name="zone_name" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
-                            <option value="North Region">North Region</option>
-                            <option value="East Region">East Region</option>
-                            <option value="South Region">South Region</option>
-                            <option value="West Region">West Region</option>
-                            <option value="Kolkata Region">Kolkata Region</option>
-                            <option value="Delhi Region">Delhi Region</option>
-                            <option value="NE Region">NE Region</option>
+                            {% for z in zones %}
+                            <option value="{{ z.ZoneName }}">{{ z.ZoneName }}</option>
+                            {% endfor %}
                         </select>
                         <label for="zoneName" class="floating-label">Zone Name *</label>
                     </div>

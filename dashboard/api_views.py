@@ -599,6 +599,49 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_val = self.kwargs.get(lookup_url_kwarg)
+        try:
+            instance = PurchaseOrder.objects.get(po_no=lookup_val)
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        except PurchaseOrder.DoesNotExist:
+            # Fallback to PurSales (tblPurSales - legacy salepurchase table)
+            try:
+                from .models.pur_sales import PurSales, PurSalesTran
+                ps = PurSales.objects.filter(Q(OrderNo=lookup_val) | Q(VoucherNo=lookup_val)).first()
+                if ps:
+                    trans = PurSalesTran.objects.filter(VoucherNo=ps.VoucherNo, VoucherDate=ps.VoucherDate)
+                    items_data = []
+                    for t in trans:
+                        items_data.append({
+                            'item': t.Item_ID_id if hasattr(t, 'Item_ID_id') else (t.Item_ID.pk if t.Item_ID else None),
+                            'item_name': t.Item_ID.material_name if t.Item_ID else '',
+                            'order_qty': float(t.Weight or 0),
+                            'uom': 'MT',
+                            'unit_rate': float(t.Unit_rate or 0),
+                            'amount': float(t.Amount or 0),
+                            'remarks': ''
+                        })
+                    data = {
+                        'po_no': ps.OrderNo or ps.VoucherNo,
+                        'po_date': str(ps.OrderDate or ps.VoucherDate)[:10] if (ps.OrderDate or ps.VoucherDate) else '',
+                        'supplier': ps.PartyID.pk if ps.PartyID else None,
+                        'supplier_name': ps.PartyID.Account_Name if ps.PartyID else '',
+                        'broker': ps.BrokerID.pk if ps.BrokerID else None,
+                        'broker_name': ps.BrokerID.BrokerName if ps.BrokerID else '',
+                        'zone_name': ps.ZoneID.ZoneName if ps.ZoneID else '',
+                        'delivery_location': ps.DeliveryLocation or '',
+                        'special_instructions': ps.SpecialInstructions or '',
+                        'internal_notes': ps.InternalNotes or '',
+                        'items': items_data
+                    }
+                    return Response(data)
+            except Exception:
+                pass
+            return Response({'detail': 'Purchase Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     # -------------------------------------------------------------------------
     # Status-Based Access Rules
     # ─────────────────────────────────────────────────────────────────────────
@@ -1232,30 +1275,65 @@ from rest_framework.response import Response as DRFResponse
 class POListForChallanDropdown(APIView):
     """
     Returns a simple list of Purchase Orders for the PO No smart dropdown
-    in Purchase Challan form. Returns: po_no, po_date, supplier_name.
+    in Purchase Challan and Purchase Bill forms. Returns: po_no, po_date, supplier_name.
+    Supports both tblPurchaseOrder and legacy tblPurSales (salepurchase).
     """
     pagination_class = None
 
     def get(self, request):
         try:
             from .models.purchase_order import PurchaseOrder
+            from .models.pur_sales import PurSales
             q = request.query_params.get('q', '').strip()
-            qs = PurchaseOrder.objects.select_related('supplier').order_by('-po_date')
-            if q:
-                qs = qs.filter(
-                    Q(po_no__icontains=q) |
-                    Q(supplier__VendorSupplierName__icontains=q)
-                )
             results = []
-            for po in qs[:100]:
-                supplier_name = ''
-                if po.supplier:
-                    supplier_name = getattr(po.supplier, 'VendorSupplierName', '') or str(po.supplier)
-                results.append({
-                    'po_no': po.po_no,
-                    'po_date': str(po.po_date)[:10] if po.po_date else '',
-                    'supplier_name': supplier_name,
-                })
+            seen_po = set()
+
+            # 1. From PurchaseOrder (tblPurchaseOrder)
+            try:
+                qs = PurchaseOrder.objects.select_related('supplier').order_by('-po_date')
+                if q:
+                    qs = qs.filter(
+                        Q(po_no__icontains=q) |
+                        Q(supplier__VendorSupplierName__icontains=q)
+                    )
+                for po in qs[:100]:
+                    if po.po_no and po.po_no not in seen_po:
+                        seen_po.add(po.po_no)
+                        supplier_name = ''
+                        if po.supplier:
+                            supplier_name = getattr(po.supplier, 'VendorSupplierName', '') or str(po.supplier)
+                        results.append({
+                            'po_no': po.po_no,
+                            'po_date': str(po.po_date)[:10] if po.po_date else '',
+                            'supplier_name': supplier_name,
+                        })
+            except Exception:
+                pass
+
+            # 2. From PurSales (tblPurSales - legacy salepurchase table)
+            try:
+                qs_ps = PurSales.objects.select_related('PartyID').order_by('-VoucherDate', '-DatdCreated')
+                if q:
+                    qs_ps = qs_ps.filter(
+                        Q(OrderNo__icontains=q) |
+                        Q(VoucherNo__icontains=q) |
+                        Q(PartyID__Account_Name__icontains=q)
+                    )
+                for ps in qs_ps[:100]:
+                    po_num = ps.OrderNo or ps.VoucherNo
+                    if po_num and po_num not in seen_po:
+                        seen_po.add(po_num)
+                        supplier_name = ''
+                        if ps.PartyID:
+                            supplier_name = getattr(ps.PartyID, 'Account_Name', '') or str(ps.PartyID)
+                        results.append({
+                            'po_no': po_num,
+                            'po_date': str(ps.OrderDate or ps.VoucherDate)[:10] if (ps.OrderDate or ps.VoucherDate) else '',
+                            'supplier_name': supplier_name,
+                        })
+            except Exception:
+                pass
+
             return DRFResponse(results)
         except Exception as e:
             return DRFResponse([], status=200)

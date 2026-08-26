@@ -1832,3 +1832,55 @@ class PurchaseChallanAndGatePassTests(TestCase):
         serializer = GatePassSerializer()
         supplier_name = serializer.get_supplier_name(self.gate_pass)
         self.assertEqual(supplier_name, "Acme Ledger Account")
+
+
+class PurchaseBillAndPODropdownTests(TestCase):
+    def setUp(self):
+        from dashboard.models import Broker, Zone, VendorSupplier
+        from dashboard.models.pur_sales import PurSales, PurSalesTran
+        from dashboard.models.account_master import AccountMaster, Category
+
+        cat = Category.objects.create(categoryName="Suppliers", categoryType="L")
+        acc = AccountMaster.objects.create(groupID=901, Account_Name="Test Supplier A/c", category=cat)
+
+        # Create duplicate brokers
+        Broker.objects.create(BrokerID=101, BrokerName="Duplicate Broker")
+        Broker.objects.create(BrokerID=102, BrokerName="Duplicate Broker")
+        Broker.objects.create(BrokerID=103, BrokerName="Single Broker")
+
+        # Create duplicate zones
+        Zone.objects.create(ZoneID=201, ZoneName="North Zone")
+        Zone.objects.create(ZoneID=202, ZoneName="North Zone")
+        Zone.objects.create(ZoneID=203, ZoneName="South Zone")
+
+        # Create PO in PurSales (tblPurSales - legacy salepurchase table)
+        self.ps = PurSales.objects.create(
+            OrderNo="PO-PURSALE-001",
+            OrderDate=timezone.now().date(),
+            VoucherNo="V-001",
+            VoucherDate=timezone.now().date(),
+            PartyID=acc
+        )
+
+    def test_purchase_bill_dropdown_deduplication(self):
+        """Verify Purchase Bill form deduplicates brokers, suppliers, and zones."""
+        url = reverse('dashboard:purchase_bill_create')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        broker_names = [b.BrokerName for b in response.context['brokers']]
+        self.assertEqual(broker_names.count("Duplicate Broker"), 1)
+        self.assertEqual(broker_names.count("Single Broker"), 1)
+
+        zone_names = [z.ZoneName for z in response.context['zones']]
+        self.assertEqual(zone_names.count("North Zone"), 1)
+        self.assertEqual(zone_names.count("South Zone"), 1)
+
+    def test_po_dropdown_includes_pursales(self):
+        """Verify PO dropdown endpoint returns POs stored in PurSales (salepurchase)."""
+        url = reverse('dashboard:api_po_list_for_challan')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        po_numbers = [item['po_no'] for item in response.json()]
+        self.assertIn("PO-PURSALE-001", po_numbers)
+

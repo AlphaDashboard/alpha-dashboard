@@ -18,3 +18,7 @@ openpyxl==3.1.5
 # PostgreSQL driver (only needed if using PostgreSQL instead of SQLite)
 # Safe to install even if not using PostgreSQL
 psycopg2-binary>=2.9.9
+
+# Static files handling for production / deployment
+whitenoise>=6.6.0
+
