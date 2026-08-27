@@ -299,6 +299,38 @@ BEGIN
             ALTER TABLE public."tblPurchaseBill" ADD COLUMN invoice_no VARCHAR(50);
         END IF;
     END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND (table_name = 'tblbroker' OR table_name = 'tblBroker')
+    ) THEN
+        DELETE FROM public."tblBroker" a
+        USING public."tblBroker" b
+        WHERE a.ctid > b.ctid AND a."BrokerID" = b."BrokerID";
+
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint 
+            WHERE conrelid = 'public."tblBroker"'::regclass AND contype = 'p'
+        ) THEN
+            ALTER TABLE public."tblBroker" ADD PRIMARY KEY ("BrokerID");
+        END IF;
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND (table_name = 'tblvendorsupplier' OR table_name = 'tblVendorSupplier')
+    ) THEN
+        DELETE FROM public."tblVendorSupplier" a
+        USING public."tblVendorSupplier" b
+        WHERE a.ctid > b.ctid AND a."VendorSupplierID" = b."VendorSupplierID";
+
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint 
+            WHERE conrelid = 'public."tblVendorSupplier"'::regclass AND contype = 'p'
+        ) THEN
+            ALTER TABLE public."tblVendorSupplier" ADD PRIMARY KEY ("VendorSupplierID");
+        END IF;
+    END IF;
 END $$;
 
 -- 2. Stored Procedure: sp_manage_purchase_challan
@@ -442,6 +474,7 @@ END;
 $function$;
 
 -- 3. Stored Procedure: sp_manage_purchase_bill (TranType = 'RMPBL')
+DROP PROCEDURE IF EXISTS public.sp_manage_purchase_bill;
 CREATE OR REPLACE PROCEDURE public.sp_manage_purchase_bill(
     p_operation             VARCHAR(20),
     INOUT p_bill_no         VARCHAR(50),
@@ -473,7 +506,8 @@ CREATE OR REPLACE PROCEDURE public.sp_manage_purchase_bill(
     p_grand_total           DECIMAL(15, 2),
     p_user                  VARCHAR(50),
     p_sal_pur_group_id      BIGINT,
-    p_items_json            JSONB DEFAULT '[]'::jsonb
+    p_items_json            JSONB DEFAULT '[]'::jsonb,
+    p_invoice_no            VARCHAR(50) DEFAULT NULL
 )
 LANGUAGE plpgsql AS $$
 DECLARE
@@ -505,6 +539,7 @@ BEGIN
             tran_type,
             bill_date,
             expected_delivery_date,
+            invoice_no,
             bill_status,
             gate_pass_no,
             gate_pass_date,
@@ -540,6 +575,7 @@ BEGIN
             'RMPBL',
             COALESCE(p_bill_date, CURRENT_TIMESTAMP),
             p_expected_delivery_date,
+            p_invoice_no,
             COALESCE(p_bill_status, 'Draft'),
             p_gate_pass_no,
             p_gate_pass_date,
@@ -604,6 +640,7 @@ BEGIN
         SET
             bill_date              = COALESCE(p_bill_date, bill_date),
             expected_delivery_date = p_expected_delivery_date,
+            invoice_no             = COALESCE(p_invoice_no, invoice_no),
             bill_status            = COALESCE(p_bill_status, bill_status),
             gate_pass_no           = p_gate_pass_no,
             gate_pass_date         = p_gate_pass_date,

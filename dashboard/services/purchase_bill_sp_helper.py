@@ -148,7 +148,7 @@ def execute_sp_purchase_bill(operation, header_data, items_data, username):
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
-                        %s
+                        %s, %s
                     )
                     """,
                     [
@@ -183,6 +183,7 @@ def execute_sp_purchase_bill(operation, header_data, items_data, username):
                         username,
                         sal_pur_group_id,
                         json.dumps(normalized_items),
+                        invoice_no,
                     ]
                 )
 

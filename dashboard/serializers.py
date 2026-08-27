@@ -2,6 +2,8 @@ from rest_framework import serializers
 import datetime
 from .models.cashbank import CashBank, CashBankTran
 from .models.section_c import SectionC, SectionCTran
+from .models.broker_supplier import Broker, VendorSupplier
+from .models.sal_pur_group import SalPurGroup
 
 class SafeDateTimeField(serializers.DateTimeField):
     def to_representation(self, value):
@@ -13,6 +15,23 @@ class SafeDateTimeField(serializers.DateTimeField):
             if settings.USE_TZ and timezone.is_naive(value):
                 value = timezone.make_aware(value)
         return super().to_representation(value)
+
+class SafePrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+    """
+    Safely resolves foreign keys by using .filter(...).first() instead of .get(...).
+    Prevents MultipleObjectsReturned crashes if legacy tables have duplicate IDs.
+    """
+    def to_internal_value(self, data):
+        if self.pk_field is not None:
+            data = self.pk_field.to_internal_value(data)
+        queryset = self.get_queryset()
+        try:
+            obj = queryset.filter(pk=data).first()
+            if obj is None:
+                self.fail('does_not_exist', pk_value=data)
+            return obj
+        except (TypeError, ValueError):
+            self.fail('incorrect_type', data_type=type(data).__name__)
 
 class CashBankTranSerializer(serializers.ModelSerializer):
     account_master_display = serializers.SerializerMethodField()
@@ -360,6 +379,9 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     items = PurchaseOrderItemSerializer(many=True)
     po_date = SafeDateTimeField(required=False)
+    broker = SafePrimaryKeyRelatedField(queryset=Broker.objects.all(), required=False, allow_null=True)
+    supplier = SafePrimaryKeyRelatedField(queryset=VendorSupplier.objects.all(), required=False, allow_null=True)
+    sal_pur_group = SafePrimaryKeyRelatedField(queryset=SalPurGroup.objects.all(), required=False, allow_null=True)
     broker_display = serializers.SerializerMethodField(read_only=True)
     supplier_display = serializers.SerializerMethodField(read_only=True)
     sal_pur_group_display = serializers.SerializerMethodField(read_only=True)
@@ -514,6 +536,9 @@ class PurchaseBillItemSerializer(serializers.ModelSerializer):
 class PurchaseBillSerializer(serializers.ModelSerializer):
     items = PurchaseBillItemSerializer(many=True)
     bill_date = SafeDateTimeField(required=False)
+    broker = SafePrimaryKeyRelatedField(queryset=Broker.objects.all(), required=False, allow_null=True)
+    supplier = SafePrimaryKeyRelatedField(queryset=VendorSupplier.objects.all(), required=False, allow_null=True)
+    sal_pur_group = SafePrimaryKeyRelatedField(queryset=SalPurGroup.objects.all(), required=False, allow_null=True)
     broker_display = serializers.SerializerMethodField(read_only=True)
     supplier_display = serializers.SerializerMethodField(read_only=True)
     sal_pur_group_display = serializers.SerializerMethodField(read_only=True)

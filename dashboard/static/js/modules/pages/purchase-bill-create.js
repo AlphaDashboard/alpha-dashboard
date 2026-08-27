@@ -1258,20 +1258,28 @@ class PurchaseBillForm {
         try {
             if (this.config.isEditMode) {
                 await PurchaseBillAPI.update(this.config.voucherNo, payload);
-                notifications.showSuccess('Purchase Bill updated successfully');
+                notifications.showSuccess('Purchase Voucher updated successfully');
                 setTimeout(() => { window.location.href = '/purchase-bill/'; }, 800);
             } else {
                 await PurchaseBillAPI.create(payload);
-                notifications.showSuccess('Purchase Bill created successfully');
+                notifications.showSuccess('Purchase Voucher created successfully');
                 this.resetForm();
             }
         } catch (err) {
-            const errorMsg = err.message ||
-                (err.response?.data && typeof err.response.data === 'object'
-                    ? JSON.stringify(err.response.data)
-                    : 'An error occurred during submission.');
-            this.showErrors(errorMsg);
-            notifications.showError('Form submission failed');
+            let errorMsg = 'An error occurred during submission.';
+            if (err.response?.data) {
+                if (typeof err.response.data === 'string') {
+                    errorMsg = err.response.data.includes('<html') ? 'Server error occurred while saving voucher.' : err.response.data;
+                } else if (typeof err.response.data === 'object') {
+                    errorMsg = Object.entries(err.response.data)
+                        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+                        .join(' | ');
+                }
+            } else if (err.message) {
+                errorMsg = err.message;
+            }
+            this.showErrors(`<i class="bi bi-exclamation-triangle-fill me-2"></i>${errorMsg}`);
+            notifications.showError(errorMsg);
         }
     }
 
