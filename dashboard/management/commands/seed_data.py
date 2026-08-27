@@ -253,6 +253,33 @@ class Command(BaseCommand):
                     (104, '2026-08-27', 'MH-18-GH-3456', 'Vijay Singh', 'WS-504', '2026-08-27', 80, 18000.00, 6000.00, 12000.00);
                 """)
                 cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblGatePass_Tran (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        GatePassNo INTEGER,
+                        GatePassDate DATE,
+                        MaterialID INTEGER,
+                        Bags NUMERIC(18,2) DEFAULT 0,
+                        GrossWeight NUMERIC(18,2) DEFAULT 0,
+                        NetWeight NUMERIC(18,2) DEFAULT 0
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblGatePass_Tran (ID, GatePassNo, GatePassDate, MaterialID, Bags, GrossWeight, NetWeight)
+                    VALUES
+                    (1, 101, '2026-08-25', 1, 100, 15200.00, 10000.00),
+                    (2, 102, '2026-08-26', 1, 50, 12400.00, 8000.00),
+                    (3, 103, '2026-08-27', 2, 200, 25000.00, 20000.00),
+                    (4, 104, '2026-08-27', 3, 80, 18000.00, 12000.00);
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblGateEntry (id, gate_pass_id, entry_datetime, vehicle_number, driver_name, created_at, created_by_id, supplier_id, material_type_id)
+                    VALUES
+                    (1, 'GP-10101', '2026-08-25 09:30:00', 'MH-12-AB-1234', 'Ramesh Kumar', '2026-08-25 09:30:00', 1, 6, 1),
+                    (2, 'GP-10102', '2026-08-26 10:00:00', 'MH-14-CD-5678', 'Suresh Patil', '2026-08-26 10:00:00', 1, 7, 1),
+                    (3, 'GP-10103', '2026-08-27 08:45:00', 'MH-15-EF-9012', 'Amit Sharma', '2026-08-27 08:45:00', 1, 8, 2),
+                    (4, 'GP-10104', '2026-08-27 11:15:00', 'MH-18-GH-3456', 'Vijay Singh', '2026-08-27 11:15:00', 1, 9, 3);
+                """)
+                cursor.execute("""
                     CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans (
                         ChallanNo VARCHAR(50) PRIMARY KEY,
                         ChallanDate DATE,
@@ -275,14 +302,56 @@ class Command(BaseCommand):
                         submittedby VARCHAR(100),
                         SubmissionDate DATETIME,
                         approvedby VARCHAR(100),
+                        ApprovalDate DATETIME,
+                        Notes VARCHAR(1000),
+                        SupplierName VARCHAR(200)
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblSalePurchaseChallans (ChallanNo, ChallanDate, TranType, GPNo, StatusId, PONO, PODate, GatePassDate, VehicleNo, DriverName, WeighmentSlipNo, Bags, GrossWeight, TareWeight, NetWeight, draftedby, SupplierName)
+                    VALUES
+                    ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker', 'Tata Steel Ltd'),
+                    ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker', 'JSW Steel Ltd');
+                """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblWeighment (
+                        WeighmentSlipNo VARCHAR(50) PRIMARY KEY,
+                        GatePassNo INTEGER,
+                        GrossWeight NUMERIC(18,2) DEFAULT 0,
+                        TareWeight NUMERIC(18,2) DEFAULT 0,
+                        NetWeight NUMERIC(18,2) DEFAULT 0,
+                        GrossDateTime DATETIME,
+                        TareDateTime DATETIME,
+                        AutoManual VARCHAR(10) DEFAULT 'Manual',
+                        VehicleType VARCHAR(100),
+                        Purchaser VARCHAR(200),
+                        Seller VARCHAR(200),
+                        Remarks VARCHAR(500),
+                        status INTEGER DEFAULT 1,
+                        draftedby VARCHAR(100),
+                        DraftedDate DATETIME,
+                        submittedby VARCHAR(100),
+                        SubmissionDate DATETIME,
+                        approvedby VARCHAR(100),
                         ApprovalDate DATETIME
                     );
                 """)
                 cursor.execute("""
-                    INSERT OR IGNORE INTO tblSalePurchaseChallans (ChallanNo, ChallanDate, TranType, GPNo, StatusId, PONO, PODate, GatePassDate, VehicleNo, DriverName, WeighmentSlipNo, Bags, GrossWeight, TareWeight, NetWeight, draftedby)
+                    CREATE TABLE IF NOT EXISTS tblWeighment_Tran (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        WeighmentSlipNo VARCHAR(50),
+                        MaterialID INTEGER,
+                        Bags NUMERIC(18,2) DEFAULT 0,
+                        GrossWeight NUMERIC(18,2) DEFAULT 0,
+                        NetWeight NUMERIC(18,2) DEFAULT 0,
+                        Remarks VARCHAR(500)
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblWeighment (WeighmentSlipNo, GatePassNo, GrossWeight, TareWeight, NetWeight, GrossDateTime, TareDateTime, VehicleType, Seller, Purchaser, status, draftedby)
                     VALUES
-                    ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker'),
-                    ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker');
+                    ('WS-501', 101, 15200.00, 5200.00, 10000.00, '2026-08-25 10:00:00', '2026-08-25 10:30:00', 'Truck', 'Tata Steel Ltd', 'Acme Corp', 1, 'maker'),
+                    ('WS-502', 102, 12400.00, 4400.00, 8000.00, '2026-08-26 11:00:00', '2026-08-26 11:45:00', 'Trailer', 'JSW Steel Ltd', 'Acme Corp', 1, 'maker');
                 """)
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS tblPurchaseBill (
@@ -312,9 +381,9 @@ class Command(BaseCommand):
                 cursor.execute("""
                     INSERT OR IGNORE INTO tblPurchaseBill (bill_no, tran_type, bill_date, invoice_no, bill_status, gate_pass_no, po_no, SalPurGroupID, broker_id, zone_name, supplier_id, supplier_contact, supplier_address, gst_number, total_basic_amount, grand_total, status)
                     VALUES
-                    ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 1, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, 1),
-                    ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 2, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, 1),
-                    ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, 1);
+                    ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 6, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, 1),
+                    ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 7, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, 1),
+                    ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 8, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, 1);
                 """)
             elif connection.vendor == 'postgresql':
                 cursor.execute("""

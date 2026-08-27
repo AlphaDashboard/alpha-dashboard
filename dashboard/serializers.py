@@ -992,15 +992,23 @@ class GatePassTranSerializer(serializers.ModelSerializer):
 
 
 class GatePassSerializer(serializers.ModelSerializer):
-    items = GatePassTranSerializer(many=True, read_only=True)
+    items = serializers.SerializerMethodField()
     supplier_name = serializers.SerializerMethodField()
+
+    def get_items(self, obj):
+        try:
+            return GatePassTranSerializer(obj.items.all(), many=True).data
+        except Exception:
+            return []
 
     def get_supplier_name(self, obj):
         """Fetch SupplierName from GateEntry linked to this GatePass via GatePassNo."""
         try:
             from .models.gate_entry import GateEntry
+            from django.db.models import Q
             entry = GateEntry.objects.filter(
-                gate_pass_id__icontains=str(obj.GatePassNo + 10000)
+                Q(gate_pass_id__icontains=str(obj.GatePassNo + 10000)) |
+                Q(gate_pass_id__icontains=str(obj.GatePassNo))
             ).select_related('supplier').first()
             if entry and entry.supplier:
                 return getattr(entry.supplier, 'Account_Name', '') or str(entry.supplier)
@@ -1095,9 +1103,13 @@ class PurchaseChallanSerializer(serializers.ModelSerializer):
     ChallanNo = serializers.CharField(required=False, allow_blank=True)
     PODate = serializers.DateField(required=False, allow_null=True)
     ChallanDate = serializers.DateField(required=False, allow_null=True)
-    materials = PurchaseChallanTranSerializer(
-        source='purchasechallantran_set', many=True, read_only=True
-    )
+    materials = serializers.SerializerMethodField()
+
+    def get_materials(self, obj):
+        try:
+            return PurchaseChallanTranSerializer(obj.purchasechallantran_set.all(), many=True).data
+        except Exception:
+            return []
 
     class Meta:
         model = PurchaseChallan

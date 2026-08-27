@@ -78,6 +78,78 @@ CREATE TABLE IF NOT EXISTS tblGatePass (
     NetWeight NUMERIC(18,2) DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS tblGatePass_Tran (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    GatePassNo INTEGER,
+    GatePassDate DATE,
+    MaterialID INTEGER,
+    Bags NUMERIC(18,2) DEFAULT 0,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS tblWeighment (
+    WeighmentSlipNo VARCHAR(50) PRIMARY KEY,
+    GatePassNo INTEGER,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    TareWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0,
+    GrossDateTime DATETIME,
+    TareDateTime DATETIME,
+    AutoManual VARCHAR(10) DEFAULT 'Manual',
+    VehicleType VARCHAR(100),
+    Purchaser VARCHAR(200),
+    Seller VARCHAR(200),
+    Remarks VARCHAR(500),
+    status INTEGER DEFAULT 1,
+    draftedby VARCHAR(100),
+    DraftedDate DATETIME,
+    submittedby VARCHAR(100),
+    SubmissionDate DATETIME,
+    approvedby VARCHAR(100),
+    ApprovalDate DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS tblWeighment_Tran (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    WeighmentSlipNo VARCHAR(50),
+    MaterialID INTEGER,
+    Bags NUMERIC(18,2) DEFAULT 0,
+    GrossWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0,
+    Remarks VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS tblGRN (
+    GrnNo VARCHAR(50) PRIMARY KEY,
+    GrnDate DATETIME,
+    GatepassNo INTEGER,
+    Netweight NUMERIC(18,2) DEFAULT 0,
+    DeductedWeight NUMERIC(18,2) DEFAULT 0,
+    Approvedweight NUMERIC(18,2) DEFAULT 0,
+    status INTEGER DEFAULT 1,
+    internalnotes VARCHAR(500),
+    draftedby VARCHAR(100),
+    DraftedDate DATETIME,
+    submittedby VARCHAR(100),
+    SubmissionDate DATETIME,
+    approvedby VARCHAR(100),
+    ApprovalDate DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS tblGRN_Tran (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    GrnNo VARCHAR(50),
+    MaterialID INTEGER,
+    ItemName VARCHAR(200),
+    Bags NUMERIC(18,2) DEFAULT 0,
+    Weight NUMERIC(18,2) DEFAULT 0,
+    DeductionPercent NUMERIC(5,2) DEFAULT 0,
+    DeductionWeight NUMERIC(18,2) DEFAULT 0,
+    NetWeight NUMERIC(18,2) DEFAULT 0,
+    Remarks VARCHAR(500)
+);
+
 CREATE TABLE IF NOT EXISTS tblPurchaseBill (
     bill_no VARCHAR(50) PRIMARY KEY,
     tran_type VARCHAR(20) DEFAULT 'RMPBL',
