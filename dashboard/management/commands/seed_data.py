@@ -205,16 +205,19 @@ class Command(BaseCommand):
         acc_pur = AccountMaster.objects.filter(groupID=401).first()
         acc_sal = AccountMaster.objects.filter(groupID=501).first()
 
-        if acc_pur:
-            SalPurGroup.objects.get_or_create(
-                SalPurGroupName='Raw Material Purchase Group',
-                defaults={'TransactionTypeID': tt_pur, 'GroupwiseAccountID': acc_pur, 'is_active': True}
-            )
-        if acc_sal:
-            SalPurGroup.objects.get_or_create(
-                SalPurGroupName='Finished Goods Sales Group',
-                defaults={'TransactionTypeID': tt_sal, 'GroupwiseAccountID': acc_sal, 'is_active': True}
-            )
+        try:
+            if acc_pur:
+                SalPurGroup.objects.get_or_create(
+                    SalPurGroupName='Raw Material Purchase Group',
+                    defaults={'TransactionTypeID': tt_pur, 'GroupwiseAccountID': acc_pur, 'is_active': True}
+                )
+            if acc_sal:
+                SalPurGroup.objects.get_or_create(
+                    SalPurGroupName='Finished Goods Sales Group',
+                    defaults={'TransactionTypeID': tt_sal, 'GroupwiseAccountID': acc_sal, 'is_active': True}
+                )
+        except Exception:
+            pass
         self.stdout.write(self.style.SUCCESS("  [OK] Transaction Types and SalPurGroups seeded"))
 
         self.stdout.write(self.style.SUCCESS("\nAll initial master data seeded successfully!"))

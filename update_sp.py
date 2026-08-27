@@ -737,14 +737,17 @@ if __name__ == '__main__':
         if connection.vendor == 'sqlite':
             print("SQLite database detected. Creating local fallback tables...")
             cursor.executescript(sqlite_tables_sql)
-            try:
-                cursor.execute('ALTER TABLE tblMaterial ADD COLUMN PurchaseGST NUMERIC(5,2);')
-            except Exception:
-                pass
-            try:
-                cursor.execute('ALTER TABLE tblMaterial ADD COLUMN SalesGST NUMERIC(6,2);')
-            except Exception:
-                pass
+            for col, col_type in [
+                ('PurchaseGST', 'NUMERIC(5,2)'),
+                ('SalesGST', 'NUMERIC(6,2)'),
+                ('unit_weight', 'NUMERIC(18,3)'),
+                ('Auto1_Manual0_calc', 'BOOLEAN'),
+                ('IsRateInclGSTY1N0', 'BOOLEAN')
+            ]:
+                try:
+                    cursor.execute(f'ALTER TABLE tblMaterial ADD COLUMN {col} {col_type};')
+                except Exception:
+                    pass
             print("SUCCESS: SQLite tables and default prototype users initialized!")
         elif connection.vendor == 'postgresql':
             print("PostgreSQL database detected. Executing Stored Procedure and Schema update...")
