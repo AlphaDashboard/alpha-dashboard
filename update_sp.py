@@ -737,6 +737,14 @@ if __name__ == '__main__':
         if connection.vendor == 'sqlite':
             print("SQLite database detected. Creating local fallback tables...")
             cursor.executescript(sqlite_tables_sql)
+            try:
+                cursor.execute('ALTER TABLE tblMaterial ADD COLUMN PurchaseGST NUMERIC(5,2);')
+            except Exception:
+                pass
+            try:
+                cursor.execute('ALTER TABLE tblMaterial ADD COLUMN SalesGST NUMERIC(6,2);')
+            except Exception:
+                pass
             print("SUCCESS: SQLite tables and default prototype users initialized!")
         elif connection.vendor == 'postgresql':
             print("PostgreSQL database detected. Executing Stored Procedure and Schema update...")

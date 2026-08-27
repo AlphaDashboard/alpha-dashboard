@@ -163,25 +163,34 @@ class Command(BaseCommand):
                 except Exception:
                     pass
 
-        for m in materials:
-            mat = Material.objects.filter(material_code=m['code']).first()
-            if mat:
-                mat.material_name = m['name']
-                mat.unit_weight = m['unit_weight']
-                mat.PurchaseGST = m['PurchaseGST']
-                mat.SalesGST = m['SalesGST']
-                mat.is_active = True
-                mat.save()
-            else:
-                Material.objects.create(
-                    material_code=m['code'],
-                    material_name=m['name'],
-                    unit_weight=m['unit_weight'],
-                    PurchaseGST=m['PurchaseGST'],
-                    SalesGST=m['SalesGST'],
-                    is_active=True
-                )
-        self.stdout.write(self.style.SUCCESS(f"  [OK] Materials seeded ({len(materials)} materials)"))
+        try:
+            for m in materials:
+                mat = Material.objects.filter(material_code=m['code']).first()
+                if mat:
+                    mat.material_name = m['name']
+                    mat.unit_weight = m['unit_weight']
+                    if hasattr(mat, 'PurchaseGST'):
+                        try:
+                            mat.PurchaseGST = m['PurchaseGST']
+                            mat.SalesGST = m['SalesGST']
+                        except Exception:
+                            pass
+                    mat.is_active = True
+                    mat.save()
+                else:
+                    fields = {
+                        'material_code': m['code'],
+                        'material_name': m['name'],
+                        'unit_weight': m['unit_weight'],
+                        'is_active': True,
+                    }
+                    try:
+                        Material.objects.create(**fields, PurchaseGST=m['PurchaseGST'], SalesGST=m['SalesGST'])
+                    except Exception:
+                        Material.objects.create(**fields)
+            self.stdout.write(self.style.SUCCESS(f"  [OK] Materials seeded ({len(materials)} materials)"))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"  [SKIP] Materials seeding skipped: {e}"))
 
         # 8. Seed Transaction Types & Sales/Purchase Groups
         tt_pur, _ = TransactionType.objects.get_or_create(
