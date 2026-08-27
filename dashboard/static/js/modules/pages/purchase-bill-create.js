@@ -318,6 +318,31 @@ class PurchaseBillForm {
                 chevron.style.transform = 'rotate(0deg)';
             });
         }
+
+        // Global Escape key to navigate Back (matching Subsection B)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const isSelect2Open = document.querySelectorAll('.select2-container--open, .select2-dropdown').length > 0;
+                const isModalOpen = document.querySelector('.modal.show') !== null;
+                const isFlatpickrOpen = document.querySelector('.flatpickr-calendar.open') !== null;
+                const gpPanel = domUtils.getElement('#gpDropdownPanel');
+                const isGpOpen = gpPanel && gpPanel.style.display !== 'none' && gpPanel.style.display !== '';
+                const poPanel = domUtils.getElement('#poDropdownPanel');
+                const isPoOpen = poPanel && poPanel.style.display !== 'none' && poPanel.style.display !== '';
+
+                if (isSelect2Open || isModalOpen || isFlatpickrOpen || isGpOpen || isPoOpen) {
+                    return;
+                }
+
+                const backBtn = document.querySelector('.erp-btn-back') || document.getElementById('backBtn');
+                if (backBtn) {
+                    e.preventDefault();
+                    backBtn.click();
+                } else {
+                    window.location.href = '/purchase-bill/';
+                }
+            }
+        });
     }
 
     // ─── Gate Pass Smart Dropdown ─────────────────────────────────────────────
@@ -880,38 +905,38 @@ class PurchaseBillForm {
             // Group, Broker, Supplier
             const groupSelect = domUtils.getElement('#salPurGroup');
             if (groupSelect) {
-                const groupVal = data.sal_pur_group || '';
-                if (groupVal && !groupSelect.querySelector(`option[value="${groupVal}"]`)) {
+                const groupVal = (data.sal_pur_group !== null && data.sal_pur_group !== undefined) ? String(data.sal_pur_group) : '';
+                if (groupVal !== '' && !groupSelect.querySelector(`option[value="${groupVal}"]`)) {
                     const text = data.sal_pur_group_display?.text || `Unknown Group (ID: ${groupVal})`;
                     const opt = new Option(text, groupVal, true, true);
                     groupSelect.add(opt);
                 }
                 groupSelect.value = groupVal;
-                if (groupVal) groupSelect.closest('.form-group')?.classList.add('has-value');
+                if (groupVal !== '') groupSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             const brokerSelect = domUtils.getElement('#broker');
             if (brokerSelect) {
-                const brokerVal = data.broker || '';
-                if (brokerVal && !brokerSelect.querySelector(`option[value="${brokerVal}"]`)) {
+                const brokerVal = (data.broker !== null && data.broker !== undefined) ? String(data.broker) : '';
+                if (brokerVal !== '' && !brokerSelect.querySelector(`option[value="${brokerVal}"]`)) {
                     const text = data.broker_display?.text || `Unknown Broker (ID: ${brokerVal})`;
                     const opt = new Option(text, brokerVal, true, true);
                     brokerSelect.add(opt);
                 }
                 brokerSelect.value = brokerVal;
-                if (brokerVal) brokerSelect.closest('.form-group')?.classList.add('has-value');
+                if (brokerVal !== '') brokerSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             const supplierSelect = domUtils.getElement('#supplier');
             if (supplierSelect) {
-                const supplierVal = data.supplier || '';
-                if (supplierVal && !supplierSelect.querySelector(`option[value="${supplierVal}"]`)) {
+                const supplierVal = (data.supplier !== null && data.supplier !== undefined) ? String(data.supplier) : '';
+                if (supplierVal !== '' && !supplierSelect.querySelector(`option[value="${supplierVal}"]`)) {
                     const text = data.supplier_display?.text || `Unknown Supplier (ID: ${supplierVal})`;
                     const opt = new Option(text, supplierVal, true, true);
                     supplierSelect.add(opt);
                 }
                 supplierSelect.value = supplierVal;
-                if (supplierVal) supplierSelect.closest('.form-group')?.classList.add('has-value');
+                if (supplierVal !== '') supplierSelect.closest('.form-group')?.classList.add('has-value');
             }
 
             const zoneNameEl = domUtils.getElement('#zoneName');
@@ -934,6 +959,11 @@ class PurchaseBillForm {
             if (gstEl) {
                 gstEl.value = data.gst_number || '';
                 if (gstEl.value) gstEl.closest('.form-group')?.classList.add('has-value');
+            }
+
+            // If contact, address, or GST are empty on the voucher header, auto-fill from selected supplier
+            if (supplierSelect && supplierSelect.value !== '' && (!scEl?.value || !saEl?.value || !gstEl?.value)) {
+                this.onSupplierChange(supplierSelect.value, supplierSelect);
             }
 
             // Delivery section
@@ -1254,6 +1284,14 @@ class PurchaseBillForm {
             this.showErrors('At least one item is required.');
             return;
         }
+
+        let totalBasic = 0;
+        payload.items.forEach(it => {
+            totalBasic += (it.order_qty * it.unit_rate);
+        });
+        payload.total_basic_amount = parseFloat(totalBasic.toFixed(2));
+        payload.taxes = 0.00;
+        payload.grand_total = parseFloat(totalBasic.toFixed(2));
 
         try {
             if (this.config.isEditMode) {

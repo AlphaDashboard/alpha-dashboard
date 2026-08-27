@@ -130,6 +130,13 @@ def execute_sp_purchase_bill(operation, header_data, items_data, username):
             'remarks':   str(row.get('remarks') or ''),
         })
 
+    # Auto-calculate totals if not provided or 0.00
+    calc_basic = round(sum(it['amount'] for it in normalized_items), 2)
+    if total_basic_amount == 0.00 and calc_basic > 0:
+        total_basic_amount = calc_basic
+    if grand_total == 0.00 and (total_basic_amount > 0 or taxes > 0):
+        grand_total = round(total_basic_amount + taxes, 2)
+
     # ------------------------------------------------------------------
     # PostgreSQL Path (Live Server)
     # ------------------------------------------------------------------

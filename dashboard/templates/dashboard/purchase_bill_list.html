@@ -12,8 +12,8 @@
     <div class="list-header flex-shrink-0" style="margin-bottom: 4px;">
         <div class="d-flex justify-content-between align-items-start" style="margin-bottom: 4px;">
             <div style="margin-top: 4px;">
-                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">Purchase Bills (RMPBL)</h2>
-                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage raw material purchase bill records.</p>
+                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">Purchase Vouchers (RMPBL)</h2>
+                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage raw material purchase voucher records.</p>
             </div>
             <a href="{% url 'dashboard:purchase_bill_create' %}" class="btn btn-primary shadow-sm" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; width: calc(14% - 4px); padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; letter-spacing: 0.1px; margin-top: 4px; margin-right: 7px;">
                 Create New
@@ -36,12 +36,12 @@
                 <div style="flex: 15; min-width: 0;">
                     <select id="typeFilter" class="form-select bg-light text-dark w-100" style="height: 32px !important; padding: 4px 24px 4px 8px !important; line-height: 1.5 !important; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #d1d5db; box-shadow: none; box-sizing: border-box;">
                         <option value="">Search By...</option>
-                        <option value="bill_no">Bill No.</option>
+                        <option value="bill_no">Voucher No.</option>
                         <option value="po_no">PO No.</option>
                         <option value="gate_pass_no">Gate Pass No.</option>
-                        <option value="date">Bill Date</option>
+                        <option value="date">Voucher Date</option>
                         <option value="supplier_name">Supplier Name</option>
-                        <option value="bill_status">Bill Status</option>
+                        <option value="bill_status">Voucher Status</option>
                         <option value="zone_name">Zone Name</option>
                         <option value="broker">Broker</option>
                         <option value="supplier_contact">Contact No.</option>
@@ -106,14 +106,14 @@
                 <thead class="erp-table-header">
                     <tr>
                         <th style="width:9%; cursor:pointer;" data-sort="bill_no" class="sortable-header text-nowrap">
-                            Bill No. <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                            Voucher No. <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
                         </th>
                         <th style="width:8%; cursor:pointer;" data-sort="date" class="sortable-header text-nowrap">
-                            Bill Date <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
+                            Voucher Date <span class="sort-icon text-muted" style="font-size:0.75rem; margin-left:4px; display:inline-block; vertical-align:middle;">↕</span>
                         </th>
                         <th style="width:8%;" class="text-nowrap">PO No.</th>
                         <th style="width:8%;" class="text-nowrap">Gate Pass</th>
-                        <th style="width:8%;" class="text-nowrap text-center">Bill Status</th>
+                        <th style="width:8%;" class="text-nowrap text-center">Voucher Status</th>
                         <th style="width:11%;">Supplier Name</th>
                         <th style="width:8%;">Zone</th>
                         <th style="width:8%;">Broker</th>

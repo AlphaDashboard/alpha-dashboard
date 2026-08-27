@@ -431,27 +431,29 @@
             {% if is_view_mode %}
                 {% if prev_pk %}
                     <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
-                       class="btn btn-sm btn-outline-secondary px-2 py-1"
+                       id="prevRecordBtn"
+                       class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1"
                        style="font-size:11px;font-weight:500;border-radius:4px;" title="Previous">
                         <i class="bi bi-chevron-left"></i> Prev
                     </a>
                 {% endif %}
                 {% if next_pk %}
                     <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
-                       class="btn btn-sm btn-outline-secondary px-2 py-1"
+                       id="nextRecordBtn"
+                       class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1"
                        style="font-size:11px;font-weight:500;border-radius:4px;" title="Next">
                         Next <i class="bi bi-chevron-right"></i>
                     </a>
                 {% endif %}
                 {% if bill_status != 'Submitted' and bill_status != 'Approved' %}
                     <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
-                       class="btn btn-sm btn-success px-2 py-1"
+                       class="btn btn-sm btn-success erp-btn-edit-mode px-2 py-1"
                        style="font-size:11px;font-weight:600;border-radius:4px;background-color:#10b981;border-color:#10b981;color:white;">
                         <i class="bi bi-pencil-square"></i> Edit
                     </a>
                 {% endif %}
             {% endif %}
-            <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px;">
+            <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary erp-btn-back" id="backBtn" style="height:28px; font-size:11px; padding:2px 10px;">
                 <i class="bi bi-arrow-left me-1"></i> Back
             </a>
         </div>

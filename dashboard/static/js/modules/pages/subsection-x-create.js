@@ -436,8 +436,8 @@ class PurchaseOrderForm {
             // Supplier section
             const brokerSelect = domUtils.getElement('#broker');
             if (brokerSelect) {
-                const brokerVal = data.broker || '';
-                if (brokerVal && !brokerSelect.querySelector(`option[value="${brokerVal}"]`)) {
+                const brokerVal = (data.broker !== null && data.broker !== undefined) ? String(data.broker) : '';
+                if (brokerVal !== '' && !brokerSelect.querySelector(`option[value="${brokerVal}"]`)) {
                     const text = data.broker_display?.text || `Unknown Broker (ID: ${brokerVal})`;
                     const opt = new Option(text, brokerVal, true, true);
                     brokerSelect.add(opt);
@@ -447,8 +447,8 @@ class PurchaseOrderForm {
 
             const supplierSelect = domUtils.getElement('#supplier');
             if (supplierSelect) {
-                const supplierVal = data.supplier || '';
-                if (supplierVal && !supplierSelect.querySelector(`option[value="${supplierVal}"]`)) {
+                const supplierVal = (data.supplier !== null && data.supplier !== undefined) ? String(data.supplier) : '';
+                if (supplierVal !== '' && !supplierSelect.querySelector(`option[value="${supplierVal}"]`)) {
                     const text = data.supplier_display?.text || `Unknown Supplier (ID: ${supplierVal})`;
                     const opt = new Option(text, supplierVal, true, true);
                     supplierSelect.add(opt);

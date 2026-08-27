@@ -124,14 +124,14 @@ class PurchaseBillList {
         domUtils.delegate('body', 'click', '.delete-btn', async (e, target) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!confirm('Are you sure you want to PERMANENTLY delete this purchase bill? This cannot be undone.')) return;
+            if (!confirm('Are you sure you want to PERMANENTLY delete this purchase voucher? This cannot be undone.')) return;
             const id = target.dataset.id;
             try {
                 await PurchaseBillAPI.delete(id);
-                notifications.showSuccess('Purchase Bill permanently deleted');
+                notifications.showSuccess('Purchase Voucher permanently deleted');
                 this.loadData();
             } catch (err) {
-                notifications.showError('Failed to delete purchase bill');
+                notifications.showError('Failed to delete purchase voucher');
             }
         });
 
@@ -141,42 +141,66 @@ class PurchaseBillList {
             e.stopPropagation();
             const id       = target.dataset.id;
             const isActive = target.dataset.status === 'true';
-            const promptMsg = isActive ? 'Are you sure you want to mark this purchase bill inactive?' : 'Are you sure you want to restore this purchase bill?';
+            const promptMsg = isActive ? 'Are you sure you want to mark this purchase voucher inactive?' : 'Are you sure you want to restore this purchase voucher?';
             if (!confirm(promptMsg)) return;
             try {
                 await apiClient.post(`/api/purchase-bill/${id}/toggle_status/`);
-                notifications.showSuccess(isActive ? 'Purchase Bill soft-deleted successfully' : 'Purchase Bill restored successfully');
+                notifications.showSuccess(isActive ? 'Purchase Voucher soft-deleted successfully' : 'Purchase Voucher restored successfully');
                 this.loadData();
             } catch (err) {
                 notifications.showError('Failed to update status');
             }
         });
 
-        // Detached dropdown positioning
-        domUtils.delegate('body', 'click', '.action-dropdown button', (e, btn) => {
+        const closeAllActionDropdowns = () => {
+            document.querySelectorAll('.erp-detached-dropdown').forEach(m => {
+                m.classList.remove('show');
+                m.style.display = 'none';
+            });
+            document.querySelectorAll('.action-dropdown button').forEach(b => {
+                b.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        // Detached dropdown positioning (matching Subsection B)
+        domUtils.delegate('body', 'click', '.action-dropdown button', function(e, btn) {
+            e.preventDefault();
             e.stopPropagation();
-            const parentDropdown = btn.closest('.action-dropdown');
-            const menu = parentDropdown ? parentDropdown.querySelector('.dropdown-menu') : null;
+
+            let menu;
+            if (btn.dataset.menuId) {
+                menu = document.getElementById(btn.dataset.menuId);
+            } else {
+                menu = btn.nextElementSibling || (btn.closest('.action-dropdown') ? btn.closest('.action-dropdown').querySelector('.dropdown-menu') : null);
+                if (!menu || !menu.classList.contains('dropdown-menu')) return;
+
+                const menuId = 'erp-dropdown-' + Math.random().toString(36).substr(2, 9);
+                btn.dataset.menuId = menuId;
+                menu.id = menuId;
+                menu.classList.add('erp-detached-dropdown');
+                document.body.appendChild(menu);
+            }
+
             if (!menu) return;
 
-            const isShown = menu.classList.contains('show');
-            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+            const isShown = menu.classList.contains('show') && menu.style.display !== 'none';
 
+            // Close all other detached dropdowns
+            closeAllActionDropdowns();
+
+            // Toggle current
             if (!isShown) {
-                if (!menu.classList.contains('erp-detached-dropdown')) {
-                    menu.classList.add('erp-detached-dropdown');
-                    document.body.appendChild(menu);
-                }
-
-                menu.classList.add('show');
                 menu.style.position = 'fixed';
                 menu.style.display = 'block';
+                menu.style.visibility = 'hidden';
+                menu.classList.add('show');
+                const menuHeight = menu.offsetHeight;
+                menu.style.visibility = '';
 
                 const rect = btn.getBoundingClientRect();
-                const menuHeight = menu.offsetHeight || 120;
-                const viewportHeight = window.innerHeight;
-
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const fitsBelow = (rect.bottom + 4 + menuHeight) <= viewportHeight;
+
                 if (fitsBelow) {
                     menu.style.top = (rect.bottom + 4) + 'px';
                     menu.style.bottom = 'auto';
@@ -187,29 +211,33 @@ class PurchaseBillList {
 
                 menu.style.left = 'auto';
                 menu.style.right = (document.documentElement.clientWidth - rect.right) + 'px';
-                menu.style.zIndex = '9999';
+                menu.style.zIndex = '99999';
+
                 btn.setAttribute('aria-expanded', 'true');
             }
         });
 
-        if (!window._erpDropdownClickListenerAdded) {
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
-                    document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
-                }
-            });
-            window._erpDropdownClickListenerAdded = true;
-        }
+        // Close detached dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
+                closeAllActionDropdowns();
+            }
+        });
 
-        if (!window._erpDropdownEscListenerAdded) {
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+        // Close dropdowns on scroll or window resize
+        window.addEventListener('scroll', closeAllActionDropdowns, true);
+        window.addEventListener('resize', closeAllActionDropdowns);
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openDropdowns = document.querySelectorAll('.erp-detached-dropdown.show');
+                if (openDropdowns.length > 0) {
+                    closeAllActionDropdowns();
                     e.stopPropagation();
                 }
-            }, true);
-            window._erpDropdownEscListenerAdded = true;
-        }
+            }
+        }, true);
     }
 
     async loadData() {
@@ -262,24 +290,30 @@ class PurchaseBillList {
                 await this.loadData();
                 return;
             }
-            console.error('Error loading Purchase Bill data:', err);
-            const errStr = JSON.stringify(err, Object.getOwnPropertyNames(err));
+            console.error('Error loading Purchase Voucher data:', err);
+            const errStr = err?.message || 'Network error';
             this.tbody.innerHTML = `
-                <tr><td colspan="12" class="text-center py-5 text-danger fw-bold fs-6">
-                    <i class="bi bi-exclamation-circle me-2"></i>Failed to load purchase bills: ${errStr}. Please try again.
-                </td></tr>`;
-            notifications.showError(`Failed to load purchase bills: ${errStr}`);
+                <tr>
+                    <td colspan="12" class="text-center py-4 text-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>Failed to load purchase vouchers: ${errStr}. Please try again.
+                    </td>
+                </tr>`;
+            notifications.showError(`Failed to load purchase vouchers: ${errStr}`);
         }
     }
 
     renderLoading() {
-        this.tbody.innerHTML = `
-            <tr><td colspan="12" class="text-center py-5 bg-white">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <span class="ms-2 text-muted fw-bold" style="font-size:0.85rem;">Loading purchase bills...</span>
-            </td></tr>`;
+        if (this.tbody) {
+            this.tbody.innerHTML = `
+                <tr>
+                    <td colspan="12" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2 text-muted fw-bold" style="font-size:0.85rem;">Loading purchase vouchers...</span>
+                    </td>
+                </tr>`;
+        }
     }
 
     updateSortHeadersUI() {
@@ -382,10 +416,10 @@ class PurchaseBillList {
                             <div class="p-4 bg-light rounded-circle d-inline-block mb-4 shadow-sm">
                                 <i class="bi bi-receipt display-3 text-primary" style="opacity: 0.8;"></i>
                             </div>
-                            <h3 class="fw-bold text-dark">No purchase bills found</h3>
-                            <p class="text-muted mb-4 fs-5">You have not created any purchase bills yet, or none match your search criteria.</p>
+                            <h3 class="fw-bold text-dark">No purchase vouchers found</h3>
+                            <p class="text-muted mb-4 fs-5">You have not created any purchase vouchers yet, or none match your search criteria.</p>
                             <a href="/purchase-bill/create/" class="btn btn-primary btn-lg shadow-sm hover-lift px-5 rounded-pill">
-                                <i class="bi bi-plus-lg me-2"></i>Create New Purchase Bill
+                                <i class="bi bi-plus-lg me-2"></i>Create New Purchase Voucher
                             </a>
                         </div>
                     </td>

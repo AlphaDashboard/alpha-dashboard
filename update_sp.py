@@ -331,6 +331,22 @@ BEGIN
             ALTER TABLE public."tblVendorSupplier" ADD PRIMARY KEY ("VendorSupplierID");
         END IF;
     END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND (table_name = 'tblpurchasebill' OR table_name = 'tblPurchaseBill')
+    ) THEN
+        UPDATE public."tblPurchaseBill"
+        SET grand_total = sub.s, total_basic_amount = sub.s
+        FROM (
+            SELECT "BillNo", COALESCE(SUM(amount), 0) AS s
+            FROM public."tblPurchaseBill_TRAN"
+            GROUP BY "BillNo"
+        ) sub
+        WHERE public."tblPurchaseBill".bill_no = sub."BillNo"
+          AND (public."tblPurchaseBill".grand_total IS NULL OR public."tblPurchaseBill".grand_total = 0)
+          AND sub.s > 0;
+    END IF;
 END $$;
 
 -- 2. Stored Procedure: sp_manage_purchase_challan

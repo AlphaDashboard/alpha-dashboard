@@ -416,7 +416,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         }
 
     def get_sal_pur_group_display(self, obj):
-        if obj.sal_pur_group_id:
+        if obj.sal_pur_group_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 g = obj.sal_pur_group
@@ -434,7 +434,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         return None
 
     def get_broker_display(self, obj):
-        if obj.broker_id:
+        if obj.broker_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 b = obj.broker
@@ -452,7 +452,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         return None
 
     def get_supplier_display(self, obj):
-        if obj.supplier_id:
+        if obj.supplier_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 s = obj.supplier
@@ -578,7 +578,7 @@ class PurchaseBillSerializer(serializers.ModelSerializer):
         }
 
     def get_sal_pur_group_display(self, obj):
-        if obj.sal_pur_group_id:
+        if obj.sal_pur_group_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 g = obj.sal_pur_group
@@ -590,7 +590,7 @@ class PurchaseBillSerializer(serializers.ModelSerializer):
         return None
 
     def get_broker_display(self, obj):
-        if obj.broker_id:
+        if obj.broker_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 b = obj.broker
@@ -602,7 +602,7 @@ class PurchaseBillSerializer(serializers.ModelSerializer):
         return None
 
     def get_supplier_display(self, obj):
-        if obj.supplier_id:
+        if obj.supplier_id is not None:
             from django.core.exceptions import ObjectDoesNotExist
             try:
                 s = obj.supplier
