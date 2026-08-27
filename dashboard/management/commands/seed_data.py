@@ -202,22 +202,152 @@ class Command(BaseCommand):
             defaults={'TransactionTypeName': 'Sales Transaction'}
         )
 
-        acc_pur = AccountMaster.objects.filter(groupID=401).first()
-        acc_sal = AccountMaster.objects.filter(groupID=501).first()
+        from django.db import connection
+        with connection.cursor() as cursor:
+            if connection.vendor == 'sqlite':
+                cursor.execute("PRAGMA foreign_keys = OFF;")
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblSalPurGroup (
+                        SalPurGroupID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        SalPurGroupName VARCHAR(255),
+                        GroupwiseAccounting BOOLEAN DEFAULT 1,
+                        GroupwiseAccountID INTEGER,
+                        TransactionTypeID BIGINT,
+                        GST_Applicable_Y_N BOOLEAN DEFAULT 1,
+                        IsGSTApplicableY1N0 BOOLEAN DEFAULT 1,
+                        IGST1_CGST0 BOOLEAN DEFAULT 0,
+                        is_active BOOLEAN DEFAULT 1
+                    );
+                """)
+                try:
+                    cursor.execute("DROP VIEW IF EXISTS vw_sal_pur_group;")
+                except Exception:
+                    pass
+                cursor.execute("CREATE VIEW IF NOT EXISTS vw_sal_pur_group AS SELECT * FROM tblSalPurGroup;")
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblSalPurGroup (SalPurGroupID, SalPurGroupName, GroupwiseAccounting, GroupwiseAccountID, TransactionTypeID, is_active)
+                    VALUES 
+                    (1, 'Raw Material Purchase Group', 1, 14, 1, 1),
+                    (2, 'Finished Goods Sales Group', 1, 16, 2, 1);
+                """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblGatePass (
+                        GatePassNo INTEGER PRIMARY KEY,
+                        GatePassdate DATE,
+                        VehicleNo VARCHAR(50),
+                        DriverName VARCHAR(100),
+                        WeighmentNo VARCHAR(50),
+                        WeighmentDate DATE,
+                        Bags NUMERIC(18,2) DEFAULT 0,
+                        GrossWeight NUMERIC(18,2) DEFAULT 0,
+                        TareWeight NUMERIC(18,2) DEFAULT 0,
+                        NetWeight NUMERIC(18,2) DEFAULT 0
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblGatePass (GatePassNo, GatePassdate, VehicleNo, DriverName, WeighmentNo, WeighmentDate, Bags, GrossWeight, TareWeight, NetWeight)
+                    VALUES
+                    (101, '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', '2026-08-25', 100, 15200.00, 5200.00, 10000.00),
+                    (102, '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', '2026-08-26', 50, 12400.00, 4400.00, 8000.00),
+                    (103, '2026-08-27', 'MH-15-EF-9012', 'Amit Sharma', 'WS-503', '2026-08-27', 200, 25000.00, 5000.00, 20000.00),
+                    (104, '2026-08-27', 'MH-18-GH-3456', 'Vijay Singh', 'WS-504', '2026-08-27', 80, 18000.00, 6000.00, 12000.00);
+                """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans (
+                        ChallanNo VARCHAR(50) PRIMARY KEY,
+                        ChallanDate DATE,
+                        TranType VARCHAR(20) DEFAULT 'RMPCH',
+                        GPNo INTEGER,
+                        StatusId INTEGER DEFAULT 1,
+                        PONO VARCHAR(50),
+                        PODate DATE,
+                        GatePassDate DATE,
+                        VehicleNo VARCHAR(50),
+                        DriverName VARCHAR(100),
+                        WeighmentSlipNo VARCHAR(50),
+                        WeighmentDate DATE,
+                        Bags NUMERIC(18,2) DEFAULT 0,
+                        GrossWeight NUMERIC(18,2) DEFAULT 0,
+                        TareWeight NUMERIC(18,2) DEFAULT 0,
+                        NetWeight NUMERIC(18,2) DEFAULT 0,
+                        draftedby VARCHAR(100),
+                        DraftedDate DATETIME,
+                        submittedby VARCHAR(100),
+                        SubmissionDate DATETIME,
+                        approvedby VARCHAR(100),
+                        ApprovalDate DATETIME
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblSalePurchaseChallans (ChallanNo, ChallanDate, TranType, GPNo, StatusId, PONO, PODate, GatePassDate, VehicleNo, DriverName, WeighmentSlipNo, Bags, GrossWeight, TareWeight, NetWeight, draftedby)
+                    VALUES
+                    ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker'),
+                    ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker');
+                """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tblPurchaseBill (
+                        bill_no VARCHAR(50) PRIMARY KEY,
+                        tran_type VARCHAR(20) DEFAULT 'RMPBL',
+                        bill_date DATETIME,
+                        expected_delivery_date DATE,
+                        invoice_no VARCHAR(50),
+                        bill_status VARCHAR(20) DEFAULT 'Draft',
+                        gate_pass_no VARCHAR(50),
+                        gate_pass_date DATE,
+                        po_no VARCHAR(50),
+                        po_date DATE,
+                        SalPurGroupID BIGINT,
+                        broker_id INTEGER,
+                        zone_name VARCHAR(50),
+                        supplier_id INTEGER,
+                        supplier_contact VARCHAR(50),
+                        supplier_address TEXT,
+                        gst_number VARCHAR(50),
+                        total_basic_amount NUMERIC(15,2) DEFAULT 0,
+                        taxes NUMERIC(15,2) DEFAULT 0,
+                        grand_total NUMERIC(15,2) DEFAULT 0,
+                        status BOOLEAN DEFAULT 1
+                    );
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblPurchaseBill (bill_no, tran_type, bill_date, invoice_no, bill_status, gate_pass_no, po_no, SalPurGroupID, broker_id, zone_name, supplier_id, supplier_contact, supplier_address, gst_number, total_basic_amount, grand_total, status)
+                    VALUES
+                    ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 1, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, 1),
+                    ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 2, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, 1),
+                    ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, 1);
+                """)
+            elif connection.vendor == 'postgresql':
+                cursor.execute("""
+                    INSERT INTO public."tblSalPurGroup" ("SalPurGroupID", "SalPurGroupName", "GroupwiseAccounting", "GroupwiseAccountID", "TransactionTypeID", "is_active")
+                    VALUES 
+                    (1, 'Raw Material Purchase Group', true, 401, 1, true),
+                    (2, 'Finished Goods Sales Group', true, 501, 2, true)
+                    ON CONFLICT ("SalPurGroupID") DO NOTHING;
+                """)
+                cursor.execute("""
+                    INSERT INTO public."tblGatePass" ("GatePassNo", "GatePassdate", "VehicleNo", "DriverName", "WeighmentNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight")
+                    VALUES
+                    (101, '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', '2026-08-25', 100, 15200.00, 5200.00, 10000.00),
+                    (102, '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', '2026-08-26', 50, 12400.00, 4400.00, 8000.00),
+                    (103, '2026-08-27', 'MH-15-EF-9012', 'Amit Sharma', 'WS-503', '2026-08-27', 200, 25000.00, 5000.00, 20000.00),
+                    (104, '2026-08-27', 'MH-18-GH-3456', 'Vijay Singh', 'WS-504', '2026-08-27', 80, 18000.00, 6000.00, 12000.00)
+                    ON CONFLICT ("GatePassNo") DO NOTHING;
+                """)
+                cursor.execute("""
+                    INSERT INTO public."tblSalePurchaseChallans" ("ChallanNo", "ChallanDate", "TranType", "GPNo", "StatusId", "PONO", "PODate", "GatePassDate", "VehicleNo", "DriverName", "WeighmentSlipNo", "Bags", "GrossWeight", "TareWeight", "NetWeight", "draftedby")
+                    VALUES
+                    ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker'),
+                    ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker')
+                    ON CONFLICT ("ChallanNo") DO NOTHING;
+                """)
+                cursor.execute("""
+                    INSERT INTO public."tblPurchaseBill" ("bill_no", "tran_type", "bill_date", "invoice_no", "bill_status", "gate_pass_no", "po_no", "SalPurGroupID", "broker_id", "zone_name", "supplier_id", "supplier_contact", "supplier_address", "gst_number", "total_basic_amount", "grand_total", "status")
+                    VALUES
+                    ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 1, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, true),
+                    ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 2, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, true),
+                    ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, true)
+                    ON CONFLICT ("bill_no") DO NOTHING;
+                """)
 
-        try:
-            if acc_pur:
-                SalPurGroup.objects.get_or_create(
-                    SalPurGroupName='Raw Material Purchase Group',
-                    defaults={'TransactionTypeID': tt_pur, 'GroupwiseAccountID': acc_pur, 'is_active': True}
-                )
-            if acc_sal:
-                SalPurGroup.objects.get_or_create(
-                    SalPurGroupName='Finished Goods Sales Group',
-                    defaults={'TransactionTypeID': tt_sal, 'GroupwiseAccountID': acc_sal, 'is_active': True}
-                )
-        except Exception:
-            pass
-        self.stdout.write(self.style.SUCCESS("  [OK] Transaction Types and SalPurGroups seeded"))
-
+        self.stdout.write(self.style.SUCCESS("  [OK] Groups, Gate Passes, Challans, and Vouchers seeded"))
         self.stdout.write(self.style.SUCCESS("\nAll initial master data seeded successfully!"))
