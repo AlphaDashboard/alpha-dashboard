@@ -385,6 +385,34 @@ class Command(BaseCommand):
                     ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 7, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, 1),
                     ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 8, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, 1);
                 """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblPurchaseOrder (
+                        po_no, po_date, expected_delivery_date, po_status, zone_name, supplier_contact, supplier_address, gst_number,
+                        delivery_location, currency, date_created, date_modified,
+                        total_basic_amount, taxes, grand_total, status, broker_id, supplier_id, SalPurGroupID, freight_terms, payment_terms, delivery_terms
+                    ) VALUES
+                    ('PO-202608-0001', '2026-08-20 10:00:00', '2026-08-30', 'Approved', 'West Zone', '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5',
+                     'Main Plant, Pune', 'INR', '2026-08-20 10:00:00', '2026-08-20 10:00:00',
+                     50000.00, 9000.00, 59000.00, 1, 1, 1, 1, 'Ex-Works', '30 Days Net', 'Immediate'),
+                    ('PO-202608-0002', '2026-08-22 11:30:00', '2026-09-02', 'Approved', 'North Zone', '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV',
+                     'Main Plant, Pune', 'INR', '2026-08-22 11:30:00', '2026-08-22 11:30:00',
+                     80000.00, 14400.00, 94400.00, 1, 2, 2, 1, 'FOR Destination', '45 Days Net', 'Immediate'),
+                    ('PO-202608-0003', '2026-08-24 14:15:00', '2026-09-05', 'Approved', 'West Zone', '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2',
+                     'Main Plant, Pune', 'INR', '2026-08-24 14:15:00', '2026-08-24 14:15:00',
+                     120000.00, 21600.00, 141600.00, 1, 1, 3, 1, 'Ex-Works', 'Immediate', 'Immediate'),
+                    ('PO-202608-0004', '2026-08-26 16:00:00', '2026-09-08', 'Approved', 'East Zone', '9988776655', 'Plot 88, Whitefield, Bangalore', '29ABCDE5678F1Z9',
+                     'Main Plant, Pune', 'INR', '2026-08-26 16:00:00', '2026-08-26 16:00:00',
+                     45000.00, 8100.00, 53100.00, 1, 3, 4, 1, 'FOR Destination', '30 Days Net', 'Immediate');
+                """)
+                cursor.execute("""
+                    INSERT OR IGNORE INTO tblPurchaseOrder_TRAN (
+                        id, PONo, item_id, order_qty, uom, unit_rate, amount, remarks
+                    ) VALUES
+                    (1, 'PO-202608-0001', 1, 10.0, 'MT', 5000.00, 50000.00, 'Steel Billets Standard'),
+                    (2, 'PO-202608-0002', 2, 16.0, 'MT', 5000.00, 80000.00, 'Scrap Heavy Melting'),
+                    (3, 'PO-202608-0003', 3, 20.0, 'MT', 6000.00, 120000.00, 'Sponge Iron Grade A'),
+                    (4, 'PO-202608-0004', 1, 9.0, 'MT', 5000.00, 45000.00, 'Steel Billets Prime');
+                """)
             elif connection.vendor == 'postgresql':
                 cursor.execute("""
                     INSERT INTO public."tblSalPurGroup" ("SalPurGroupID", "SalPurGroupName", "GroupwiseAccounting", "GroupwiseAccountID", "TransactionTypeID", "is_active")
@@ -417,6 +445,26 @@ class Command(BaseCommand):
                     ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, true)
                     ON CONFLICT ("bill_no") DO NOTHING;
                 """)
+                cursor.execute("""
+                    INSERT INTO public."tblPurchaseOrder" (
+                        "po_no", "po_date", "expected_delivery_date", "po_status", "zone_name", "supplier_contact", "supplier_address", "gst_number",
+                        "delivery_location", "currency", "date_created", "date_modified",
+                        "total_basic_amount", "taxes", "grand_total", "status", "broker_id", "supplier_id", "SalPurGroupID", "freight_terms", "payment_terms", "delivery_terms"
+                    ) VALUES
+                    ('PO-202608-0001', '2026-08-20 10:00:00', '2026-08-30', 'Approved', 'West Zone', '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5',
+                     'Main Plant, Pune', 'INR', '2026-08-20 10:00:00', '2026-08-20 10:00:00',
+                     50000.00, 9000.00, 59000.00, true, 1, 1, 1, 'Ex-Works', '30 Days Net', 'Immediate'),
+                    ('PO-202608-0002', '2026-08-22 11:30:00', '2026-09-02', 'Approved', 'North Zone', '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV',
+                     'Main Plant, Pune', 'INR', '2026-08-22 11:30:00', '2026-08-22 11:30:00',
+                     80000.00, 14400.00, 94400.00, true, 2, 2, 1, 'FOR Destination', '45 Days Net', 'Immediate'),
+                    ('PO-202608-0003', '2026-08-24 14:15:00', '2026-09-05', 'Approved', 'West Zone', '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2',
+                     'Main Plant, Pune', 'INR', '2026-08-24 14:15:00', '2026-08-24 14:15:00',
+                     120000.00, 21600.00, 141600.00, true, 1, 3, 1, 'Ex-Works', 'Immediate', 'Immediate'),
+                    ('PO-202608-0004', '2026-08-26 16:00:00', '2026-09-08', 'Approved', 'East Zone', '9988776655', 'Plot 88, Whitefield, Bangalore', '29ABCDE5678F1Z9',
+                     'Main Plant, Pune', 'INR', '2026-08-26 16:00:00', '2026-08-26 16:00:00',
+                     45000.00, 8100.00, 53100.00, true, 3, 4, 1, 'FOR Destination', '30 Days Net', 'Immediate')
+                    ON CONFLICT ("po_no") DO NOTHING;
+                """)
 
-        self.stdout.write(self.style.SUCCESS("  [OK] Groups, Gate Passes, Challans, and Vouchers seeded"))
+        self.stdout.write(self.style.SUCCESS("  [OK] Groups, Gate Passes, Challans, Vouchers, and Purchase Orders seeded"))
         self.stdout.write(self.style.SUCCESS("\nAll initial master data seeded successfully!"))
