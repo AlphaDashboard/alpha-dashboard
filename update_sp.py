@@ -748,6 +748,8 @@ if __name__ == '__main__':
             ]:
                 try:
                     cursor.execute(f'ALTER TABLE tblMaterial ADD COLUMN {col} {col_type};')
+                except Exception:
+                    pass
             for col, col_type in [
                 ('Notes', 'VARCHAR(1000)'),
                 ('SupplierName', 'VARCHAR(200)')
