@@ -22,3 +22,9 @@ psycopg2-binary>=2.9.9
 # Static files handling for production / deployment
 whitenoise>=6.6.0
 
+# Production WSGI HTTP Server
+gunicorn>=21.2.0
+
+# Database URL parser for cloud deployment (Render, Railway, Supabase)
+dj-database-url>=2.1.0
+

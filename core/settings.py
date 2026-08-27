@@ -97,8 +97,22 @@ if _env_file.exists():
                 os.environ.setdefault(_key.strip(), _val.strip())
 
 DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DB_ENGINE == 'django.db.backends.sqlite3':
+if DATABASE_URL:
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=600,
+                ssl_require=False
+            )
+        }
+        DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    except ImportError:
+        pass
+elif DB_ENGINE == 'django.db.backends.sqlite3':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
