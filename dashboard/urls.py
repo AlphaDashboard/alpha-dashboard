@@ -26,6 +26,7 @@ from .views import (
     MaterialCreateAPIView,
     BrokerCreateAPIView,
     VendorSupplierCreateAPIView,
+    VendorSupplierDetailAPIView,
     SubSectionYListView,
     SubSectionYCreateView,
     SalPurGroupListView,
@@ -119,6 +120,7 @@ urlpatterns = [
     path('api/material-create/', MaterialCreateAPIView.as_view(), name='api_material_create'),
     path('api/broker-create/', BrokerCreateAPIView.as_view(), name='api_broker_create'),
     path('api/supplier-create/', VendorSupplierCreateAPIView.as_view(), name='api_supplier_create'),
+    path('api/vendor-supplier/<int:pk>/', VendorSupplierDetailAPIView.as_view(), name='api_vendor_supplier_detail'),
 
     # Sub Section Y URLs
     path('subsection-y/', SubSectionYListView.as_view(), name='subsection_y_list'),

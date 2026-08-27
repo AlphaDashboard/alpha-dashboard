@@ -99,6 +99,60 @@ class PurchaseBillForm {
         });
     }
 
+    async onSupplierChange(supplierId, selectElement) {
+        const contactInput = domUtils.getElement('#supplierContact');
+        const addressInput = domUtils.getElement('#supplierAddress');
+        const gstInput = domUtils.getElement('#gstNumber');
+
+        let contact = '';
+        let address = '';
+        let gst = '';
+
+        const selectedOpt = selectElement ? selectElement.options[selectElement.selectedIndex] : null;
+        if (selectedOpt) {
+            contact = selectedOpt.getAttribute('data-contact') || '';
+            address = selectedOpt.getAttribute('data-address') || '';
+            gst = selectedOpt.getAttribute('data-gst') || '';
+        }
+
+        if (!contact && !address && !gst && supplierId) {
+            try {
+                const res = await fetch(`/api/vendor-supplier/${supplierId}/`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        contact = data.contact_no || '';
+                        address = data.address || '';
+                        gst = data.gst_no || '';
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to fetch supplier details:', err);
+            }
+        }
+
+        if (contactInput) {
+            contactInput.value = contact;
+            contactInput.closest('.form-group')?.classList.toggle('has-value', !!contact);
+        }
+        if (addressInput) {
+            addressInput.value = address;
+            addressInput.closest('.form-group')?.classList.toggle('has-value', !!address);
+        }
+        if (gstInput) {
+            gstInput.value = gst;
+            gstInput.closest('.form-group')?.classList.toggle('has-value', !!gst);
+        }
+
+        if (contact || address || gst) {
+            const collapseEl = domUtils.getElement('#moreBillDetailsCollapse');
+            if (collapseEl && !collapseEl.classList.contains('show') && typeof bootstrap !== 'undefined') {
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+                bsCollapse.show();
+            }
+        }
+    }
+
     bindEvents() {
         // Table actions
         if (this.tbody) {
@@ -155,7 +209,14 @@ class PurchaseBillForm {
             this.billStatusSelect.addEventListener('change', () => this.updateProgress());
         }
 
-        // Save buttons
+        // Save button (Unified)
+        if (this.generateBillBtn) {
+            this.generateBillBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedStatus = domUtils.getElement('#billStatus')?.value || 'Draft';
+                this.submitForm(selectedStatus);
+            });
+        }
         if (this.saveDraftBtn) {
             this.saveDraftBtn.addEventListener('click', () => this.submitForm('Draft'));
         }
@@ -225,12 +286,17 @@ class PurchaseBillForm {
 
         const supplierSelect = domUtils.getElement('#supplier');
         if (supplierSelect) {
-            supplierSelect.addEventListener('change', (e) => {
-                if (e.target.value === 'add_new') {
+            supplierSelect.addEventListener('change', async (e) => {
+                const val = e.target.value;
+                if (val === 'add_new') {
                     e.target.value = '';
                     if (this.createSupplierForm) this.createSupplierForm.reset();
                     if (this.supplierModalError) this.supplierModalError.classList.add('d-none');
                     if (this.createSupplierModal) this.createSupplierModal.show();
+                    return;
+                }
+                if (val) {
+                    await this.onSupplierChange(val, e.target);
                 }
             });
         }
@@ -774,6 +840,11 @@ class PurchaseBillForm {
                 expDateEl.value = data.expected_delivery_date ? data.expected_delivery_date.split('T')[0] : '';
                 if (expDateEl.value) expDateEl.closest('.form-group')?.classList.add('has-value');
             }
+            const invoiceNoEl = domUtils.getElement('#invoiceNo');
+            if (invoiceNoEl) {
+                invoiceNoEl.value = data.invoice_no || '';
+                if (invoiceNoEl.value) invoiceNoEl.closest('.form-group')?.classList.add('has-value');
+            }
             if (this.billStatusSelect) {
                 this.billStatusSelect.value = data.bill_status || 'Draft';
                 this.billStatusSelect.closest('.form-group')?.classList.add('has-value');
@@ -1119,6 +1190,7 @@ class PurchaseBillForm {
         const payload = {
             bill_date:              domUtils.getElement('#billDate').value,
             expected_delivery_date: domUtils.getElement('#expectedDeliveryDate').value || null,
+            invoice_no:             domUtils.getElement('#invoiceNo')?.value?.trim() || null,
             bill_status:            targetStatus,
             gate_pass_no:           domUtils.getElement('#gatePassNo')?.value   || null,
             gate_pass_date:         domUtils.getElement('#gatePassDate')?.value || null,
@@ -1219,12 +1291,17 @@ class PurchaseBillForm {
             billDateInput.value = today;
         }
 
+        const invoiceNoInput = domUtils.getElement('#invoiceNo');
+        if (invoiceNoInput) {
+            invoiceNoInput.value = '';
+        }
+
         if (this.billStatusSelect) {
             this.billStatusSelect.value = 'Draft';
         }
 
         this.addRow();
-        this.updateTotals();
+        this.calculateTotals();
         this.updateProgress();
 
         document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(el => {

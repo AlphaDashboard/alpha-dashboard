@@ -1,9 +1,12 @@
+import sys
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from .account_master import AccountMaster
 from .gate_entry import Material
 from .broker_supplier import Broker, VendorSupplier
 from .sal_pur_group import SalPurGroup
+
+TESTING = 'test' in sys.argv
 
 
 class PurchaseBill(models.Model):
@@ -68,6 +71,12 @@ class PurchaseBill(models.Model):
         blank=True,
         verbose_name=_("PO Date")
     )
+    invoice_no = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        verbose_name=_("Invoice No")
+    )
 
     # Supplier Details
     sal_pur_group = models.ForeignKey(
@@ -98,6 +107,8 @@ class PurchaseBill(models.Model):
     supplier = models.ForeignKey(
         VendorSupplier,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         db_constraint=False,
         related_name='supplier_bills',
         verbose_name=_("Supplier Name")
@@ -231,6 +242,7 @@ class PurchaseBill(models.Model):
 
     class Meta:
         db_table = 'tblPurchaseBill'
+        managed = TESTING
         verbose_name = _('Purchase Bill')
         verbose_name_plural = _('Purchase Bills')
         ordering = ['-bill_date', '-date_created']
@@ -327,6 +339,7 @@ class PurchaseBillItem(models.Model):
 
     class Meta:
         db_table = 'tblPurchaseBill_TRAN'
+        managed = TESTING
         verbose_name = _('Purchase Bill Detail')
         verbose_name_plural = _('Purchase Bill Details')
 

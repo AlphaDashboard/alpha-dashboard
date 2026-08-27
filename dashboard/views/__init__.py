@@ -51,6 +51,7 @@ __all__ = [
     'MaterialCreateAPIView',
     'BrokerCreateAPIView',
     'VendorSupplierCreateAPIView',
+    'VendorSupplierDetailAPIView',
     'SubSectionYListView',
     'SubSectionYCreateView',
     'SalPurGroupListView',
@@ -69,7 +70,7 @@ __all__ = [
     'PurchaseBillCreateView',
 ]
 from .section_c_views import SectionCListView, SectionCCreateView
-from .subsection_x_views import SubSectionXListView, SubSectionXCreateView, MaterialCreateAPIView, BrokerCreateAPIView, VendorSupplierCreateAPIView
+from .subsection_x_views import SubSectionXListView, SubSectionXCreateView, MaterialCreateAPIView, BrokerCreateAPIView, VendorSupplierCreateAPIView, VendorSupplierDetailAPIView
 from .subsection_y_views import SubSectionYListView, SubSectionYCreateView
 from .sal_pur_group_views import SalPurGroupListView, SalPurGroupCreateView
 from .user_master_views import UserMasterListView, UserMasterCreateView, LoginView, LogoutView

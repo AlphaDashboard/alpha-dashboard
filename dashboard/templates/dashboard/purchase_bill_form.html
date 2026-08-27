@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}{% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill - Alpha Management{% endblock %}
+{% block title %}{% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Voucher - Alpha Management{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="/static/css/common-dropdown.css?v={% now 'U' %}">
@@ -423,7 +423,7 @@
     <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 32px;">
         <div class="d-flex align-items-center gap-2">
             <h1 class="page-title">
-                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Bill
+                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Voucher
             </h1>
             <span class="badge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px;">RMPBL</span>
         </div>
@@ -464,7 +464,7 @@
     <div id="billLockedBanner" class="d-none mb-1 p-2 d-flex align-items-center gap-2 flex-shrink-0"
          style="border-radius:4px;font-size:12px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;">
         <i class="bi bi-lock-fill" style="font-size:14px;flex-shrink:0;"></i>
-        <span id="billLockedBannerText">This Purchase Bill cannot be edited in its current state.</span>
+        <span id="billLockedBannerText">This Purchase Voucher cannot be edited in its current state.</span>
     </div>
 
     <form id="purchaseBillForm" class="erp-form-flex" novalidate>
@@ -477,12 +477,12 @@
             
             <!-- ── ROW 1: Bill No | Bill Date | Sales/Purchase Group | Bill Status ── -->
             <div class="row g-2">
-                <!-- Bill No -->
+                <!-- Purchase Voucher No -->
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <input type="text" id="billNo" name="bill_no" class="form-control"
                                value="{% if is_view_mode %}{{ voucher_no }}{% else %}(Auto Generated){% endif %}" disabled placeholder=" ">
-                        <label for="billNo" class="floating-label">Bill No *</label>
+                        <label for="billNo" class="floating-label">Purchase Voucher No. *</label>
                     </div>
                 </div>
 
@@ -603,18 +603,26 @@
                 </div>
             </div>
 
-            <!-- ── ROW 3: Expected Date | Broker Name | Zone Name | Supplier Name ── -->
+            <!-- ── ROW 3: Invoice Date | Invoice No | Broker Name | Zone Name | Supplier Name ── -->
             <div class="row g-2" style="margin-top: 1px;">
-                <!-- Expected Delivery Date -->
-                <div class="col-md-3">
+                <!-- Invoice Date -->
+                <div class="col-md-2">
                     <div class="form-group has-value">
                         <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
-                        <label for="expectedDeliveryDate" class="floating-label">Expected Date</label>
+                        <label for="expectedDeliveryDate" class="floating-label">Invoice Date</label>
+                    </div>
+                </div>
+
+                <!-- Invoice No (User Enterable) -->
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <input type="text" id="invoiceNo" name="invoice_no" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                        <label for="invoiceNo" class="floating-label">Invoice No.</label>
                     </div>
                 </div>
 
                 <!-- Broker Name -->
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group has-value">
                         <select id="broker" name="broker" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -628,7 +636,7 @@
                 </div>
 
                 <!-- Zone Name -->
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group has-value">
                         <select id="zoneName" name="zone_name" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -641,13 +649,16 @@
                 </div>
 
                 <!-- Supplier Name -->
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group has-value">
                         <select id="supplier" name="supplier" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
                             <option value="add_new" class="text-primary fw-bold">+ Add New Supplier</option>
                             {% for s in suppliers %}
-                            <option value="{{ s.VendorSupplierID }}">{{ s.VendorSupplierName }}</option>
+                            <option value="{{ s.VendorSupplierID }}"
+                                    data-contact="{{ s.ContactNo|default:'' }}"
+                                    data-address="{% if s.Address1 and s.Address2 %}{{ s.Address1 }}, {{ s.Address2 }}{% elif s.Address1 %}{{ s.Address1 }}{% elif s.Address2 %}{{ s.Address2 }}{% endif %}"
+                                    data-gst="{{ s.GSTNo|default:'' }}">{{ s.VendorSupplierName }}</option>
                             {% endfor %}
                         </select>
                         <label for="supplier" class="floating-label">Supplier Name *</label>
@@ -780,14 +791,8 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2" id="actionButtonsContainer">
                                     {% if not is_view_mode %}
-                                    <button type="button" class="erp-btn-secondary" id="saveDraftBtn">
-                                        <i class="bi bi-file-earmark"></i> Save Draft
-                                    </button>
-                                    <button type="button" class="erp-btn-submit" id="submitApprovalBtn">
-                                        <i class="bi bi-send-check"></i> Save and Submitted
-                                    </button>
                                     <button type="submit" class="erp-btn-save shadow-sm" id="generateBillBtn">
-                                        <i class="bi bi-floppy"></i> Save Bill
+                                        <i class="bi bi-floppy"></i> Save Voucher
                                     </button>
                                     {% endif %}
                                 </div>
@@ -865,14 +870,8 @@
                             <!-- Action buttons inside Terms Tab -->
                             <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
                                 {% if not is_view_mode %}
-                                <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
-                                    <i class="bi bi-file-earmark"></i> Save Draft
-                                </button>
-                                <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
-                                    <i class="bi bi-send-check"></i> Save and Submitted
-                                </button>
                                 <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
-                                    <i class="bi bi-floppy"></i> Save Bill
+                                    <i class="bi bi-floppy"></i> Save Voucher
                                 </button>
                                 {% endif %}
                             </div>
@@ -927,14 +926,8 @@
                             <!-- Action buttons inside Additional Info Tab -->
                             <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
                                 {% if not is_view_mode %}
-                                <button type="button" class="erp-btn-secondary" onclick="document.getElementById('saveDraftBtn')?.click()">
-                                    <i class="bi bi-file-earmark"></i> Save Draft
-                                </button>
-                                <button type="button" class="erp-btn-submit" onclick="document.getElementById('submitApprovalBtn')?.click()">
-                                    <i class="bi bi-send-check"></i> Save and Submitted
-                                </button>
                                 <button type="button" class="erp-btn-save shadow-sm" onclick="document.getElementById('generateBillBtn')?.click()">
-                                    <i class="bi bi-floppy"></i> Save Bill
+                                    <i class="bi bi-floppy"></i> Save Voucher
                                 </button>
                                 {% endif %}
                             </div>

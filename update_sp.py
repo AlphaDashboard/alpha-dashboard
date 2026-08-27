@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS tblPurchaseBill (
     tran_type VARCHAR(20) DEFAULT 'RMPBL',
     bill_date DATETIME,
     expected_delivery_date DATE,
+    invoice_no VARCHAR(50),
     bill_status VARCHAR(20) DEFAULT 'Draft',
     gate_pass_no VARCHAR(50),
     gate_pass_date DATE,
@@ -205,6 +206,7 @@ CREATE TABLE IF NOT EXISTS public."tblPurchaseBill" (
     tran_type VARCHAR(20) DEFAULT 'RMPBL',
     bill_date TIMESTAMP,
     expected_delivery_date DATE,
+    invoice_no VARCHAR(50),
     bill_status VARCHAR(20) DEFAULT 'Draft',
     gate_pass_no VARCHAR(50),
     gate_pass_date DATE,
@@ -283,6 +285,18 @@ BEGIN
             WHERE table_name = 'tblsalepurchasechallans_tran' AND column_name = 'GrossWeight'
         ) THEN
             ALTER TABLE public.tblSalePurchaseChallans_Tran ADD COLUMN "GrossWeight" NUMERIC(18,2) DEFAULT 0;
+        END IF;
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND (table_name = 'tblpurchasebill' OR table_name = 'tblPurchaseBill')
+    ) THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE (table_name = 'tblpurchasebill' OR table_name = 'tblPurchaseBill') AND column_name = 'invoice_no'
+        ) THEN
+            ALTER TABLE public."tblPurchaseBill" ADD COLUMN invoice_no VARCHAR(50);
         END IF;
     END IF;
 END $$;

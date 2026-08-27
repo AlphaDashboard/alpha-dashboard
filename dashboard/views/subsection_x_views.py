@@ -138,3 +138,26 @@ class VendorSupplierCreateAPIView(View):
             })
         except Exception as e:
             return JsonResponse({'success': False, 'errors': {'general': str(e)}})
+
+
+class VendorSupplierDetailAPIView(View):
+    """Returns details (contact, address, GST) for a selected vendor/supplier."""
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            supplier = VendorSupplier.objects.get(VendorSupplierID=pk)
+            address_parts = [p.strip() for p in [supplier.Address1, supplier.Address2] if p and p.strip()]
+            full_address = ", ".join(address_parts)
+            return JsonResponse({
+                'success': True,
+                'id': supplier.VendorSupplierID,
+                'name': supplier.VendorSupplierName,
+                'contact_no': supplier.ContactNo or '',
+                'address': full_address,
+                'gst_no': supplier.GSTNo or '',
+                'pan_no': supplier.PANo or ''
+            })
+        except VendorSupplier.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Supplier not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+

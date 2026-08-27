@@ -521,7 +521,7 @@ class PurchaseBillSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseBill
         fields = [
-            'bill_no', 'tran_type', 'bill_date', 'expected_delivery_date', 'bill_status',
+            'bill_no', 'tran_type', 'bill_date', 'expected_delivery_date', 'invoice_no', 'bill_status',
             'gate_pass_no', 'gate_pass_date', 'po_no', 'po_date',
             'sal_pur_group', 'sal_pur_group_display',
             'broker', 'broker_display', 'zone_name', 'supplier', 'supplier_display',
@@ -532,6 +532,7 @@ class PurchaseBillSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             'bill_no':            {'required': False, 'allow_blank': True},
+            'invoice_no':         {'required': False, 'allow_blank': True, 'allow_null': True},
             'tran_type':          {'required': False},
             'total_basic_amount': {'required': False},
             'taxes':              {'required': False},

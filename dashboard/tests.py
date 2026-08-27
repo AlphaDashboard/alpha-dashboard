@@ -1836,6 +1836,18 @@ class PurchaseChallanAndGatePassTests(TestCase):
 
 class PurchaseBillAndPODropdownTests(TestCase):
     def setUp(self):
+        from django.db import connection
+        from dashboard.models.purchase_bill import PurchaseBill, PurchaseBillItem
+        with connection.schema_editor() as editor:
+            try:
+                editor.create_model(PurchaseBill)
+            except Exception:
+                pass
+            try:
+                editor.create_model(PurchaseBillItem)
+            except Exception:
+                pass
+
         from dashboard.models import Broker, Zone, VendorSupplier
         from dashboard.models.pur_sales import PurSales, PurSalesTran
         from dashboard.models.account_master import AccountMaster, Category
@@ -1883,4 +1895,74 @@ class PurchaseBillAndPODropdownTests(TestCase):
         self.assertEqual(response.status_code, 200)
         po_numbers = [item['po_no'] for item in response.json()]
         self.assertIn("PO-PURSALE-001", po_numbers)
+
+    def test_vendor_supplier_detail_api(self):
+        """Verify VendorSupplierDetailAPIView returns contact, address, and GST."""
+        from dashboard.models import VendorSupplier
+        sup = VendorSupplier.objects.create(
+            VendorSupplierID=888,
+            VendorSupplierName="Sharma Steel Works",
+            Address1="Industrial Area Phase 1",
+            Address2="New Delhi",
+            ContactNo="+91-9876543210",
+            GSTNo="07AAAAA0000A1Z5"
+        )
+        url = reverse('dashboard:api_vendor_supplier_detail', kwargs={'pk': 888})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['name'], "Sharma Steel Works")
+        self.assertEqual(data['contact_no'], "+91-9876543210")
+        self.assertEqual(data['address'], "Industrial Area Phase 1, New Delhi")
+        self.assertEqual(data['gst_no'], "07AAAAA0000A1Z5")
+
+    def test_purchase_bill_invoice_no_and_template_labels(self):
+        """Verify invoice_no field and updated Purchase Voucher labels in template."""
+        from dashboard.models import PurchaseBill, Material, VendorSupplier
+        from dashboard.services.purchase_bill_sp_helper import execute_sp_purchase_bill
+
+        sup = VendorSupplier.objects.create(
+            VendorSupplierID=777,
+            VendorSupplierName="Test Vendor Co",
+            Address1="123 Industrial Road",
+            ContactNo="9998887776",
+            GSTNo="07ABCDE1234F1Z5"
+        )
+        mat = Material.objects.create(material_code="ITEM-001", material_name="Iron Rods")
+        bill_no = execute_sp_purchase_bill(
+            operation='INSERT',
+            header_data={
+                'bill_date': timezone.now(),
+                'invoice_no': 'INV-2026-999',
+                'expected_delivery_date': timezone.now().date(),
+                'bill_status': 'Draft',
+                'supplier': sup.pk
+            },
+            items_data=[{
+                'item': mat.pk,
+                'order_qty': 10,
+                'unit_rate': 500,
+                'uom': 'MT',
+                'amount': 5000,
+                'remarks': 'Test'
+            }],
+            username='tester'
+        )
+        self.assertIsNotNone(bill_no)
+        bill = PurchaseBill.objects.get(bill_no=bill_no)
+        self.assertEqual(bill.invoice_no, 'INV-2026-999')
+
+        # Check template rendering for Purchase Voucher No. label and single Save Voucher button
+        url = reverse('dashboard:purchase_bill_create')
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn("Purchase Voucher No.", content)
+        self.assertIn("Invoice Date", content)
+        self.assertIn("Invoice No.", content)
+        self.assertIn("Save Voucher", content)
+        self.assertNotIn("Save Bill", content)
+        self.assertNotIn("Save and Submitted", content)
+
 
