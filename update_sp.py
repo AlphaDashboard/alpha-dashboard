@@ -50,7 +50,9 @@ CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans (
     submittedby VARCHAR(100),
     SubmissionDate DATETIME,
     approvedby VARCHAR(100),
-    ApprovalDate DATETIME
+    ApprovalDate DATETIME,
+    Notes VARCHAR(1000),
+    SupplierName VARCHAR(200)
 );
 
 CREATE TABLE IF NOT EXISTS tblSalePurchaseChallans_Tran (
@@ -746,6 +748,12 @@ if __name__ == '__main__':
             ]:
                 try:
                     cursor.execute(f'ALTER TABLE tblMaterial ADD COLUMN {col} {col_type};')
+            for col, col_type in [
+                ('Notes', 'VARCHAR(1000)'),
+                ('SupplierName', 'VARCHAR(200)')
+            ]:
+                try:
+                    cursor.execute(f'ALTER TABLE tblSalePurchaseChallans ADD COLUMN {col} {col_type};')
                 except Exception:
                     pass
             print("SUCCESS: SQLite tables and default prototype users initialized!")
