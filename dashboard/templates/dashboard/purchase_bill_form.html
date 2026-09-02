@@ -163,6 +163,29 @@
     /* ── Row gutter ── */
     .row.g-2 > [class*="col-"] { padding: 1px 4px; }
 
+    /* ── Compact 2-Row Header Form Grid ── */
+    .erp-header-row-1 {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+    }
+    .erp-header-row-2 {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 4px;
+    }
+    @media (max-width: 1200px) {
+        .erp-header-row-1 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .erp-header-row-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 768px) {
+        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: minmax(0, 1fr); }
+    }
+
     /* ── Status Progress Bar Stepper (Exact Challan Style) ── */
     .progress-container {
         display: flex;
@@ -473,14 +496,14 @@
         {% csrf_token %}
 
         <!-- ══════════════════════════════════════════════════
-             HEADER CARD (Balanced 4 Columns Layout)
+             HEADER CARD (Compact 2 Rows Layout)
         ══════════════════════════════════════════════════ -->
         <div class="card flex-shrink-0" id="billDetailsCard">
             
-            <!-- ── ROW 1: Bill No | Bill Date | Sales/Purchase Group | Bill Status ── -->
-            <div class="row g-2">
+            <!-- ── ROW 1 (6 Fields): Voucher No | Bill Date | Group | Bill Status | Gate Pass No | Gate Pass Date ── -->
+            <div class="erp-header-row-1">
                 <!-- Purchase Voucher No -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <input type="text" id="billNo" name="bill_no" class="form-control"
                                value="{% if is_view_mode %}{{ voucher_no }}{% else %}(Auto Generated){% endif %}" disabled placeholder=" ">
@@ -489,7 +512,7 @@
                 </div>
 
                 <!-- Bill Date -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <input type="date" id="billDate" name="bill_date" class="form-control" placeholder=" " required {% if is_view_mode %}disabled{% endif %}>
                         <label for="billDate" class="floating-label">Bill Date *</label>
@@ -497,7 +520,7 @@
                 </div>
 
                 <!-- Sales/Purchase Group -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <select id="salPurGroup" name="sal_pur_group" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -511,7 +534,7 @@
                 </div>
 
                 <!-- Bill Status -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <select id="billStatus" name="bill_status" class="form-select" {% if is_view_mode %}disabled{% endif %}>
                             <option value="Draft" {% if bill_status == 'Draft' %}selected{% endif %}>Draft</option>
@@ -522,12 +545,9 @@
                         <label for="billStatus" class="floating-label">Bill Status</label>
                     </div>
                 </div>
-            </div>
 
-            <!-- ── ROW 2: Gate Pass No | Gate Pass Date | PO No | PO Date ── -->
-            <div class="row g-2" style="margin-top: 1px;">
                 <!-- Gate Pass No (Smart Dropdown) -->
-                <div class="col-md-3" style="position:relative;">
+                <div style="position:relative;">
                     <div class="form-group mb-0" id="gpDropdownGroup">
                         <input type="hidden" id="gatePassNo" name="gate_pass_no">
                         <input type="text" id="gatePassNoDisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
@@ -559,15 +579,18 @@
                 </div>
 
                 <!-- Gate Pass Date (Auto-fill) -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <input type="date" id="gatePassDate" name="gate_pass_date" class="form-control" placeholder=" " readonly>
                         <label for="gatePassDate" class="floating-label">Gate Pass Date</label>
                     </div>
                 </div>
+            </div>
 
+            <!-- ── ROW 2 (7 Fields): PO No | PO Date | Invoice Date | Invoice No | Broker | Zone | Supplier ── -->
+            <div class="erp-header-row-2">
                 <!-- PO No (Smart Dropdown) -->
-                <div class="col-md-3" style="position:relative;">
+                <div style="position:relative;">
                     <div class="form-group mb-0" id="poDropdownGroup">
                         <input type="hidden" id="poNo" name="po_no">
                         <input type="text" id="poNoDisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
@@ -597,18 +620,15 @@
                 </div>
 
                 <!-- PO Date (Auto-fill) -->
-                <div class="col-md-3">
+                <div>
                     <div class="form-group has-value">
                         <input type="date" id="poDate" name="po_date" class="form-control" placeholder=" " readonly>
                         <label for="poDate" class="floating-label">PO Date</label>
                     </div>
                 </div>
-            </div>
 
-            <!-- ── ROW 3: Invoice Date | Invoice No | Broker Name | Zone Name | Supplier Name ── -->
-            <div class="row g-2" style="margin-top: 1px;">
                 <!-- Invoice Date -->
-                <div class="col-md-2">
+                <div>
                     <div class="form-group has-value">
                         <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
                         <label for="expectedDeliveryDate" class="floating-label">Invoice Date</label>
@@ -616,7 +636,7 @@
                 </div>
 
                 <!-- Invoice No (User Enterable) -->
-                <div class="col-md-2">
+                <div>
                     <div class="form-group">
                         <input type="text" id="invoiceNo" name="invoice_no" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
                         <label for="invoiceNo" class="floating-label">Invoice No.</label>
@@ -624,7 +644,7 @@
                 </div>
 
                 <!-- Broker Name -->
-                <div class="col-md-2">
+                <div>
                     <div class="form-group has-value">
                         <select id="broker" name="broker" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -638,7 +658,7 @@
                 </div>
 
                 <!-- Zone Name -->
-                <div class="col-md-2">
+                <div>
                     <div class="form-group has-value">
                         <select id="zoneName" name="zone_name" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -651,7 +671,7 @@
                 </div>
 
                 <!-- Supplier Name -->
-                <div class="col-md-4">
+                <div>
                     <div class="form-group has-value">
                         <select id="supplier" name="supplier" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
                             <option value=""></option>
@@ -667,6 +687,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- Toggle Link for Optional Fields -->
             <div class="mt-2 text-start">
