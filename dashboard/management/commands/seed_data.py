@@ -152,16 +152,28 @@ class Command(BaseCommand):
             {'code': 'RM-006', 'name': 'Heavy Melting Steel Scrap', 'unit_weight': 1000.0, 'PurchaseGST': 18.0, 'SalesGST': 18.0},
             {'code': 'RM-007', 'name': 'Refractory Bricks High Alumina', 'unit_weight': 25.0, 'PurchaseGST': 18.0, 'SalesGST': 18.0},
         ]
-        # Reset postgres sequences if on PostgreSQL
+        # Reset postgres sequences if on PostgreSQL or ensure SQLite columns exist
         from django.db import connection
-        if connection.vendor == 'postgresql':
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
+            if connection.vendor == 'postgresql':
                 try:
                     cursor.execute("""
                         SELECT setval(pg_get_serial_sequence('"tblMaterial"', 'id'), coalesce(max(id), 1), true) FROM "tblMaterial";
                     """)
                 except Exception:
                     pass
+            elif connection.vendor == 'sqlite':
+                for col, col_type in [
+                    ('PurchaseGST', 'NUMERIC(5,2)'),
+                    ('SalesGST', 'NUMERIC(6,2)'),
+                    ('unit_weight', 'NUMERIC(18,3)'),
+                    ('Auto1_Manual0_calc', 'BOOLEAN'),
+                    ('IsRateInclGSTY1N0', 'BOOLEAN')
+                ]:
+                    try:
+                        cursor.execute(f'ALTER TABLE tblMaterial ADD COLUMN {col} {col_type};')
+                    except Exception:
+                        pass
 
         try:
             for m in materials:

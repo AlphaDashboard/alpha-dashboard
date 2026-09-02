@@ -883,6 +883,7 @@ if __name__ == '__main__':
     with connection.cursor() as cursor:
         if connection.vendor == 'sqlite':
             print("SQLite database detected. Creating local fallback tables...")
+            cursor.execute("PRAGMA foreign_keys = OFF;")
             cursor.executescript(sqlite_tables_sql)
             for col, col_type in [
                 ('PurchaseGST', 'NUMERIC(5,2)'),
