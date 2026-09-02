@@ -106,25 +106,13 @@
     }
 
     /* ── Floating labels (Exact Challan Style) ── */
-    .form-group { position: relative; margin-bottom: 1px !important; }
+    .form-group { position: relative; margin-bottom: 0 !important; }
     .form-group label.floating-label {
-        position: absolute; left: 8px; top: 9px;
-        color: #64748b; font-size: 11px; pointer-events: none;
-        transition: 0.2s ease all; background: #ffffff !important; padding: 0 3px; line-height: 1;
-        z-index: 12 !important;
-    }
-    .form-group input:focus + label.floating-label,
-    .form-group input:not(:placeholder-shown) + label.floating-label,
-    .form-group select + label.floating-label,
-    .form-group input[readonly] + label.floating-label,
-    .form-group input:disabled + label.floating-label,
-    .form-group textarea:focus + label.floating-label,
-    .form-group textarea:not(:placeholder-shown) + label.floating-label,
-    .form-group.is-focused label.floating-label,
-    .form-group.has-value label.floating-label {
-        top: -6px !important; left: 6px !important;
-        font-size: 9.5px !important; color: #334155 !important;
-        font-weight: 600 !important; z-index: 12 !important;
+        position: absolute; left: 6px; top: -6px !important;
+        color: #334155 !important; font-size: 9.5px !important; font-weight: 600 !important;
+        pointer-events: none;
+        background: #ffffff !important; padding: 0 4px; line-height: 1;
+        z-index: 12 !important; white-space: nowrap;
     }
     .form-group input[readonly] + label.floating-label,
     .form-group input:disabled + label.floating-label {
@@ -167,23 +155,23 @@
     .erp-header-row-1 {
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr));
-        gap: 6px;
+        gap: 8px;
     }
     .erp-header-row-2 {
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr)) minmax(0, 1.5fr);
-        gap: 6px;
-        margin-top: 4px;
+        gap: 8px;
+        margin-top: 10px;
     }
     @media (max-width: 1200px) {
         .erp-header-row-1 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .erp-header-row-2 { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr); }
+        .erp-header-row-2 { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr); margin-top: 8px; }
     }
     @media (max-width: 768px) {
-        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; }
     }
     @media (max-width: 480px) {
-        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: minmax(0, 1fr); }
+        .erp-header-row-1, .erp-header-row-2 { grid-template-columns: minmax(0, 1fr); margin-top: 8px; }
     }
 
     /* ── Status Progress Bar Stepper (Exact Challan Style) ── */
@@ -548,7 +536,7 @@
 
                 <!-- Gate Pass No (Smart Dropdown) -->
                 <div style="position:relative;">
-                    <div class="form-group mb-0" id="gpDropdownGroup">
+                    <div class="form-group has-value mb-0" id="gpDropdownGroup">
                         <input type="hidden" id="gatePassNo" name="gate_pass_no">
                         <input type="text" id="gatePassNoDisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
@@ -591,7 +579,7 @@
             <div class="erp-header-row-2">
                 <!-- PO No (Smart Dropdown) -->
                 <div style="position:relative;">
-                    <div class="form-group mb-0" id="poDropdownGroup">
+                    <div class="form-group has-value mb-0" id="poDropdownGroup">
                         <input type="hidden" id="poNo" name="po_no">
                         <input type="text" id="poNoDisplay" class="form-control erp-dropdown-arrow" placeholder=" " autocomplete="off"
                                style="cursor:pointer;" {% if is_view_mode %}disabled{% endif %}>
@@ -629,11 +617,12 @@
 
                 <!-- Invoice No (User Enterable) -->
                 <div>
-                    <div class="form-group">
+                    <div class="form-group has-value">
                         <input type="text" id="invoiceNo" name="invoice_no" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
                         <label for="invoiceNo" class="floating-label">Invoice No.</label>
                     </div>
                 </div>
+
 
                 <!-- Invoice Date (on right side of Invoice No) -->
                 <div>
