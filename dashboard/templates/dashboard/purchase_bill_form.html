@@ -171,13 +171,13 @@
     }
     .erp-header-row-2 {
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr)) minmax(0, 1.5fr);
         gap: 6px;
         margin-top: 4px;
     }
     @media (max-width: 1200px) {
         .erp-header-row-1 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .erp-header-row-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .erp-header-row-2 { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr); }
     }
     @media (max-width: 768px) {
         .erp-header-row-1, .erp-header-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -627,19 +627,19 @@
                     </div>
                 </div>
 
-                <!-- Invoice Date -->
-                <div>
-                    <div class="form-group has-value">
-                        <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
-                        <label for="expectedDeliveryDate" class="floating-label">Invoice Date</label>
-                    </div>
-                </div>
-
                 <!-- Invoice No (User Enterable) -->
                 <div>
                     <div class="form-group">
                         <input type="text" id="invoiceNo" name="invoice_no" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
                         <label for="invoiceNo" class="floating-label">Invoice No.</label>
+                    </div>
+                </div>
+
+                <!-- Invoice Date (on right side of Invoice No) -->
+                <div>
+                    <div class="form-group has-value">
+                        <input type="date" id="expectedDeliveryDate" name="expected_delivery_date" class="form-control" placeholder=" " {% if is_view_mode %}disabled{% endif %}>
+                        <label for="expectedDeliveryDate" class="floating-label">Invoice Date</label>
                     </div>
                 </div>
 
@@ -761,6 +761,13 @@
                         </button>
                     </li>
                     <li class="nav-item">
+                        <button class="nav-link" id="tab-taxes"
+                                data-bs-toggle="tab" data-bs-target="#panel-taxes"
+                                type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-receipt me-1"></i>Tax & Other Expenses
+                        </button>
+                    </li>
+                    <li class="nav-item">
                         <button class="nav-link" id="tab-terms"
                                 data-bs-toggle="tab" data-bs-target="#panel-terms"
                                 type="button" style="font-size:11.5px; font-weight:600; padding:6px 14px;">
@@ -799,6 +806,16 @@
                                 <tbody id="itemsTableBody">
                                     <!-- Injected by purchase-bill-create.js -->
                                 </tbody>
+                                <tfoot>
+                                    <tr style="background:#536479; color:#ffffff; font-weight:700; font-size:11.5px; border-top:2px solid #334155;">
+                                        <td colspan="2" class="text-end" style="padding:6px 10px; text-transform:uppercase; letter-spacing:0.5px; color:#ffffff;">TOTAL:</td>
+                                        <td class="text-end" style="padding:6px 8px; color:#ffffff;" id="tableTotalQtyDisplay">0.00</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-end" style="padding:6px 8px; color:#ffffff;" id="tableTotalAmountDisplay">0.00</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
 
@@ -806,9 +823,11 @@
                         <div class="erp-table-footer-bar">
                             <div class="d-flex align-items-center justify-content-between w-100 px-3">
                                 <div class="d-flex align-items-center gap-4">
-                                    <span class="erp-footer-label">TOTALS</span>
+                                    <span class="erp-footer-label">SUMMARY</span>
                                     <div class="d-flex align-items-center gap-4">
+                                        <span class="erp-footer-item">Total Qty: <strong id="footerTotalQty">0.00</strong></span>
                                         <span class="erp-footer-item">Total Basic: <strong id="totalBasicAmountDisplay">0.00</strong></span>
+                                        <span class="erp-footer-item">Tax / Expenses: <strong id="footerTotalTax">0.00</strong></span>
                                         <span class="erp-footer-item">Grand Total: <strong id="grandTotalDisplay">0.00</strong></span>
                                     </div>
                                 </div>
@@ -822,6 +841,123 @@
                             </div>
                         </div>
                     </div><!-- /TAB 1 -->
+
+                    <!-- ── TAB 2: Tax & Other Expenses Tab ── -->
+                    <div class="tab-pane fade" id="panel-taxes" role="tabpanel">
+                        <div class="p-3" style="overflow-y: auto; flex: 1 1 auto; min-height: 0; background: #ffffff;">
+                            <div class="row g-3">
+                                <!-- GST & Tax Configuration -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded border" style="background:#f8fafc; border-color:#e2e8f0 !important;">
+                                        <h6 class="fw-bold mb-3" style="font-size:12px; color:#1e293b; text-transform:uppercase; letter-spacing:0.5px;">
+                                            <i class="bi bi-receipt me-1 text-primary"></i> GST & Tax Details
+                                        </h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <select id="taxType" name="tax_type" class="form-select tax-calc-input" {% if is_view_mode %}disabled{% endif %}>
+                                                        <option value="INTRA" selected>Intra-State (CGST + SGST)</option>
+                                                        <option value="INTER">Inter-State (IGST)</option>
+                                                        <option value="EXEMPT">Exempted / Non-GST</option>
+                                                    </select>
+                                                    <label for="taxType" class="floating-label">Tax Category</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <select id="gstRate" name="gst_rate" class="form-select tax-calc-input" {% if is_view_mode %}disabled{% endif %}>
+                                                        <option value="18" selected>18% (Standard GST)</option>
+                                                        <option value="12">12% GST</option>
+                                                        <option value="5">5% GST</option>
+                                                        <option value="28">28% GST</option>
+                                                        <option value="0">0% (Nil Rated)</option>
+                                                    </select>
+                                                    <label for="gstRate" class="floating-label">GST Rate %</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="cgstAmount" name="cgst_amount" class="form-control text-end" value="0.00" readonly>
+                                                    <label for="cgstAmount" class="floating-label">CGST Amount</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="sgstAmount" name="sgst_amount" class="form-control text-end" value="0.00" readonly>
+                                                    <label for="sgstAmount" class="floating-label">SGST Amount</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="igstAmount" name="igst_amount" class="form-control text-end" value="0.00" readonly>
+                                                    <label for="igstAmount" class="floating-label">IGST Amount</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="tcsPercent" name="tcs_percent" class="form-control text-end tax-calc-input" value="0.00" placeholder="0.00" {% if is_view_mode %}disabled{% endif %}>
+                                                    <label for="tcsPercent" class="floating-label">TCS %</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="tcsAmount" name="tcs_amount" class="form-control text-end" value="0.00" readonly>
+                                                    <label for="tcsAmount" class="floating-label">TCS Amount</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Other Expenses & Adjustments -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded border" style="background:#f8fafc; border-color:#e2e8f0 !important;">
+                                        <h6 class="fw-bold mb-3" style="font-size:12px; color:#1e293b; text-transform:uppercase; letter-spacing:0.5px;">
+                                            <i class="bi bi-cash-stack me-1 text-success"></i> Other Expenses & Adjustments
+                                        </h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="freightCharges" name="freight_charges" class="form-control text-end tax-calc-input" value="0.00" placeholder="0.00" {% if is_view_mode %}disabled{% endif %}>
+                                                    <label for="freightCharges" class="floating-label">Freight & Transport (+)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="loadingCharges" name="loading_charges" class="form-control text-end tax-calc-input" value="0.00" placeholder="0.00" {% if is_view_mode %}disabled{% endif %}>
+                                                    <label for="loadingCharges" class="floating-label">Loading/Unloading (+)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="otherExpenses" name="other_expenses" class="form-control text-end tax-calc-input" value="0.00" placeholder="0.00" {% if is_view_mode %}disabled{% endif %}>
+                                                    <label for="otherExpenses" class="floating-label">Other Charges (+)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="discountAmount" name="discount_amount" class="form-control text-end tax-calc-input" value="0.00" placeholder="0.00" {% if is_view_mode %}disabled{% endif %}>
+                                                    <label for="discountAmount" class="floating-label">Discount (-)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="number" step="0.01" id="roundOffAmount" name="round_off_amount" class="form-control text-end" value="0.00" readonly>
+                                                    <label for="roundOffAmount" class="floating-label">Round Off (±)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group has-value">
+                                                    <input type="text" id="calcGrandTotalDisplay" class="form-control text-end fw-bold" value="0.00" style="background:#eff6ff !important; color:#1e40af !important; font-size:12px;" readonly>
+                                                    <label for="calcGrandTotalDisplay" class="floating-label">Net Payable / Grand Total</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /TAB 2 -->
 
                     <!-- ── TAB 2: Delivery & Payment Terms Tab ── -->
                     <div class="tab-pane fade" id="panel-terms" role="tabpanel">

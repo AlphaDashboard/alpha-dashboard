@@ -14,6 +14,24 @@ class PurchaseBillForm {
 
         this.totalBasicAmountDisplay = domUtils.getElement('#totalBasicAmountDisplay');
         this.grandTotalDisplay = domUtils.getElement('#grandTotalDisplay');
+        this.tableTotalQtyDisplay = domUtils.getElement('#tableTotalQtyDisplay');
+        this.tableTotalAmountDisplay = domUtils.getElement('#tableTotalAmountDisplay');
+        this.footerTotalQty = domUtils.getElement('#footerTotalQty');
+        this.footerTotalTax = domUtils.getElement('#footerTotalTax');
+        this.calcGrandTotalDisplay = domUtils.getElement('#calcGrandTotalDisplay');
+
+        this.taxTypeSelect = domUtils.getElement('#taxType');
+        this.gstRateSelect = domUtils.getElement('#gstRate');
+        this.cgstAmountInput = domUtils.getElement('#cgstAmount');
+        this.sgstAmountInput = domUtils.getElement('#sgstAmount');
+        this.igstAmountInput = domUtils.getElement('#igstAmount');
+        this.tcsPercentInput = domUtils.getElement('#tcsPercent');
+        this.tcsAmountInput = domUtils.getElement('#tcsAmount');
+        this.freightChargesInput = domUtils.getElement('#freightCharges');
+        this.loadingChargesInput = domUtils.getElement('#loadingCharges');
+        this.otherExpensesInput = domUtils.getElement('#otherExpenses');
+        this.discountAmountInput = domUtils.getElement('#discountAmount');
+        this.roundOffAmountInput = domUtils.getElement('#roundOffAmount');
 
         this.saveDraftBtn = domUtils.getElement('#saveDraftBtn');
         this.submitApprovalBtn = domUtils.getElement('#submitApprovalBtn');
@@ -237,6 +255,12 @@ class PurchaseBillForm {
             this.form.addEventListener('change', (e) => this.validateField(e.target));
             this.form.addEventListener('blur',   (e) => this.validateField(e.target), true);
         }
+
+        // Tax & Other expenses inputs
+        document.querySelectorAll('.tax-calc-input').forEach(el => {
+            el.addEventListener('input', () => this.calculateTotals());
+            el.addEventListener('change', () => this.calculateTotals());
+        });
 
         // Modals
         if (this.createMaterialForm) {
@@ -812,16 +836,72 @@ class PurchaseBillForm {
     }
 
     calculateTotals() {
+        let totalQty = 0;
         let totalBasic = 0;
         if (this.tbody) {
+            this.tbody.querySelectorAll('.row-qty').forEach(input => {
+                totalQty += parseFloat(input.value) || 0;
+            });
             this.tbody.querySelectorAll('.row-amount').forEach(input => {
                 totalBasic += parseFloat(input.value) || 0;
             });
         }
 
-        const totalFormatted = formatter.formatCurrency(totalBasic);
-        if (this.totalBasicAmountDisplay) this.totalBasicAmountDisplay.textContent = totalFormatted;
-        if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = totalFormatted;
+        // 1. Update Column-aligned Totals in Items Table and Footer
+        const qtyFormatted = totalQty.toFixed(2);
+        const totalBasicFormatted = formatter.formatCurrency(totalBasic);
+
+        if (this.tableTotalQtyDisplay) this.tableTotalQtyDisplay.textContent = qtyFormatted;
+        if (this.tableTotalAmountDisplay) this.tableTotalAmountDisplay.textContent = totalBasicFormatted;
+        if (this.footerTotalQty) this.footerTotalQty.textContent = qtyFormatted;
+        if (this.totalBasicAmountDisplay) this.totalBasicAmountDisplay.textContent = totalBasicFormatted;
+
+        // 2. Tax Calculations
+        const taxType = this.taxTypeSelect ? this.taxTypeSelect.value : 'INTRA';
+        const gstRate = this.gstRateSelect ? (parseFloat(this.gstRateSelect.value) || 0) : 18;
+
+        let cgst = 0, sgst = 0, igst = 0;
+        if (taxType === 'INTRA') {
+            const halfRate = gstRate / 2;
+            cgst = (totalBasic * halfRate) / 100;
+            sgst = (totalBasic * halfRate) / 100;
+            igst = 0;
+        } else if (taxType === 'INTER') {
+            cgst = 0;
+            sgst = 0;
+            igst = (totalBasic * gstRate) / 100;
+        }
+
+        if (this.cgstAmountInput) this.cgstAmountInput.value = cgst.toFixed(2);
+        if (this.sgstAmountInput) this.sgstAmountInput.value = sgst.toFixed(2);
+        if (this.igstAmountInput) this.igstAmountInput.value = igst.toFixed(2);
+
+        const totalTax = cgst + sgst + igst;
+
+        // 3. TCS Calculations
+        const tcsPct = this.tcsPercentInput ? (parseFloat(this.tcsPercentInput.value) || 0) : 0;
+        const tcsAmt = (totalBasic + totalTax) * (tcsPct / 100);
+        if (this.tcsAmountInput) this.tcsAmountInput.value = tcsAmt.toFixed(2);
+
+        // 4. Other Expenses & Adjustments
+        const freight = this.freightChargesInput ? (parseFloat(this.freightChargesInput.value) || 0) : 0;
+        const loading = this.loadingChargesInput ? (parseFloat(this.loadingChargesInput.value) || 0) : 0;
+        const other = this.otherExpensesInput ? (parseFloat(this.otherExpensesInput.value) || 0) : 0;
+        const discount = this.discountAmountInput ? (parseFloat(this.discountAmountInput.value) || 0) : 0;
+
+        const totalExpenses = freight + loading + other - discount + tcsAmt;
+        const rawGrandTotal = totalBasic + totalTax + totalExpenses;
+        const roundedGrandTotal = Math.round(rawGrandTotal);
+        const roundOff = roundedGrandTotal - rawGrandTotal;
+
+        if (this.roundOffAmountInput) this.roundOffAmountInput.value = roundOff.toFixed(2);
+
+        const grandTotalFormatted = formatter.formatCurrency(roundedGrandTotal);
+        const totalTaxAndExpensesFormatted = formatter.formatCurrency(totalTax + (freight + loading + other - discount));
+
+        if (this.calcGrandTotalDisplay) this.calcGrandTotalDisplay.value = grandTotalFormatted;
+        if (this.footerTotalTax) this.footerTotalTax.textContent = totalTaxAndExpensesFormatted;
+        if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = grandTotalFormatted;
     }
 
     updateProgress() {
