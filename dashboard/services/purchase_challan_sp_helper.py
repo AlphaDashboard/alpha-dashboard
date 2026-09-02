@@ -88,14 +88,64 @@ def execute_sp_purchase_challan(operation, header_data, tran_items, username):
     from django.utils import timezone
 
     if operation == 'INSERT':
+        if not challan_no or str(challan_no).strip() in ('', '(Auto-Generated)', 'Auto Generated'):
+            now = timezone.now()
+            prefix = f"PC-{now.strftime('%Y%m')}-"
+            last_pc = PurchaseChallan.objects.filter(ChallanNo__startswith=prefix).order_by('ChallanNo').last()
+            if last_pc and last_pc.ChallanNo:
+                try:
+                    last_num = int(str(last_pc.ChallanNo).split('-')[-1])
+                    challan_no = f"{prefix}{last_num + 1:04d}"
+                except Exception:
+                    challan_no = f"{prefix}0001"
+            else:
+                cnt = PurchaseChallan.objects.count() + 1
+                challan_no = f"{prefix}{cnt:04d}"
+
+        gp_date = None
+        veh_no = None
+        drv_name = None
+        ws_no = None
+        ws_date = None
+        bags = sum(float(x.get('Bags') or 0) for x in normalized_tran)
+        gross_wt = sum(float(x.get('GrossWeight') or 0) for x in normalized_tran)
+        net_wt = sum(float(x.get('NetWeight') or 0) for x in normalized_tran)
+        tare_wt = 0
+
+        if gp_no:
+            try:
+                from dashboard.models.gate_entry import GatePass
+                gp = GatePass.objects.filter(GatePassNo=gp_no).first()
+                if gp:
+                    gp_date = gp.GatePassdate
+                    veh_no = gp.VehicleNo
+                    drv_name = gp.DriverName
+                    ws_no = gp.WeighmentNo
+                    ws_date = gp.WeighmentDate
+                    if not bags and gp.Bags: bags = float(gp.Bags)
+                    if not gross_wt and gp.GrossWeight: gross_wt = float(gp.GrossWeight)
+                    if not tare_wt and gp.TareWeight: tare_wt = float(gp.TareWeight)
+                    if not net_wt and gp.NetWeight: net_wt = float(gp.NetWeight)
+            except Exception:
+                pass
+
         pc = PurchaseChallan(
             ChallanNo=challan_no,
-            ChallanDate=challan_date,
+            ChallanDate=challan_date or timezone.now().date(),
             TranType=tran_type,
             GPNo=gp_no,
             StatusId=status_val,
             PONO=po_no,
             PODate=po_date,
+            GatePassDate=gp_date,
+            VehicleNo=veh_no,
+            DriverName=drv_name,
+            WeighmentSlipNo=ws_no,
+            WeighmentDate=ws_date,
+            Bags=bags,
+            GrossWeight=gross_wt,
+            TareWeight=tare_wt,
+            NetWeight=net_wt,
             Notes=notes,
             SupplierName=supplier_name,
             draftedby=username,
