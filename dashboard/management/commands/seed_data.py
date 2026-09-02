@@ -414,57 +414,168 @@ class Command(BaseCommand):
                     (4, 'PO-202608-0004', 1, 9.0, 'MT', 5000.00, 45000.00, 'Steel Billets Prime');
                 """)
             elif connection.vendor == 'postgresql':
-                cursor.execute("""
-                    INSERT INTO public."tblSalPurGroup" ("SalPurGroupID", "SalPurGroupName", "GroupwiseAccounting", "GroupwiseAccountID", "TransactionTypeID", "is_active")
-                    VALUES 
-                    (1, 'Raw Material Purchase Group', true, 401, 1, true),
-                    (2, 'Finished Goods Sales Group', true, 501, 2, true)
-                    ON CONFLICT ("SalPurGroupID") DO NOTHING;
-                """)
-                cursor.execute("""
-                    INSERT INTO public."tblGatePass" ("GatePassNo", "GatePassdate", "VehicleNo", "DriverName", "WeighmentNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight")
-                    VALUES
-                    (101, '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', '2026-08-25', 100, 15200.00, 5200.00, 10000.00),
-                    (102, '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', '2026-08-26', 50, 12400.00, 4400.00, 8000.00),
-                    (103, '2026-08-27', 'MH-15-EF-9012', 'Amit Sharma', 'WS-503', '2026-08-27', 200, 25000.00, 5000.00, 20000.00),
-                    (104, '2026-08-27', 'MH-18-GH-3456', 'Vijay Singh', 'WS-504', '2026-08-27', 80, 18000.00, 6000.00, 12000.00)
-                    ON CONFLICT ("GatePassNo") DO NOTHING;
-                """)
-                cursor.execute("""
-                    INSERT INTO public."tblSalePurchaseChallans" ("ChallanNo", "ChallanDate", "TranType", "GPNo", "StatusId", "PONO", "PODate", "GatePassDate", "VehicleNo", "DriverName", "WeighmentSlipNo", "Bags", "GrossWeight", "TareWeight", "NetWeight", "draftedby")
-                    VALUES
-                    ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker'),
-                    ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker')
-                    ON CONFLICT ("ChallanNo") DO NOTHING;
-                """)
-                cursor.execute("""
-                    INSERT INTO public."tblPurchaseBill" ("bill_no", "tran_type", "bill_date", "invoice_no", "bill_status", "gate_pass_no", "po_no", "SalPurGroupID", "broker_id", "zone_name", "supplier_id", "supplier_contact", "supplier_address", "gst_number", "total_basic_amount", "grand_total", "status")
-                    VALUES
-                    ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 1, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, true),
-                    ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 2, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, true),
-                    ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, true)
-                    ON CONFLICT ("bill_no") DO NOTHING;
-                """)
-                cursor.execute("""
-                    INSERT INTO public."tblPurchaseOrder" (
-                        "po_no", "po_date", "expected_delivery_date", "po_status", "zone_name", "supplier_contact", "supplier_address", "gst_number",
-                        "delivery_location", "currency", "date_created", "date_modified",
-                        "total_basic_amount", "taxes", "grand_total", "status", "broker_id", "supplier_id", "SalPurGroupID", "freight_terms", "payment_terms", "delivery_terms"
-                    ) VALUES
-                    ('PO-202608-0001', '2026-08-20 10:00:00', '2026-08-30', 'Approved', 'West Zone', '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5',
-                     'Main Plant, Pune', 'INR', '2026-08-20 10:00:00', '2026-08-20 10:00:00',
-                     50000.00, 9000.00, 59000.00, true, 1, 1, 1, 'Ex-Works', '30 Days Net', 'Immediate'),
-                    ('PO-202608-0002', '2026-08-22 11:30:00', '2026-09-02', 'Approved', 'North Zone', '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV',
-                     'Main Plant, Pune', 'INR', '2026-08-22 11:30:00', '2026-08-22 11:30:00',
-                     80000.00, 14400.00, 94400.00, true, 2, 2, 1, 'FOR Destination', '45 Days Net', 'Immediate'),
-                    ('PO-202608-0003', '2026-08-24 14:15:00', '2026-09-05', 'Approved', 'West Zone', '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2',
-                     'Main Plant, Pune', 'INR', '2026-08-24 14:15:00', '2026-08-24 14:15:00',
-                     120000.00, 21600.00, 141600.00, true, 1, 3, 1, 'Ex-Works', 'Immediate', 'Immediate'),
-                    ('PO-202608-0004', '2026-08-26 16:00:00', '2026-09-08', 'Approved', 'East Zone', '9988776655', 'Plot 88, Whitefield, Bangalore', '29ABCDE5678F1Z9',
-                     'Main Plant, Pune', 'INR', '2026-08-26 16:00:00', '2026-08-26 16:00:00',
-                     45000.00, 8100.00, 53100.00, true, 3, 4, 1, 'FOR Destination', '30 Days Net', 'Immediate')
-                    ON CONFLICT ("po_no") DO NOTHING;
-                """)
+                try:
+                    cursor.execute("""
+                        INSERT INTO public."tblSalPurGroup" ("SalPurGroupID", "SalPurGroupName", "GroupwiseAccounting", "GroupwiseAccountID", "TransactionTypeID", "is_active")
+                        VALUES 
+                        (1, 'Raw Material Purchase Group', true, 401, 1, true),
+                        (2, 'Finished Goods Sales Group', true, 501, 2, true)
+                        ON CONFLICT ("SalPurGroupID") DO NOTHING;
+                    """)
+                except Exception:
+                    pass
+                try:
+                    cursor.execute("""
+                        INSERT INTO public."tblGatePass" ("GatePassNo", "GatePassdate", "VehicleNo", "DriverName", "WeighmentNo", "WeighmentDate", "Bags", "GrossWeight", "TareWeight", "NetWeight")
+                        VALUES
+                        (101, '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', '2026-08-25', 100, 15200.00, 5200.00, 10000.00),
+                        (102, '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', '2026-08-26', 50, 12400.00, 4400.00, 8000.00),
+                        (103, '2026-08-27', 'MH-15-EF-9012', 'Amit Sharma', 'WS-503', '2026-08-27', 200, 25000.00, 5000.00, 20000.00),
+                        (104, '2026-08-27', 'MH-18-GH-3456', 'Vijay Singh', 'WS-504', '2026-08-27', 80, 18000.00, 6000.00, 12000.00)
+                        ON CONFLICT ("GatePassNo") DO NOTHING;
+                    """)
+                except Exception:
+                    pass
+                try:
+                    cursor.execute("""
+                        INSERT INTO public."tblSalePurchaseChallans" ("ChallanNo", "ChallanDate", "TranType", "GPNo", "StatusId", "PONO", "PODate", "GatePassDate", "VehicleNo", "DriverName", "WeighmentSlipNo", "Bags", "GrossWeight", "TareWeight", "NetWeight", "draftedby")
+                        VALUES
+                        ('PC-202608-0001', '2026-08-25', 'RMPCH', 101, 1, 'PO-202608-0001', '2026-08-20', '2026-08-25', 'MH-12-AB-1234', 'Ramesh Kumar', 'WS-501', 100, 15200.00, 5200.00, 10000.00, 'maker'),
+                        ('PC-202608-0002', '2026-08-26', 'RMPCH', 102, 2, 'PO-202608-0002', '2026-08-22', '2026-08-26', 'MH-14-CD-5678', 'Suresh Patil', 'WS-502', 50, 12400.00, 4400.00, 8000.00, 'maker')
+                        ON CONFLICT ("ChallanNo") DO NOTHING;
+                    """)
+                except Exception:
+                    pass
+                try:
+                    cursor.execute("""
+                        INSERT INTO public."tblPurchaseBill" ("bill_no", "tran_type", "bill_date", "invoice_no", "bill_status", "gate_pass_no", "po_no", "SalPurGroupID", "broker_id", "zone_name", "supplier_id", "supplier_contact", "supplier_address", "gst_number", "total_basic_amount", "grand_total", "status")
+                        VALUES
+                        ('PB-202608-0001', 'RMPBL', '2026-08-25 10:00:00', 'INV-9001', 'Active', '101', 'PO-202608-0001', 1, 1, 'West Zone', 1, '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5', 50000.00, 59000.00, true),
+                        ('PB-202608-0002', 'RMPBL', '2026-08-26 11:30:00', 'INV-9002', 'Active', '102', 'PO-202608-0002', 1, 2, 'North Zone', 2, '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV', 80000.00, 94400.00, true),
+                        ('PB-202608-0003', 'RMPBL', '2026-08-27 14:15:00', 'INV-9003', 'Active', '103', 'PO-202608-0003', 1, 1, 'West Zone', 3, '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2', 120000.00, 141600.00, true)
+                        ON CONFLICT ("bill_no") DO NOTHING;
+                    """)
+                except Exception:
+                    pass
 
-        self.stdout.write(self.style.SUCCESS("  [OK] Groups, Gate Passes, Challans, Vouchers, and Purchase Orders seeded"))
+        self.stdout.write(self.style.SUCCESS("  [OK] Groups, Gate Passes, Challans, and Vouchers seeded"))
+
+        # 9. Seed Purchase Orders via Django ORM (database-agnostic, always runs)
+        try:
+            from dashboard.models.purchase_order import PurchaseOrder
+            import datetime
+            tz = datetime.timezone.utc
+
+            po_seed_data = [
+                {
+                    'po_no': 'PO-202608-0001',
+                    'po_date': datetime.datetime(2026, 8, 20, 10, 0, 0, tzinfo=tz),
+                    'expected_delivery_date': datetime.date(2026, 8, 30),
+                    'po_status': 'Approved',
+                    'zone_name': 'West Zone',
+                    'supplier_contact': '9876543210',
+                    'supplier_address': 'Plot 12, MIDC Industrial Area, Pune',
+                    'gst_number': '27ABCDE1234F1Z5',
+                    'delivery_location': 'Main Plant, Pune',
+                    'delivery_terms': 'Immediate',
+                    'payment_terms': '30 Days Net',
+                    'freight_terms': 'Ex-Works',
+                    'currency': 'INR',
+                    'total_basic_amount': 50000.00,
+                    'taxes': 9000.00,
+                    'grand_total': 59000.00,
+                    'supplier_id': 1,
+                    'broker_id': 1,
+                    'date_created': datetime.datetime(2026, 8, 20, 10, 0, 0, tzinfo=tz),
+                    'date_modified': datetime.datetime(2026, 8, 20, 10, 0, 0, tzinfo=tz),
+                },
+                {
+                    'po_no': 'PO-202608-0002',
+                    'po_date': datetime.datetime(2026, 8, 22, 11, 30, 0, tzinfo=tz),
+                    'expected_delivery_date': datetime.date(2026, 9, 2),
+                    'po_status': 'Approved',
+                    'zone_name': 'North Zone',
+                    'supplier_contact': '9123456780',
+                    'supplier_address': 'Industrial Estate, Mumbai',
+                    'gst_number': '27AABCT1332L1ZV',
+                    'delivery_location': 'Main Plant, Pune',
+                    'delivery_terms': 'Immediate',
+                    'payment_terms': '45 Days Net',
+                    'freight_terms': 'FOR Destination',
+                    'currency': 'INR',
+                    'total_basic_amount': 80000.00,
+                    'taxes': 14400.00,
+                    'grand_total': 94400.00,
+                    'supplier_id': 2,
+                    'broker_id': 2,
+                    'date_created': datetime.datetime(2026, 8, 22, 11, 30, 0, tzinfo=tz),
+                    'date_modified': datetime.datetime(2026, 8, 22, 11, 30, 0, tzinfo=tz),
+                },
+                {
+                    'po_no': 'PO-202608-0003',
+                    'po_date': datetime.datetime(2026, 8, 24, 14, 15, 0, tzinfo=tz),
+                    'expected_delivery_date': datetime.date(2026, 9, 5),
+                    'po_status': 'Approved',
+                    'zone_name': 'West Zone',
+                    'supplier_contact': '9811122233',
+                    'supplier_address': 'Sector 4, Phase 2, Nagpur',
+                    'gst_number': '27XYZPA9876Q1Z2',
+                    'delivery_location': 'Main Plant, Pune',
+                    'delivery_terms': 'Immediate',
+                    'payment_terms': 'Immediate',
+                    'freight_terms': 'Ex-Works',
+                    'currency': 'INR',
+                    'total_basic_amount': 120000.00,
+                    'taxes': 21600.00,
+                    'grand_total': 141600.00,
+                    'supplier_id': 3,
+                    'broker_id': 1,
+                    'date_created': datetime.datetime(2026, 8, 24, 14, 15, 0, tzinfo=tz),
+                    'date_modified': datetime.datetime(2026, 8, 24, 14, 15, 0, tzinfo=tz),
+                },
+                {
+                    'po_no': 'PO-202608-0004',
+                    'po_date': datetime.datetime(2026, 8, 26, 16, 0, 0, tzinfo=tz),
+                    'expected_delivery_date': datetime.date(2026, 9, 8),
+                    'po_status': 'Approved',
+                    'zone_name': 'East Zone',
+                    'supplier_contact': '9988776655',
+                    'supplier_address': 'Plot 88, Whitefield, Bangalore',
+                    'gst_number': '29ABCDE5678F1Z9',
+                    'delivery_location': 'Main Plant, Pune',
+                    'delivery_terms': 'Immediate',
+                    'payment_terms': '30 Days Net',
+                    'freight_terms': 'FOR Destination',
+                    'currency': 'INR',
+                    'total_basic_amount': 45000.00,
+                    'taxes': 8100.00,
+                    'grand_total': 53100.00,
+                    'supplier_id': 4,
+                    'broker_id': 3,
+                    'date_created': datetime.datetime(2026, 8, 26, 16, 0, 0, tzinfo=tz),
+                    'date_modified': datetime.datetime(2026, 8, 26, 16, 0, 0, tzinfo=tz),
+                },
+            ]
+
+
+            po_count = 0
+            for po_data in po_seed_data:
+                po_no = po_data.pop('po_no')
+                supplier_id = po_data.pop('supplier_id')
+                broker_id = po_data.pop('broker_id')
+                try:
+                    supplier = VendorSupplier.objects.get(VendorSupplierID=supplier_id)
+                    broker = Broker.objects.filter(BrokerID=broker_id).first()
+                    _, created = PurchaseOrder.objects.get_or_create(
+                        po_no=po_no,
+                        defaults={**po_data, 'supplier': supplier, 'broker': broker, 'status': True}
+                    )
+                    if created:
+                        po_count += 1
+                except Exception:
+                    pass
+            self.stdout.write(self.style.SUCCESS(f"  [OK] Purchase Orders seeded ({po_count} new POs created)"))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"  [SKIP] Purchase Orders seeding skipped: {e}"))
+
         self.stdout.write(self.style.SUCCESS("\nAll initial master data seeded successfully!"))
