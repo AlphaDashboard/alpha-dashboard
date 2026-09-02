@@ -202,6 +202,79 @@ CREATE TABLE IF NOT EXISTS tblPurchaseBill_TRAN (
     user_modified VARCHAR(50),
     date_modified DATETIME
 );
+
+CREATE TABLE IF NOT EXISTS tblPurchaseOrder (
+    po_no VARCHAR(50) PRIMARY KEY,
+    po_date DATETIME NOT NULL,
+    expected_delivery_date DATE,
+    po_status VARCHAR(20) DEFAULT 'Approved',
+    zone_name VARCHAR(50),
+    supplier_contact VARCHAR(50),
+    supplier_address TEXT,
+    gst_number VARCHAR(50),
+    delivery_location VARCHAR(100),
+    delivery_terms VARCHAR(100),
+    payment_terms VARCHAR(100),
+    freight_terms VARCHAR(100),
+    currency VARCHAR(10) DEFAULT 'INR',
+    purchaser_name VARCHAR(100),
+    department VARCHAR(50),
+    cost_center VARCHAR(50),
+    special_instructions TEXT,
+    internal_notes TEXT,
+    total_basic_amount NUMERIC(15,2) DEFAULT 0,
+    taxes NUMERIC(15,2) DEFAULT 0,
+    grand_total NUMERIC(15,2) DEFAULT 0,
+    status BOOLEAN DEFAULT 1,
+    user_created VARCHAR(50),
+    date_created DATETIME,
+    user_modified VARCHAR(50),
+    date_modified DATETIME,
+    broker_id INTEGER,
+    supplier_id INTEGER,
+    SalPurGroupID BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS tblPurchaseOrder_TRAN (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    PONo VARCHAR(50),
+    item_id INTEGER,
+    order_qty NUMERIC(15,4) DEFAULT 0,
+    uom VARCHAR(10),
+    unit_rate NUMERIC(15,4) DEFAULT 0,
+    amount NUMERIC(15,2) DEFAULT 0,
+    remarks VARCHAR(200),
+    user_created VARCHAR(50),
+    date_created DATETIME,
+    user_modified VARCHAR(50),
+    date_modified DATETIME
+);
+
+INSERT OR IGNORE INTO tblPurchaseOrder (
+    po_no, po_date, expected_delivery_date, po_status, zone_name, supplier_contact, supplier_address, gst_number,
+    delivery_location, currency, date_created, date_modified,
+    total_basic_amount, taxes, grand_total, status, broker_id, supplier_id, SalPurGroupID, freight_terms, payment_terms, delivery_terms
+) VALUES
+('PO-202608-0001', '2026-08-20 10:00:00', '2026-08-30', 'Approved', 'West Zone', '9876543210', 'Plot 12, MIDC Industrial Area, Pune', '27ABCDE1234F1Z5',
+ 'Main Plant, Pune', 'INR', '2026-08-20 10:00:00', '2026-08-20 10:00:00',
+ 50000.00, 9000.00, 59000.00, 1, 1, 1, 1, 'Ex-Works', '30 Days Net', 'Immediate'),
+('PO-202608-0002', '2026-08-22 11:30:00', '2026-09-02', 'Approved', 'North Zone', '9123456780', 'Industrial Estate, Mumbai', '27AABCT1332L1ZV',
+ 'Main Plant, Pune', 'INR', '2026-08-22 11:30:00', '2026-08-22 11:30:00',
+ 80000.00, 14400.00, 94400.00, 1, 2, 2, 1, 'FOR Destination', '45 Days Net', 'Immediate'),
+('PO-202608-0003', '2026-08-24 14:15:00', '2026-09-05', 'Approved', 'West Zone', '9811122233', 'Sector 4, Phase 2, Nagpur', '27XYZPA9876Q1Z2',
+ 'Main Plant, Pune', 'INR', '2026-08-24 14:15:00', '2026-08-24 14:15:00',
+ 120000.00, 21600.00, 141600.00, 1, 1, 3, 1, 'Ex-Works', 'Immediate', 'Immediate'),
+('PO-202608-0004', '2026-08-26 16:00:00', '2026-09-08', 'Approved', 'East Zone', '9988776655', 'Plot 88, Whitefield, Bangalore', '29ABCDE5678F1Z9',
+ 'Main Plant, Pune', 'INR', '2026-08-26 16:00:00', '2026-08-26 16:00:00',
+ 45000.00, 8100.00, 53100.00, 1, 3, 4, 1, 'FOR Destination', '30 Days Net', 'Immediate');
+
+INSERT OR IGNORE INTO tblPurchaseOrder_TRAN (
+    id, PONo, item_id, order_qty, uom, unit_rate, amount, remarks
+) VALUES
+(1, 'PO-202608-0001', 1, 10.0, 'MT', 5000.00, 50000.00, 'Steel Billets Standard'),
+(2, 'PO-202608-0002', 2, 16.0, 'MT', 5000.00, 80000.00, 'Scrap Heavy Melting'),
+(3, 'PO-202608-0003', 3, 20.0, 'MT', 6000.00, 120000.00, 'Sponge Iron Grade A'),
+(4, 'PO-202608-0004', 1, 9.0, 'MT', 5000.00, 45000.00, 'Steel Billets Prime');
 """
 
 postgresql_sql = """
