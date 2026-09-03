@@ -151,21 +151,21 @@
     /* ── Row gutter ── */
     .row.g-2 > [class*="col-"] { padding: 1px 4px; }
 
-    /* ── Compact 2-Row Header Form Grid (Standardized Exact Widths & Aligned Columns) ── */
+    /* ── Compact 2-Row Header Form Grid ── */
     .erp-header-row-1 {
         display: grid;
-        grid-template-columns: 150px 125px 150px 125px minmax(180px, 1.5fr) minmax(130px, 1fr);
+        grid-template-columns: minmax(125px, 1.1fr) 110px 110px 110px 120px 110px minmax(150px, 1.3fr) minmax(110px, 1fr);
         gap: 8px;
     }
     .erp-header-row-2 {
         display: grid;
-        grid-template-columns: 150px 125px 150px 125px minmax(130px, 1fr) minmax(120px, 1fr) minmax(180px, 1.5fr);
+        grid-template-columns: 135px 110px 250px 130px minmax(260px, 1fr);
         gap: 8px;
         margin-top: 10px;
     }
     @media (max-width: 1200px) {
-        .erp-header-row-1 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .erp-header-row-2 { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr); margin-top: 8px; }
+        .erp-header-row-1 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .erp-header-row-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 8px; }
     }
     @media (max-width: 768px) {
         .erp-header-row-1, .erp-header-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; }
@@ -488,7 +488,7 @@
         ══════════════════════════════════════════════════ -->
         <div class="card flex-shrink-0" id="billDetailsCard">
             
-            <!-- ── ROW 1 (6 Fields): Voucher No | Bill Date | Gate Pass No | Gate Pass Date | Sales/Purchase Group | Bill Status ── -->
+            <!-- ── ROW 1 (8 Fields): Voucher No | Bill Date | Gate Pass No | Gate Pass Date | PO No | PO Date | Group | Bill Status ── -->
             <div class="erp-header-row-1">
                 <!-- Purchase Voucher No -->
                 <div>
@@ -547,37 +547,6 @@
                     </div>
                 </div>
 
-                <!-- Sales/Purchase Group -->
-                <div>
-                    <div class="form-group has-value">
-                        <select id="salPurGroup" name="sal_pur_group" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
-                            <option value=""></option>
-                            <option value="add_new" class="text-primary fw-bold">+ Add New Group</option>
-                            {% for g in sal_pur_groups %}
-                            <option value="{{ g.SalPurGroupID }}">{{ g.SalPurGroupName }}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="salPurGroup" class="floating-label">Sales/Purchase Group *</label>
-                    </div>
-                </div>
-
-                <!-- Bill Status -->
-                <div>
-                    <div class="form-group has-value">
-                        <select id="billStatus" name="bill_status" class="form-select" {% if is_view_mode %}disabled{% endif %}>
-                            <option value="Draft" {% if bill_status == 'Draft' %}selected{% endif %}>Draft</option>
-                            <option value="Submitted" {% if bill_status == 'Submitted' %}selected{% endif %}>Submitted for Approval</option>
-                            <option value="RefBack" {% if bill_status == 'RefBack' %}selected{% endif %}>Ref. Back by Approver</option>
-                            <option value="Approved" {% if bill_status == 'Approved' %}selected{% endif %}>Approved</option>
-                        </select>
-                        <label for="billStatus" class="floating-label">Bill Status</label>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ── ROW 2 (7 Fields): PO No | PO Date | Invoice Date | Invoice No | Broker | Zone | Supplier ── -->
-            <div class="erp-header-row-2">
                 <!-- PO No (Smart Dropdown) -->
                 <div style="position:relative;">
                     <div class="form-group has-value mb-0" id="poDropdownGroup">
@@ -616,6 +585,37 @@
                     </div>
                 </div>
 
+                <!-- Sales/Purchase Group -->
+                <div>
+                    <div class="form-group has-value">
+                        <select id="salPurGroup" name="sal_pur_group" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
+                            <option value=""></option>
+                            <option value="add_new" class="text-primary fw-bold">+ Add New Group</option>
+                            {% for g in sal_pur_groups %}
+                            <option value="{{ g.SalPurGroupID }}">{{ g.SalPurGroupName }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="salPurGroup" class="floating-label">Sales/Purchase Group *</label>
+                    </div>
+                </div>
+
+                <!-- Bill Status -->
+                <div>
+                    <div class="form-group has-value">
+                        <select id="billStatus" name="bill_status" class="form-select" {% if is_view_mode %}disabled{% endif %}>
+                            <option value="Draft" {% if bill_status == 'Draft' %}selected{% endif %}>Draft</option>
+                            <option value="Submitted" {% if bill_status == 'Submitted' %}selected{% endif %}>Submitted for Approval</option>
+                            <option value="RefBack" {% if bill_status == 'RefBack' %}selected{% endif %}>Ref. Back by Approver</option>
+                            <option value="Approved" {% if bill_status == 'Approved' %}selected{% endif %}>Approved</option>
+                        </select>
+                        <label for="billStatus" class="floating-label">Bill Status</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ── ROW 2 (5 Fields): Invoice No | Invoice Date | Broker Name (250px) | Zone Name | Supplier Name (Expanded) ── -->
+            <div class="erp-header-row-2">
                 <!-- Invoice No (User Enterable) -->
                 <div>
                     <div class="form-group has-value">
@@ -623,7 +623,6 @@
                         <label for="invoiceNo" class="floating-label">Invoice No.</label>
                     </div>
                 </div>
-
 
                 <!-- Invoice Date (on right side of Invoice No) -->
                 <div>
@@ -633,7 +632,7 @@
                     </div>
                 </div>
 
-                <!-- Broker Name -->
+                <!-- Broker Name (Increased to 250px) -->
                 <div>
                     <div class="form-group has-value">
                         <select id="broker" name="broker" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
@@ -647,7 +646,7 @@
                     </div>
                 </div>
 
-                <!-- Zone Name -->
+                <!-- Zone Name (Moved Left) -->
                 <div>
                     <div class="form-group has-value">
                         <select id="zoneName" name="zone_name" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
@@ -660,7 +659,7 @@
                     </div>
                 </div>
 
-                <!-- Supplier Name -->
+                <!-- Supplier Name (Widely Expanded) -->
                 <div>
                     <div class="form-group has-value">
                         <select id="supplier" name="supplier" class="form-select" required {% if is_view_mode %}disabled{% endif %}>
@@ -677,6 +676,7 @@
                     </div>
                 </div>
             </div>
+
 
 
             <!-- Toggle Link for Optional Fields -->
