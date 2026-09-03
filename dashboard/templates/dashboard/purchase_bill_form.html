@@ -151,15 +151,15 @@
     /* ── Row gutter ── */
     .row.g-2 > [class*="col-"] { padding: 1px 4px; }
 
-    /* ── Compact 2-Row Header Form Grid (Standardized Date Widths & Aligned Columns) ── */
+    /* ── Compact 2-Row Header Form Grid (Standardized Exact Widths & Aligned Columns) ── */
     .erp-header-row-1 {
         display: grid;
-        grid-template-columns: minmax(130px, 1.2fr) 125px minmax(130px, 1.2fr) 125px minmax(170px, 1.8fr) minmax(130px, 1.2fr);
+        grid-template-columns: 150px 125px 150px 125px minmax(180px, 1.5fr) minmax(130px, 1fr);
         gap: 8px;
     }
     .erp-header-row-2 {
         display: grid;
-        grid-template-columns: minmax(130px, 1.2fr) 125px minmax(130px, 1.2fr) 125px minmax(130px, 1.2fr) minmax(120px, 1fr) minmax(170px, 1.8fr);
+        grid-template-columns: 150px 125px 150px 125px minmax(130px, 1fr) minmax(120px, 1fr) minmax(180px, 1.5fr);
         gap: 8px;
         margin-top: 10px;
     }
