@@ -19,6 +19,7 @@ class PurchaseBillForm {
         this.footerTotalQty = domUtils.getElement('#footerTotalQty');
         this.footerTotalTax = domUtils.getElement('#footerTotalTax');
         this.calcGrandTotalDisplay = domUtils.getElement('#calcGrandTotalDisplay');
+        this.calcTotalTaxDisplay = domUtils.getElement('#calcTotalTaxDisplay');
 
         this.taxTypeSelect = domUtils.getElement('#taxType');
         this.gstRateSelect = domUtils.getElement('#gstRate');
@@ -900,6 +901,7 @@ class PurchaseBillForm {
         const totalTaxAndExpensesFormatted = formatter.formatCurrency(totalTax + (freight + loading + other - discount));
 
         if (this.calcGrandTotalDisplay) this.calcGrandTotalDisplay.value = grandTotalFormatted;
+        if (this.calcTotalTaxDisplay) this.calcTotalTaxDisplay.value = formatter.formatCurrency(totalTax + tcsAmt);
         if (this.footerTotalTax) this.footerTotalTax.textContent = totalTaxAndExpensesFormatted;
         if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = grandTotalFormatted;
     }
