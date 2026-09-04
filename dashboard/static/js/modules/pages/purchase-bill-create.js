@@ -18,21 +18,17 @@ class PurchaseBillForm {
         this.tableTotalAmountDisplay = domUtils.getElement('#tableTotalAmountDisplay');
         this.footerTotalQty = domUtils.getElement('#footerTotalQty');
         this.footerTotalTax = domUtils.getElement('#footerTotalTax');
-        this.calcGrandTotalDisplay = domUtils.getElement('#calcGrandTotalDisplay');
-        this.calcTotalTaxDisplay = domUtils.getElement('#calcTotalTaxDisplay');
 
-        this.taxTypeSelect = domUtils.getElement('#taxType');
-        this.gstRateSelect = domUtils.getElement('#gstRate');
-        this.cgstAmountInput = domUtils.getElement('#cgstAmount');
-        this.sgstAmountInput = domUtils.getElement('#sgstAmount');
-        this.igstAmountInput = domUtils.getElement('#igstAmount');
-        this.tcsPercentInput = domUtils.getElement('#tcsPercent');
-        this.tcsAmountInput = domUtils.getElement('#tcsAmount');
-        this.freightChargesInput = domUtils.getElement('#freightCharges');
-        this.loadingChargesInput = domUtils.getElement('#loadingCharges');
-        this.otherExpensesInput = domUtils.getElement('#otherExpenses');
-        this.discountAmountInput = domUtils.getElement('#discountAmount');
-        this.roundOffAmountInput = domUtils.getElement('#roundOffAmount');
+        // Charges Table DOM elements (Tax & Other Expenses Tab)
+        this.chargesTable = domUtils.getElement('#chargesTable');
+        this.chargesTableBody = domUtils.getElement('#chargesTableBody');
+        this.tableTotalChargesDisplay = domUtils.getElement('#tableTotalChargesDisplay');
+        this.footerTotalQtyTaxTab = domUtils.getElement('#footerTotalQtyTaxTab');
+        this.totalBasicAmountDisplayTaxTab = domUtils.getElement('#totalBasicAmountDisplayTaxTab');
+        this.footerTotalTaxTaxTab = domUtils.getElement('#footerTotalTaxTaxTab');
+        this.grandTotalDisplayTaxTab = domUtils.getElement('#grandTotalDisplayTaxTab');
+        this.generateBillBtnTaxTab = domUtils.getElement('#generateBillBtnTaxTab');
+        this.salPurGroupSelect = domUtils.getElement('#salPurGroup');
 
         this.saveDraftBtn = domUtils.getElement('#saveDraftBtn');
         this.submitApprovalBtn = domUtils.getElement('#submitApprovalBtn');
@@ -87,6 +83,11 @@ class PurchaseBillForm {
             }
             this.addRow();
             this.updateProgress();
+            if (this.salPurGroupSelect && this.salPurGroupSelect.value) {
+                await this.onSalPurGroupChange(this.salPurGroupSelect.value);
+            } else {
+                this.clearChargesTable();
+            }
         }
 
         if (this.config.isViewMode) {
@@ -228,9 +229,16 @@ class PurchaseBillForm {
             this.billStatusSelect.addEventListener('change', () => this.updateProgress());
         }
 
-        // Save button (Unified)
+        // Save button (Unified & Taxes Tab)
         if (this.generateBillBtn) {
             this.generateBillBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedStatus = domUtils.getElement('#billStatus')?.value || 'Draft';
+                this.submitForm(selectedStatus);
+            });
+        }
+        if (this.generateBillBtnTaxTab) {
+            this.generateBillBtnTaxTab.addEventListener('click', (e) => {
                 e.preventDefault();
                 const selectedStatus = domUtils.getElement('#billStatus')?.value || 'Draft';
                 this.submitForm(selectedStatus);
@@ -257,12 +265,6 @@ class PurchaseBillForm {
             this.form.addEventListener('blur',   (e) => this.validateField(e.target), true);
         }
 
-        // Tax & Other expenses inputs
-        document.querySelectorAll('.tax-calc-input').forEach(el => {
-            el.addEventListener('input', () => this.calculateTotals());
-            el.addEventListener('change', () => this.calculateTotals());
-        });
-
         // Modals
         if (this.createMaterialForm) {
             this.createMaterialForm.addEventListener('submit', async (e) => {
@@ -279,6 +281,10 @@ class PurchaseBillForm {
                     if (this.createSalPurGroupForm) this.createSalPurGroupForm.reset();
                     if (this.groupModalError) this.groupModalError.classList.add('d-none');
                     if (this.createSalPurGroupModal) this.createSalPurGroupModal.show();
+                } else if (e.target.value) {
+                    this.onSalPurGroupChange(e.target.value);
+                } else {
+                    this.clearChargesTable();
                 }
             });
         }
@@ -836,6 +842,113 @@ class PurchaseBillForm {
         amountInput.value = amount.toFixed(2);
     }
 
+    async onSalPurGroupChange(groupId) {
+        if (!groupId || groupId === 'add_new') {
+            this.clearChargesTable();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/sal-pur-group/${groupId}/`);
+            if (!response.ok) throw new Error('Failed to fetch group details');
+            const data = await response.json();
+            this.populateChargesTable(data.transactions || []);
+        } catch (err) {
+            console.error('Error fetching sales/purchase group charges:', err);
+            this.clearChargesTable();
+        }
+    }
+
+    clearChargesTable() {
+        if (!this.chargesTableBody) return;
+        this.chargesTableBody.innerHTML = `
+            <tr id="noChargesRow">
+                <td colspan="4" class="text-center text-muted py-4" style="font-size:12px;">
+                    <i class="bi bi-info-circle me-1"></i> Please select a Sales/Purchase Group to load charges.
+                </td>
+            </tr>
+        `;
+        this.calculateTotals();
+    }
+
+    populateChargesTable(transactions = []) {
+        if (!this.chargesTableBody) return;
+        this.chargesTableBody.innerHTML = '';
+
+        if (!transactions || transactions.length === 0) {
+            this.chargesTableBody.innerHTML = `
+                <tr id="noChargesRow">
+                    <td colspan="4" class="text-center text-muted py-4" style="font-size:12px;">
+                        <i class="bi bi-info-circle me-1"></i> No charges defined for this Sales/Purchase Group.
+                    </td>
+                </tr>
+            `;
+            this.calculateTotals();
+            return;
+        }
+
+        const isViewMode = this.config.isViewMode;
+
+        transactions.forEach((tx, idx) => {
+            const row = document.createElement('tr');
+            row.className = 'charge-row';
+            row.dataset.chargeId = tx.ID || '';
+            row.dataset.chargeName = tx.ChargesName || '';
+            row.dataset.debitCredit = tx.Debit_D_Credit_C || 'D';
+            row.dataset.autoManual = tx.Auto_Y_Manual_N ? '1' : '0';
+            row.dataset.account = tx.ChargeAccountID || '';
+
+            const rateVal = parseFloat(tx.Rate) || 0;
+            const rateFormatted = rateVal.toFixed(2);
+
+            const isCredit = (tx.Debit_D_Credit_C === 'C');
+            const typeBadge = isCredit ? '<span class="badge bg-warning text-dark ms-1" style="font-size:9.5px; font-weight:600;">Discount (-)</span>' : '';
+
+            row.innerHTML = `
+                <td class="text-center text-muted" style="font-size:11.5px; font-weight:600;">${idx + 1}</td>
+                <td>
+                    <span class="fw-semibold text-dark" style="font-size:12px;">${tx.ChargesName || 'Charge'}</span>
+                    ${typeBadge}
+                </td>
+                <td class="text-end">
+                    <input type="number" step="0.01" class="form-control text-end charge-rate"
+                           value="${rateFormatted}" placeholder="0.00"
+                           ${isViewMode ? 'disabled' : ''}>
+                </td>
+                <td class="text-end">
+                    <input type="number" step="0.01" class="form-control text-end charge-amount"
+                           value="0.00" placeholder="0.00"
+                           ${isViewMode ? 'disabled' : ''}>
+                </td>
+            `;
+
+            // Event listeners for rate and amount changes
+            const rateInput = row.querySelector('.charge-rate');
+            const amountInput = row.querySelector('.charge-amount');
+
+            if (rateInput) {
+                rateInput.addEventListener('input', () => {
+                    row.dataset.userEditedRate = '1';
+                    delete row.dataset.userEditedAmount; // Recompute amount based on new rate
+                    this.calculateTotals();
+                });
+                rateInput.addEventListener('change', () => this.calculateTotals());
+            }
+
+            if (amountInput) {
+                amountInput.addEventListener('input', () => {
+                    row.dataset.userEditedAmount = '1';
+                    this.calculateTotals();
+                });
+                amountInput.addEventListener('change', () => this.calculateTotals());
+            }
+
+            this.chargesTableBody.appendChild(row);
+        });
+
+        this.calculateTotals();
+    }
+
     calculateTotals() {
         let totalQty = 0;
         let totalBasic = 0;
@@ -848,62 +961,57 @@ class PurchaseBillForm {
             });
         }
 
-        // 1. Update Column-aligned Totals in Items Table and Footer
+        // 1. Update Column-aligned Totals in Items Table and Footer Displays
         const qtyFormatted = totalQty.toFixed(2);
         const totalBasicFormatted = formatter.formatCurrency(totalBasic);
 
         if (this.tableTotalQtyDisplay) this.tableTotalQtyDisplay.textContent = qtyFormatted;
         if (this.tableTotalAmountDisplay) this.tableTotalAmountDisplay.textContent = totalBasicFormatted;
         if (this.footerTotalQty) this.footerTotalQty.textContent = qtyFormatted;
+        if (this.footerTotalQtyTaxTab) this.footerTotalQtyTaxTab.textContent = qtyFormatted;
         if (this.totalBasicAmountDisplay) this.totalBasicAmountDisplay.textContent = totalBasicFormatted;
+        if (this.totalBasicAmountDisplayTaxTab) this.totalBasicAmountDisplayTaxTab.textContent = totalBasicFormatted;
 
-        // 2. Tax Calculations
-        const taxType = this.taxTypeSelect ? this.taxTypeSelect.value : 'INTRA';
-        const gstRate = this.gstRateSelect ? (parseFloat(this.gstRateSelect.value) || 0) : 18;
+        // 2. Dynamic Charges Table Calculation
+        let totalTaxesCharges = 0;
+        if (this.chargesTableBody) {
+            const chargeRows = this.chargesTableBody.querySelectorAll('.charge-row');
+            chargeRows.forEach(row => {
+                const rateInput = row.querySelector('.charge-rate');
+                const amountInput = row.querySelector('.charge-amount');
+                const isCredit = (row.dataset.debitCredit === 'C');
+                const isAuto = (row.dataset.autoManual !== '0');
+                const userEditedAmount = (row.dataset.userEditedAmount === '1');
 
-        let cgst = 0, sgst = 0, igst = 0;
-        if (taxType === 'INTRA') {
-            const halfRate = gstRate / 2;
-            cgst = (totalBasic * halfRate) / 100;
-            sgst = (totalBasic * halfRate) / 100;
-            igst = 0;
-        } else if (taxType === 'INTER') {
-            cgst = 0;
-            sgst = 0;
-            igst = (totalBasic * gstRate) / 100;
+                const rate = rateInput ? (parseFloat(rateInput.value) || 0) : 0;
+                let amount = amountInput ? (parseFloat(amountInput.value) || 0) : 0;
+
+                // Auto compute amount from rate if user hasn't typed a fixed amount
+                if (!userEditedAmount && (rate > 0 || isAuto)) {
+                    amount = (totalBasic * rate) / 100;
+                    if (amountInput) amountInput.value = amount.toFixed(2);
+                }
+
+                if (isCredit) {
+                    totalTaxesCharges -= amount; // Discount / deduction
+                } else {
+                    totalTaxesCharges += amount; // Tax / expense / addition
+                }
+            });
         }
 
-        if (this.cgstAmountInput) this.cgstAmountInput.value = cgst.toFixed(2);
-        if (this.sgstAmountInput) this.sgstAmountInput.value = sgst.toFixed(2);
-        if (this.igstAmountInput) this.igstAmountInput.value = igst.toFixed(2);
-
-        const totalTax = cgst + sgst + igst;
-
-        // 3. TCS Calculations
-        const tcsPct = this.tcsPercentInput ? (parseFloat(this.tcsPercentInput.value) || 0) : 0;
-        const tcsAmt = (totalBasic + totalTax) * (tcsPct / 100);
-        if (this.tcsAmountInput) this.tcsAmountInput.value = tcsAmt.toFixed(2);
-
-        // 4. Other Expenses & Adjustments
-        const freight = this.freightChargesInput ? (parseFloat(this.freightChargesInput.value) || 0) : 0;
-        const loading = this.loadingChargesInput ? (parseFloat(this.loadingChargesInput.value) || 0) : 0;
-        const other = this.otherExpensesInput ? (parseFloat(this.otherExpensesInput.value) || 0) : 0;
-        const discount = this.discountAmountInput ? (parseFloat(this.discountAmountInput.value) || 0) : 0;
-
-        const totalExpenses = freight + loading + other - discount + tcsAmt;
-        const rawGrandTotal = totalBasic + totalTax + totalExpenses;
+        // 3. Grand Total Calculation
+        const rawGrandTotal = totalBasic + totalTaxesCharges;
         const roundedGrandTotal = Math.round(rawGrandTotal);
-        const roundOff = roundedGrandTotal - rawGrandTotal;
 
-        if (this.roundOffAmountInput) this.roundOffAmountInput.value = roundOff.toFixed(2);
-
+        const totalTaxesChargesFormatted = formatter.formatCurrency(totalTaxesCharges);
         const grandTotalFormatted = formatter.formatCurrency(roundedGrandTotal);
-        const totalTaxAndExpensesFormatted = formatter.formatCurrency(totalTax + (freight + loading + other - discount));
 
-        if (this.calcGrandTotalDisplay) this.calcGrandTotalDisplay.value = grandTotalFormatted;
-        if (this.calcTotalTaxDisplay) this.calcTotalTaxDisplay.value = formatter.formatCurrency(totalTax + tcsAmt);
-        if (this.footerTotalTax) this.footerTotalTax.textContent = totalTaxAndExpensesFormatted;
+        if (this.tableTotalChargesDisplay) this.tableTotalChargesDisplay.textContent = totalTaxesChargesFormatted;
+        if (this.footerTotalTax) this.footerTotalTax.textContent = totalTaxesChargesFormatted;
+        if (this.footerTotalTaxTaxTab) this.footerTotalTaxTaxTab.textContent = totalTaxesChargesFormatted;
         if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = grandTotalFormatted;
+        if (this.grandTotalDisplayTaxTab) this.grandTotalDisplayTaxTab.textContent = grandTotalFormatted;
     }
 
     updateProgress() {
@@ -994,7 +1102,10 @@ class PurchaseBillForm {
                     groupSelect.add(opt);
                 }
                 groupSelect.value = groupVal;
-                if (groupVal !== '') groupSelect.closest('.form-group')?.classList.add('has-value');
+                if (groupVal !== '') {
+                    groupSelect.closest('.form-group')?.classList.add('has-value');
+                    await this.onSalPurGroupChange(groupVal);
+                }
             }
 
             const brokerSelect = domUtils.getElement('#broker');
@@ -1371,9 +1482,24 @@ class PurchaseBillForm {
         payload.items.forEach(it => {
             totalBasic += (it.order_qty * it.unit_rate);
         });
+
+        let totalTaxesCharges = 0;
+        if (this.chargesTableBody) {
+            this.chargesTableBody.querySelectorAll('.charge-row').forEach(row => {
+                const amountInput = row.querySelector('.charge-amount');
+                const isCredit = (row.dataset.debitCredit === 'C');
+                const amount = amountInput ? (parseFloat(amountInput.value) || 0) : 0;
+                if (isCredit) {
+                    totalTaxesCharges -= amount;
+                } else {
+                    totalTaxesCharges += amount;
+                }
+            });
+        }
+
         payload.total_basic_amount = parseFloat(totalBasic.toFixed(2));
-        payload.taxes = 0.00;
-        payload.grand_total = parseFloat(totalBasic.toFixed(2));
+        payload.taxes = parseFloat(totalTaxesCharges.toFixed(2));
+        payload.grand_total = parseFloat((totalBasic + totalTaxesCharges).toFixed(2));
 
         try {
             if (this.config.isEditMode) {
@@ -1410,6 +1536,7 @@ class PurchaseBillForm {
         if (this.tbody) {
             this.tbody.innerHTML = '';
         }
+        this.clearChargesTable();
         this.selectedGP = null;
         this.selectedPO = null;
 
