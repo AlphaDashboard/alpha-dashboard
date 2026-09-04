@@ -320,16 +320,6 @@
         background-color: #ffffff;
         height: 32px !important;
     }
-    .erp-data-table tfoot tr, .erp-data-table tfoot td {
-        background-color: #536479 !important;
-        color: #ffffff !important;
-        font-size: 11.5px !important;
-        font-weight: 700 !important;
-        border: 1px solid #475569 !important;
-        padding: 6px 8px !important;
-        vertical-align: middle !important;
-        height: 32px !important;
-    }
     .erp-data-table .form-control, .erp-data-table .form-select {
         height: 28px !important;
         padding: 2px 6px !important;
@@ -844,16 +834,6 @@
                                 <tbody id="itemsTableBody">
                                     <!-- Injected by purchase-bill-create.js -->
                                 </tbody>
-                                <tfoot>
-                                    <tr style="background:#536479; color:#ffffff; font-weight:700; font-size:11.5px; border-top:2px solid #334155;">
-                                        <td colspan="2" class="text-end" style="padding:6px 10px; text-transform:uppercase; letter-spacing:0.5px; color:#ffffff;">TOTAL:</td>
-                                        <td class="text-end" style="padding:6px 8px; color:#ffffff;" id="tableTotalQtyDisplay">0.00</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="text-end" style="padding:6px 8px; color:#ffffff;" id="tableTotalAmountDisplay">0.00</td>
-                                        <td colspan="2"></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
 
@@ -887,24 +867,15 @@
                                 <thead>
                                     <tr>
                                         <th style="width:5%;" class="text-center">#</th>
-                                        <th style="width:45%;">Charge Name</th>
-                                        <th style="width:25%;" class="text-end">Rate (%)</th>
-                                        <th style="width:25%;" class="text-end">Amount</th>
+                                        <th style="width:47%;">Charge Name</th>
+                                        <th style="width:20%;" class="text-end">Rate (%)</th>
+                                        <th style="width:20%;" class="text-end">Amount</th>
+                                        <th style="width:8%;" class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="chargesTableBody">
-                                    <tr id="noChargesRow">
-                                        <td colspan="4" class="text-center text-muted py-4" style="font-size:12px;">
-                                            <i class="bi bi-info-circle me-1"></i> Please select a Sales/Purchase Group to load charges.
-                                        </td>
-                                    </tr>
+                                    <!-- Injected dynamically by purchase-bill-create.js -->
                                 </tbody>
-                                <tfoot>
-                                    <tr style="background:#536479; color:#ffffff; font-weight:700; font-size:11.5px; border-top:2px solid #334155;">
-                                        <td colspan="3" class="text-end" style="padding:6px 10px; text-transform:uppercase; letter-spacing:0.5px; color:#ffffff;">TOTAL TAXES & CHARGES:</td>
-                                        <td class="text-end" style="padding:6px 8px; color:#ffffff;" id="tableTotalChargesDisplay">0.00</td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
 

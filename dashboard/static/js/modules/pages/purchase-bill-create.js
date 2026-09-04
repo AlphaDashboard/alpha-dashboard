@@ -14,15 +14,12 @@ class PurchaseBillForm {
 
         this.totalBasicAmountDisplay = domUtils.getElement('#totalBasicAmountDisplay');
         this.grandTotalDisplay = domUtils.getElement('#grandTotalDisplay');
-        this.tableTotalQtyDisplay = domUtils.getElement('#tableTotalQtyDisplay');
-        this.tableTotalAmountDisplay = domUtils.getElement('#tableTotalAmountDisplay');
         this.footerTotalQty = domUtils.getElement('#footerTotalQty');
         this.footerTotalTax = domUtils.getElement('#footerTotalTax');
 
         // Charges Table DOM elements (Tax & Other Expenses Tab)
         this.chargesTable = domUtils.getElement('#chargesTable');
         this.chargesTableBody = domUtils.getElement('#chargesTableBody');
-        this.tableTotalChargesDisplay = domUtils.getElement('#tableTotalChargesDisplay');
         this.footerTotalQtyTaxTab = domUtils.getElement('#footerTotalQtyTaxTab');
         this.totalBasicAmountDisplayTaxTab = domUtils.getElement('#totalBasicAmountDisplayTaxTab');
         this.footerTotalTaxTaxTab = domUtils.getElement('#footerTotalTaxTaxTab');
@@ -861,13 +858,8 @@ class PurchaseBillForm {
 
     clearChargesTable() {
         if (!this.chargesTableBody) return;
-        this.chargesTableBody.innerHTML = `
-            <tr id="noChargesRow">
-                <td colspan="4" class="text-center text-muted py-4" style="font-size:12px;">
-                    <i class="bi bi-info-circle me-1"></i> Please select a Sales/Purchase Group to load charges.
-                </td>
-            </tr>
-        `;
+        this.chargesTableBody.innerHTML = '';
+        this.addChargeRow();
         this.calculateTotals();
     }
 
@@ -875,78 +867,131 @@ class PurchaseBillForm {
         if (!this.chargesTableBody) return;
         this.chargesTableBody.innerHTML = '';
 
-        if (!transactions || transactions.length === 0) {
-            this.chargesTableBody.innerHTML = `
-                <tr id="noChargesRow">
-                    <td colspan="4" class="text-center text-muted py-4" style="font-size:12px;">
-                        <i class="bi bi-info-circle me-1"></i> No charges defined for this Sales/Purchase Group.
-                    </td>
-                </tr>
-            `;
-            this.calculateTotals();
-            return;
+        if (transactions && transactions.length > 0) {
+            transactions.forEach(tx => this.addChargeRow(tx));
+        } else {
+            this.addChargeRow();
         }
+        this.calculateTotals();
+    }
+
+    addChargeRow(data = null) {
+        if (!this.chargesTableBody) return;
+        const row = document.createElement('tr');
+        row.className = 'charge-row';
+
+        const chargeName = data ? (data.ChargesName || data.charge_name || '') : '';
+        const rateVal = data ? (parseFloat(data.Rate || data.rate) || 0) : 0;
+        const rateFormatted = rateVal.toFixed(2);
+        const amountVal = data ? (parseFloat(data.amount) || 0) : 0;
+        const amountFormatted = amountVal.toFixed(2);
+
+        row.dataset.chargeId = data?.ID || data?.id || '';
+        row.dataset.chargeName = chargeName;
+        row.dataset.debitCredit = data?.Debit_D_Credit_C || 'D';
+        row.dataset.autoManual = data?.Auto_Y_Manual_N ? '1' : '0';
+        row.dataset.account = data?.ChargeAccountID || '';
 
         const isViewMode = this.config.isViewMode;
 
-        transactions.forEach((tx, idx) => {
-            const row = document.createElement('tr');
-            row.className = 'charge-row';
-            row.dataset.chargeId = tx.ID || '';
-            row.dataset.chargeName = tx.ChargesName || '';
-            row.dataset.debitCredit = tx.Debit_D_Credit_C || 'D';
-            row.dataset.autoManual = tx.Auto_Y_Manual_N ? '1' : '0';
-            row.dataset.account = tx.ChargeAccountID || '';
+        row.innerHTML = `
+            <td class="text-center text-muted charge-num" style="font-size:11.5px; font-weight:600;"></td>
+            <td>
+                <input type="text" class="form-control charge-name" placeholder="Enter charge name"
+                       value="${chargeName}" ${isViewMode ? 'disabled' : ''}>
+            </td>
+            <td class="text-end">
+                <input type="number" step="0.01" class="form-control text-end charge-rate"
+                       value="${rateFormatted}" placeholder="0.00"
+                       ${isViewMode ? 'disabled' : ''}>
+            </td>
+            <td class="text-end">
+                <input type="number" step="0.01" class="form-control text-end charge-amount"
+                       value="${amountFormatted}" placeholder="0.00"
+                       ${isViewMode ? 'disabled' : ''}>
+            </td>
+            <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                    <button type="button" class="erp-action-btn erp-btn-add add-charge-btn" title="Add Row" ${isViewMode ? 'disabled' : ''}>
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="erp-action-btn erp-btn-delete remove-charge-btn" title="Delete Row" ${isViewMode ? 'disabled' : ''}>
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
 
-            const rateVal = parseFloat(tx.Rate) || 0;
-            const rateFormatted = rateVal.toFixed(2);
+        const rateInput = row.querySelector('.charge-rate');
+        const amountInput = row.querySelector('.charge-amount');
+        const nameInput = row.querySelector('.charge-name');
+        const addBtn = row.querySelector('.add-charge-btn');
+        const delBtn = row.querySelector('.remove-charge-btn');
 
-            const isCredit = (tx.Debit_D_Credit_C === 'C');
-            const typeBadge = isCredit ? '<span class="badge bg-warning text-dark ms-1" style="font-size:9.5px; font-weight:600;">Discount (-)</span>' : '';
+        if (rateInput) {
+            rateInput.addEventListener('input', () => {
+                row.dataset.userEditedRate = '1';
+                delete row.dataset.userEditedAmount;
+                this.calculateTotals();
+            });
+            rateInput.addEventListener('change', () => this.calculateTotals());
+        }
 
-            row.innerHTML = `
-                <td class="text-center text-muted" style="font-size:11.5px; font-weight:600;">${idx + 1}</td>
-                <td>
-                    <span class="fw-semibold text-dark" style="font-size:12px;">${tx.ChargesName || 'Charge'}</span>
-                    ${typeBadge}
-                </td>
-                <td class="text-end">
-                    <input type="number" step="0.01" class="form-control text-end charge-rate"
-                           value="${rateFormatted}" placeholder="0.00"
-                           ${isViewMode ? 'disabled' : ''}>
-                </td>
-                <td class="text-end">
-                    <input type="number" step="0.01" class="form-control text-end charge-amount"
-                           value="0.00" placeholder="0.00"
-                           ${isViewMode ? 'disabled' : ''}>
-                </td>
-            `;
+        if (amountInput) {
+            amountInput.addEventListener('input', () => {
+                row.dataset.userEditedAmount = '1';
+                this.calculateTotals();
+            });
+            amountInput.addEventListener('change', () => this.calculateTotals());
+        }
 
-            // Event listeners for rate and amount changes
-            const rateInput = row.querySelector('.charge-rate');
-            const amountInput = row.querySelector('.charge-amount');
+        if (nameInput) {
+            nameInput.addEventListener('input', (e) => {
+                row.dataset.chargeName = e.target.value;
+            });
+        }
 
-            if (rateInput) {
-                rateInput.addEventListener('input', () => {
-                    row.dataset.userEditedRate = '1';
-                    delete row.dataset.userEditedAmount; // Recompute amount based on new rate
-                    this.calculateTotals();
-                });
-                rateInput.addEventListener('change', () => this.calculateTotals());
-            }
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                this.addChargeRow();
+            });
+        }
 
-            if (amountInput) {
-                amountInput.addEventListener('input', () => {
-                    row.dataset.userEditedAmount = '1';
-                    this.calculateTotals();
-                });
-                amountInput.addEventListener('change', () => this.calculateTotals());
-            }
+        if (delBtn) {
+            delBtn.addEventListener('click', () => {
+                row.remove();
+                this.renumberChargeRows();
+                this.calculateTotals();
+            });
+        }
 
-            this.chargesTableBody.appendChild(row);
-        });
-
+        this.chargesTableBody.appendChild(row);
+        this.renumberChargeRows();
         this.calculateTotals();
+    }
+
+    renumberChargeRows() {
+        if (!this.chargesTableBody) return;
+        const rows = this.chargesTableBody.querySelectorAll('.charge-row');
+        if (rows.length === 0) {
+            this.addChargeRow();
+            return;
+        }
+        rows.forEach((row, idx) => {
+            const numCell = row.querySelector('.charge-num');
+            if (numCell) numCell.textContent = idx + 1;
+
+            const addBtn = row.querySelector('.add-charge-btn');
+            const delBtn = row.querySelector('.remove-charge-btn');
+
+            if (idx === 0) {
+                if (addBtn) addBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (delBtn) delBtn.style.setProperty('display', (rows.length > 1 ? 'inline-flex' : 'none'), 'important');
+            } else {
+                if (addBtn) addBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (delBtn) delBtn.style.setProperty('display', 'inline-flex', 'important');
+            }
+        });
     }
 
     calculateTotals() {
@@ -961,12 +1006,10 @@ class PurchaseBillForm {
             });
         }
 
-        // 1. Update Column-aligned Totals in Items Table and Footer Displays
+        // 1. Update Column-aligned Totals in Footer Displays
         const qtyFormatted = totalQty.toFixed(2);
         const totalBasicFormatted = formatter.formatCurrency(totalBasic);
 
-        if (this.tableTotalQtyDisplay) this.tableTotalQtyDisplay.textContent = qtyFormatted;
-        if (this.tableTotalAmountDisplay) this.tableTotalAmountDisplay.textContent = totalBasicFormatted;
         if (this.footerTotalQty) this.footerTotalQty.textContent = qtyFormatted;
         if (this.footerTotalQtyTaxTab) this.footerTotalQtyTaxTab.textContent = qtyFormatted;
         if (this.totalBasicAmountDisplay) this.totalBasicAmountDisplay.textContent = totalBasicFormatted;
@@ -1007,7 +1050,6 @@ class PurchaseBillForm {
         const totalTaxesChargesFormatted = formatter.formatCurrency(totalTaxesCharges);
         const grandTotalFormatted = formatter.formatCurrency(roundedGrandTotal);
 
-        if (this.tableTotalChargesDisplay) this.tableTotalChargesDisplay.textContent = totalTaxesChargesFormatted;
         if (this.footerTotalTax) this.footerTotalTax.textContent = totalTaxesChargesFormatted;
         if (this.footerTotalTaxTaxTab) this.footerTotalTaxTaxTab.textContent = totalTaxesChargesFormatted;
         if (this.grandTotalDisplay) this.grandTotalDisplay.textContent = grandTotalFormatted;
