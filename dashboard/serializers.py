@@ -871,7 +871,7 @@ class SalPurGroupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         transactions_data = validated_data.pop('transactions', [])
         request = self.context.get('request')
-        username = request.user.username if (request and request.user) else 'system'
+        username = request.user.username if (request and getattr(request, 'user', None) and getattr(request.user, 'is_authenticated', False) and getattr(request.user, 'username', None)) else 'system'
 
         from dashboard.services.sal_pur_group_sp_helper import execute_sp_sal_pur_group
         group_id = execute_sp_sal_pur_group('INSERT', validated_data, transactions_data, username)
@@ -880,7 +880,7 @@ class SalPurGroupSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         transactions_data = validated_data.pop('transactions', [])
         request = self.context.get('request')
-        username = request.user.username if (request and request.user) else 'system'
+        username = request.user.username if (request and getattr(request, 'user', None) and getattr(request.user, 'is_authenticated', False) and getattr(request.user, 'username', None)) else 'system'
 
         validated_data['SalPurGroupID'] = instance.SalPurGroupID
 
