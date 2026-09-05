@@ -1,7 +1,8 @@
-import { PurchaseBillAPI } from '../api/purchase-bill-api.js?v=150';
-import { domUtils } from '../utils/dom.js?v=150';
-import { formatter } from '../utils/formatter.js?v=150';
-import { notifications } from '../utils/notifications.js?v=150';
+import { PurchaseBillAPI } from '../api/purchase-bill-api.js?v=151';
+import { apiClient } from '../api/client.js?v=151';
+import { domUtils } from '../utils/dom.js?v=151';
+import { formatter } from '../utils/formatter.js?v=151';
+import { notifications } from '../utils/notifications.js?v=151';
 
 class PurchaseBillForm {
 
@@ -1768,6 +1769,10 @@ class PurchaseBillForm {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.currentFormInstance = new PurchaseBillForm(window.APP_CONFIG || {});
+    });
+} else {
     window.currentFormInstance = new PurchaseBillForm(window.APP_CONFIG || {});
-});
+}
