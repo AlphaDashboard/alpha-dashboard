@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="{% static 'vendor/bootstrap.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -80,43 +81,60 @@
         document.body.classList.add('sidebar-collapsed');
 
         // --- Sidebar Hover Auto-Expand when Collapsed ---
+        let sidebarHoverTimer = null;
         sidebar.addEventListener('mouseenter', function() {
             if (document.body.classList.contains('sidebar-collapsed')) {
-                sidebar.classList.add('sidebar-hover-expanded');
+                clearTimeout(sidebarHoverTimer);
+                sidebarHoverTimer = setTimeout(() => {
+                    sidebar.classList.add('sidebar-hover-expanded');
+                }, 100);
             }
         });
         
         sidebar.addEventListener('mouseleave', function() {
-            sidebar.classList.remove('sidebar-hover-expanded');
+            clearTimeout(sidebarHoverTimer);
+            sidebarHoverTimer = setTimeout(() => {
+                sidebar.classList.remove('sidebar-hover-expanded');
+            }, 200);
         });
 
-        // --- Submenu Hover Expand/Collapse (Settings, Section 1, Section 2, Section 3) ---
+        // --- Submenu Hover Expand/Collapse with Gentle Transition ---
         document.querySelectorAll('.sidebar .nav-item').forEach(navItem => {
             const collapseEl = navItem.querySelector('.collapse');
             const trigger = navItem.querySelector('.section-link');
             if (collapseEl && trigger) {
-                const hasActiveLink = collapseEl.querySelector('.active-link');
                 const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+                let hoverTimer = null;
                 
                 navItem.addEventListener('mouseenter', function() {
                     if (window.innerWidth > 768) {
-                        // Accordion-like behavior: collapse other non-active submenus on enter
-                        document.querySelectorAll('.sidebar .nav-item').forEach(otherItem => {
-                            if (otherItem !== navItem) {
-                                const otherCollapseEl = otherItem.querySelector('.collapse');
-                                if (otherCollapseEl && !otherCollapseEl.querySelector('.active-link')) {
-                                    const otherBsCollapse = bootstrap.Collapse.getOrCreateInstance(otherCollapseEl, { toggle: false });
-                                    otherBsCollapse.hide();
+                        clearTimeout(hoverTimer);
+                        hoverTimer = setTimeout(() => {
+                            // Collapse other non-active submenus gently
+                            document.querySelectorAll('.sidebar .nav-item').forEach(otherItem => {
+                                if (otherItem !== navItem) {
+                                    const otherCollapseEl = otherItem.querySelector('.collapse');
+                                    if (otherCollapseEl && !otherCollapseEl.querySelector('.active-link') && otherCollapseEl.classList.contains('show')) {
+                                        const otherBsCollapse = bootstrap.Collapse.getOrCreateInstance(otherCollapseEl, { toggle: false });
+                                        otherBsCollapse.hide();
+                                    }
                                 }
+                            });
+                            if (!collapseEl.classList.contains('show')) {
+                                bsCollapse.show();
                             }
-                        });
-                        bsCollapse.show();
+                        }, 180);
                     }
                 });
 
                 navItem.addEventListener('mouseleave', function() {
+                    clearTimeout(hoverTimer);
                     if (window.innerWidth > 768 && !collapseEl.querySelector('.active-link')) {
-                        bsCollapse.hide();
+                        hoverTimer = setTimeout(() => {
+                            if (collapseEl.classList.contains('show')) {
+                                bsCollapse.hide();
+                            }
+                        }, 220);
                     }
                 });
             }

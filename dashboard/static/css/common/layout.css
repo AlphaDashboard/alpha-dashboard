@@ -25,7 +25,7 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
 .fw-bold { font-weight: 600 !important; }
 .text-dark { color: #0f172a !important; }
 
-/* Sidebar Styling */
+/* Sidebar Styling - Modern ERP Treeview */
 .sidebar {
     position: fixed;
     top: 72px;
@@ -33,64 +33,131 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     left: 0;
     width: var(--sidebar-width);
     z-index: 1058; /* Float above relative table filters and fixed footers */
-    padding: 16px 0;
-    background-color: #1e293b;
+    padding: 12px 0 24px 0;
+    background-color: #2c3e50;
     color: #f8fafc;
     overflow-y: auto;
     overflow-x: hidden;
-    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Custom Sleek Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar a {
     color: #cbd5e1;
     text-decoration: none;
-    border-radius: 8px;
-    margin: 4px 16px;
-    display: block;
-    transition: all 0.2s ease;
-}
-
-.sidebar a:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.08);
-    transform: translateX(4px);
+    transition: all 0.35s ease;
 }
 
 .sidebar .nav-link {
-    height: 44px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    font-weight: 500;
-    font-size: 14px;
+    min-height: 42px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 16px !important;
+    font-weight: 700;
+    font-size: 13.5px;
     letter-spacing: 0.01em;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sidebar .collapse .nav-link {
-    height: 38px;
-    padding-left: 32px;
-    font-size: 13px;
-    color: #94a3b8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sidebar .collapse .nav-link:hover {
     color: #ffffff;
+    border-radius: 6px;
+    margin: 3px 10px;
+    cursor: pointer;
+    transition: background-color 0.35s ease, color 0.35s ease, transform 0.3s ease;
 }
 
-.sidebar .active-link {
-    background-color: #2563eb !important;
+.sidebar .nav-link .main-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar .nav-link:hover {
     color: #ffffff !important;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(37,99,235,0.2);
-    border-radius: 10px;
-    height: 44px;
-    margin: 2px 16px;
+    background-color: #1abc9c !important;
+}
+
+.sidebar .main-icon {
+    min-width: 20px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.sidebar .caret-icon {
+    font-size: 11px !important;
+    margin-left: auto !important;
+    transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0.85;
+}
+
+/* Submenu Treeview Styling & Smooth Collapse */
+.sidebar .collapsing,
+.collapsing {
+    transition: height 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.sidebar .erp-submenu {
+    background-color: #3b4a5a;
+    border-radius: 8px;
+    margin: 3px 10px 8px 10px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .erp-submenu .sub-section-link {
+    min-height: 36px;
+    padding: 8px 16px !important;
+    margin: 2px 0 !important;
+    font-size: 12.5px !important;
+    font-weight: 400;
+    color: #e2e8f0 !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 10px;
+    text-align: right;
+    transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+.sidebar .erp-submenu .sub-section-link:hover {
+    background-color: #16a085 !important;
+    color: #ffffff !important;
+}
+
+.sidebar .sub-icon {
+    font-size: 12px;
+    min-width: 16px;
+    text-align: center;
+    opacity: 0.85;
+}
+
+/* Active Link Badge */
+.sidebar .active-link {
+    background: linear-gradient(135deg, #1abc9c, #16a085) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(26, 188, 156, 0.4);
+    border-radius: 6px !important;
+}
+
+.sidebar .active-link .sub-icon {
+    opacity: 1;
 }
 
 /* Mobile Sidebar Overlay */
@@ -119,7 +186,7 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     padding: 20px;
     margin-top: 72px;
     min-height: calc(100vh - 72px);
-    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Desktop Collapsed State */
@@ -230,21 +297,21 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link span {
         display: inline-block !important;
         opacity: 0;
-        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.05s;
+        animation: fadeInText 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: 0.1s;
     }
     
     body.sidebar-collapsed .sidebar.sidebar-hover-expanded .caret-icon {
         display: inline-block !important;
         opacity: 0;
-        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.05s;
+        animation: fadeInText 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: 0.1s;
     }
     
     body.sidebar-collapsed .sidebar.sidebar-hover-expanded .collapse {
         opacity: 0;
-        animation: fadeInSubmenu 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.1s;
+        animation: fadeInSubmenu 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: 0.15s;
     }
 
     /* Shift main content dynamically when sidebar is hovered (prevents content hiding) */
@@ -277,9 +344,9 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
 
 /* Global transitions synchronization overrides */
 .erp-list-footer-fixed {
-    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), right 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1), right 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 .erp-footer-fixed {
-    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }

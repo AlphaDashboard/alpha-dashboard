@@ -1,88 +1,248 @@
 <!-- Sidebar Component -->
 <div class="sidebar shadow-sm" id="sidebar">
-    <ul class="nav flex-column">
+    <ul class="nav flex-column erp-treeview-nav">
+        <!-- 1. Dashboard -->
         <li class="nav-item">
-            <a class="nav-link fs-5 fw-bold text-white mb-2" id="dashboard-link" href="{% url 'dashboard:alpha_list' %}">
-                <i class="bi bi-grid-1x2-fill fs-5 me-2"></i> <span>Dashboard</span>
+            <a class="nav-link main-link fs-6 fw-bold text-white mb-1 {% if request.resolver_match.url_name == 'alpha_list' and not request.GET.section %}active-link{% endif %}" id="dashboard-link" href="{% url 'dashboard:alpha_list' %}">
+                <div class="main-label">
+                    <i class="fas fa-home main-icon"></i>
+                    <span>Dashboard</span>
+                </div>
             </a>
         </li>
         
-        <!-- Settings -->
+        <!-- 2. Master -->
         <li class="nav-item">
-            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#settingsMenu">
-                <i class="bi bi-gear-fill fs-5 me-2"></i> <span>Settings</span>
-                <i class="bi bi-chevron-down caret-icon"></i>
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#masterMenu" role="button" aria-expanded="false" aria-controls="masterMenu">
+                <div class="main-label">
+                    <i class="fas fa-database main-icon"></i>
+                    <span>Master</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
             </a>
-            <div class="collapse {% if request.resolver_match.url_name == 'alpha_list' or request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' or request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' or request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}show{% endif %}" id="settingsMenu">
-                <ul class="nav flex-column ps-3">
+            <div class="collapse {% if request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' or request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' or request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}show{% endif %}" id="masterMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
                     <li>
-                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'alpha_list' %}active-link{% endif %}" href="{% url 'dashboard:alpha_list' %}">
-                            Account Master
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' %}active-link{% endif %}" href="{% url 'dashboard:gate_entry' %}" data-section="Master" data-subsection="Account Group">
+                            <span>Account Group</span>
+                            <i class="fas fa-layer-group sub-icon"></i>
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'gate_entry' or request.resolver_match.url_name == 'gate_entry_print' %}active-link{% endif %}" href="{% url 'dashboard:gate_entry' %}" data-section="Settings" data-subsection="AccountMaster Sub Group 1">
-                            AccountMaster Sub Group 1
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'alpha_list' %}active-link{% endif %}" href="{% url 'dashboard:alpha_list' %}" data-section="Master" data-subsection="Accounts">
+                            <span>Accounts</span>
+                            <i class="fas fa-user sub-icon"></i>
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' %}active-link{% endif %}" href="{% url 'dashboard:sal_pur_group_list' %}" data-section="Settings" data-subsection="Purchase Sale Group">
-                            Purchase Sale Group
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' %}active-link{% endif %}" href="{% url 'dashboard:sal_pur_group_list' %}" data-section="Master" data-subsection="Sales Purchase Group">
+                            <span>Sales Purchase Group</span>
+                            <i class="fas fa-box sub-icon"></i>
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}active-link{% endif %}" href="{% url 'dashboard:user_master_list' %}" data-section="Settings" data-subsection="User Master">
-                            User Master
+                        <a class="nav-link sub-section-link" href="#" data-section="Master" data-subsection="Products/Items">
+                            <span>Products/Items</span>
+                            <i class="fas fa-cubes sub-icon"></i>
                         </a>
                     </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}active-link{% endif %}" href="{% url 'dashboard:user_master_list' %}" data-section="Master" data-subsection="User Master">
+                            <span>User Master</span>
+                            <i class="fas fa-user-shield sub-icon"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        
+        <!-- 3. Transactions -->
+        <li class="nav-item">
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#transactionsMenu" role="button" aria-expanded="false" aria-controls="transactionsMenu">
+                <div class="main-label">
+                    <i class="fas fa-file-invoice-dollar main-icon"></i>
+                    <span>Transactions</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' or request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' or request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}show{% endif %}" id="transactionsMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' %}active-link{% endif %}" href="{% url 'dashboard:voucher_list' %}" data-section="Transactions" data-subsection="Cash">
+                            <span>Cash</span>
+                            <i class="fas fa-money-bill sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' %}active-link{% endif %}" href="{% url 'dashboard:bank_transaction_list' %}" data-section="Transactions" data-subsection="Bank">
+                            <span>Bank</span>
+                            <i class="fas fa-university sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}active-link{% endif %}" href="{% url 'dashboard:section_c_list' %}" data-section="Transactions" data-subsection="Journal">
+                            <span>Journal</span>
+                            <i class="fas fa-book sub-icon"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
 
+        <!-- 4. Raw Materials -->
+        <li class="nav-item">
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#rawMaterialsMenu" role="button" aria-expanded="false" aria-controls="rawMaterialsMenu">
+                <div class="main-label">
+                    <i class="fas fa-industry main-icon"></i>
+                    <span>Raw Materials</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' or request.resolver_match.url_name == 'purchase_challan_list' or request.resolver_match.url_name == 'purchase_challan_create' or request.resolver_match.url_name == 'purchase_challan_edit' or request.resolver_match.url_name == 'grn_list' or request.resolver_match.url_name == 'grn_create' or request.resolver_match.url_name == 'grn_edit' or request.resolver_match.url_name == 'weighment_list' or request.resolver_match.url_name == 'weighment_create' or request.resolver_match.url_name == 'weighment_edit' or request.resolver_match.url_name == 'purchase_bill_list' or request.resolver_match.url_name == 'purchase_bill_create' or request.resolver_match.url_name == 'purchase_bill_edit' or request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' %}show{% endif %}" id="rawMaterialsMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_x_list' %}" data-section="Raw Materials" data-subsection="Purchase Order">
+                            <span>Purchase Order</span>
+                            <i class="fas fa-file-alt sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'purchase_challan_list' or request.resolver_match.url_name == 'purchase_challan_create' or request.resolver_match.url_name == 'purchase_challan_edit' %}active-link{% endif %}" href="{% url 'dashboard:purchase_challan_list' %}" data-section="Raw Materials" data-subsection="Purchase Challan">
+                            <span>Purchase Challan</span>
+                            <i class="fas fa-file sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'grn_list' or request.resolver_match.url_name == 'grn_create' or request.resolver_match.url_name == 'grn_edit' %}active-link{% endif %}" href="{% url 'dashboard:grn_list' %}" data-section="Raw Materials" data-subsection="Gatepass Entry">
+                            <span>Gatepass Entry</span>
+                            <i class="fas fa-door-open sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'weighment_list' or request.resolver_match.url_name == 'weighment_create' or request.resolver_match.url_name == 'weighment_edit' %}active-link{% endif %}" href="{% url 'dashboard:weighment_list' %}" data-section="Raw Materials" data-subsection="Weighment">
+                            <span>Weighment</span>
+                            <i class="fas fa-weight sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'purchase_bill_list' or request.resolver_match.url_name == 'purchase_bill_create' or request.resolver_match.url_name == 'purchase_bill_edit' %}active-link{% endif %}" href="{% url 'dashboard:purchase_bill_list' %}" data-section="Raw Materials" data-subsection="Purchase Bill">
+                            <span>Purchase Bill</span>
+                            <i class="fas fa-file-invoice sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Purchase Return">
+                            <span>Purchase Return</span>
+                            <i class="fas fa-undo sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_y_list' %}" data-section="Raw Materials" data-subsection="Sales Order">
+                            <span>Sales Order</span>
+                            <i class="fas fa-shopping-cart sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Sale Challan">
+                            <span>Sale Challan</span>
+                            <i class="fas fa-truck sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Sale Bill">
+                            <span>Sale Bill</span>
+                            <i class="fas fa-file-invoice-dollar sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Sale Return">
+                            <span>Sale Return</span>
+                            <i class="fas fa-undo-alt sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Consignment Sales">
+                            <span>Consignment Sales</span>
+                            <i class="fas fa-shipping-fast sub-icon"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link sub-section-link" href="#" data-section="Raw Materials" data-subsection="Stock Transfer">
+                            <span>Stock Transfer</span>
+                            <i class="fas fa-exchange-alt sub-icon"></i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
-        
-        <!-- Section 1 -->
+
+        <!-- 5. Finished Goods -->
         <li class="nav-item">
-            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section1">
-                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 1</span>
-                <i class="bi bi-chevron-down caret-icon"></i>
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#finishedGoodsMenu" role="button" aria-expanded="false" aria-controls="finishedGoodsMenu">
+                <div class="main-label">
+                    <i class="fas fa-box-open main-icon"></i>
+                    <span>Finished Goods</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
             </a>
-            <div class="collapse {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' or request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' or request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}show{% endif %}" id="section1">
-                <ul class="nav flex-column ps-3">
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'voucher_list' or request.resolver_match.url_name == 'voucher_create' or request.resolver_match.url_name == 'voucher_edit' %}active-link{% endif %}" href="{% url 'dashboard:voucher_list' %}" data-section="Section 1" data-subsection="Sub Section A (Vouchers)">Sub Section A</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'bank_transaction_list' or request.resolver_match.url_name == 'bank_transaction_create' or request.resolver_match.url_name == 'bank_transaction_edit' %}active-link{% endif %}" href="{% url 'dashboard:bank_transaction_list' %}" data-section="Section 1" data-subsection="Sub Section B">Sub Section B</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'section_c_list' or request.resolver_match.url_name == 'section_c_create' or request.resolver_match.url_name == 'section_c_edit' %}active-link{% endif %}" href="{% url 'dashboard:section_c_list' %}" data-section="Section 1" data-subsection="Sub Section C">Sub Section C</a></li>
+            <div class="collapse" id="finishedGoodsMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Purchase Order"><span>Purchase Order</span><i class="fas fa-file-alt sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Purchase Challan"><span>Purchase Challan</span><i class="fas fa-file sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Gatepass Entry"><span>Gatepass Entry</span><i class="fas fa-door-open sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Weighment"><span>Weighment</span><i class="fas fa-weight sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Purchase Bill"><span>Purchase Bill</span><i class="fas fa-file-invoice sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Purchase Return"><span>Purchase Return</span><i class="fas fa-undo sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Sales Order"><span>Sales Order</span><i class="fas fa-shopping-cart sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Sale Challan"><span>Sale Challan</span><i class="fas fa-truck sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Sale Bill"><span>Sale Bill</span><i class="fas fa-file-invoice-dollar sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Sale Return"><span>Sale Return</span><i class="fas fa-undo-alt sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Consignment Sales"><span>Consignment Sales</span><i class="fas fa-shipping-fast sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Finished Goods" data-subsection="Stock Transfer"><span>Stock Transfer</span><i class="fas fa-exchange-alt sub-icon"></i></a></li>
                 </ul>
             </div>
         </li>
-        <!-- Section 2 -->
+
+        <!-- 6. Store Materials -->
         <li class="nav-item">
-            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section2">
-                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 2</span>
-                <i class="bi bi-chevron-down caret-icon"></i>
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#storeMaterialsMenu" role="button" aria-expanded="false" aria-controls="storeMaterialsMenu">
+                <div class="main-label">
+                    <i class="fas fa-warehouse main-icon"></i>
+                    <span>Store Materials</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
             </a>
-            <div class="collapse {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' or request.resolver_match.url_name == 'purchase_bill_list' or request.resolver_match.url_name == 'purchase_bill_create' or request.resolver_match.url_name == 'purchase_bill_edit' or request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' or request.resolver_match.url_name == 'grn_list' or request.resolver_match.url_name == 'grn_create' or request.resolver_match.url_name == 'grn_edit' or request.resolver_match.url_name == 'weighment_list' or request.resolver_match.url_name == 'weighment_create' or request.resolver_match.url_name == 'weighment_edit' or request.resolver_match.url_name == 'purchase_challan_list' or request.resolver_match.url_name == 'purchase_challan_create' or request.resolver_match.url_name == 'purchase_challan_edit' %}show{% endif %}" id="section2">
-                <ul class="nav flex-column ps-3">
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'grn_list' or request.resolver_match.url_name == 'grn_create' or request.resolver_match.url_name == 'grn_edit' %}active-link{% endif %}" href="{% url 'dashboard:grn_list' %}" data-section="Section 2" data-subsection="Sub Section X0 (GRN)">Sub Section X0 (GRN)</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'weighment_list' or request.resolver_match.url_name == 'weighment_create' or request.resolver_match.url_name == 'weighment_edit' %}active-link{% endif %}" href="{% url 'dashboard:weighment_list' %}" data-section="Section 2" data-subsection="Weighment">Weighment</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'purchase_challan_list' or request.resolver_match.url_name == 'purchase_challan_create' or request.resolver_match.url_name == 'purchase_challan_edit' %}active-link{% endif %}" href="{% url 'dashboard:purchase_challan_list' %}" data-section="Section 2" data-subsection="Purchase Challan">Purchase Challan</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'purchase_bill_list' or request.resolver_match.url_name == 'purchase_bill_create' or request.resolver_match.url_name == 'purchase_bill_edit' %}active-link{% endif %}" href="{% url 'dashboard:purchase_bill_list' %}" data-section="Section 2" data-subsection="Purchase Voucher">Purchase Voucher</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'subsection_x_list' or request.resolver_match.url_name == 'subsection_x_create' or request.resolver_match.url_name == 'subsection_x_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_x_list' %}" data-section="Section 2" data-subsection="Sub Section X">Sub Section X</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal {% if request.resolver_match.url_name == 'subsection_y_list' or request.resolver_match.url_name == 'subsection_y_create' or request.resolver_match.url_name == 'subsection_y_edit' %}active-link{% endif %}" href="{% url 'dashboard:subsection_y_list' %}" data-section="Section 2" data-subsection="Sub Section Y">Sub Section Y</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 2" data-subsection="Sub Section Z">Sub Section Z</a></li>
+            <div class="collapse" id="storeMaterialsMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Purchase Order"><span>Purchase Order</span><i class="fas fa-file-alt sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Purchase Challan"><span>Purchase Challan</span><i class="fas fa-file sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Gatepass Entry"><span>Gatepass Entry</span><i class="fas fa-door-open sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Weighment"><span>Weighment</span><i class="fas fa-weight sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Purchase Bill"><span>Purchase Bill</span><i class="fas fa-file-invoice sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Purchase Return"><span>Purchase Return</span><i class="fas fa-undo sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Sales Order"><span>Sales Order</span><i class="fas fa-shopping-cart sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Sale Challan"><span>Sale Challan</span><i class="fas fa-truck sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Sale Bill"><span>Sale Bill</span><i class="fas fa-file-invoice-dollar sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Sale Return"><span>Sale Return</span><i class="fas fa-undo-alt sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Store Materials" data-subsection="Stock Transfer"><span>Stock Transfer</span><i class="fas fa-exchange-alt sub-icon"></i></a></li>
                 </ul>
             </div>
         </li>
-        <!-- Section 3 -->
+
+        <!-- 7. Payroll Processing -->
         <li class="nav-item">
-            <a class="nav-link section-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#section3">
-                <i class="bi bi-folder2 fs-5 me-2"></i> <span>Section 3</span>
-                <i class="bi bi-chevron-down caret-icon"></i>
+            <a class="nav-link section-link" data-bs-toggle="collapse" href="#payrollMenu" role="button" aria-expanded="false" aria-controls="payrollMenu">
+                <div class="main-label">
+                    <i class="fas fa-users-cog main-icon"></i>
+                    <span>Payroll Processing</span>
+                </div>
+                <i class="fas fa-chevron-down caret-icon"></i>
             </a>
-            <div class="collapse" id="section3">
-                <ul class="nav flex-column ps-3">
-                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section P">Sub Section P</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section Q">Sub Section Q</a></li>
-                    <li><a class="nav-link sub-section-link fw-normal" href="#" data-section="Section 3" data-subsection="Sub Section R">Sub Section R</a></li>
+            <div class="collapse" id="payrollMenu">
+                <ul class="nav flex-column erp-submenu ps-2">
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Payroll Processing" data-subsection="Time Sheet"><span>Time Sheet</span><i class="fas fa-clock sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Payroll Processing" data-subsection="Overtime"><span>Overtime</span><i class="fas fa-business-time sub-icon"></i></a></li>
+                    <li><a class="nav-link sub-section-link" href="#" data-section="Payroll Processing" data-subsection="Advance Deductions"><span>Advance Deductions</span><i class="fas fa-cut sub-icon"></i></a></li>
                 </ul>
             </div>
         </li>
