@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="{% static 'vendor/flatpickr.min.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="sidebar-collapsed">
+<body>
 
     <!-- Page Loader -->
     <div class="page-loader" id="globalLoader">
@@ -76,69 +76,6 @@
     <script>
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
-        
-        // Ensure sidebar starts collapsed by default
-        document.body.classList.add('sidebar-collapsed');
-
-        // --- Sidebar Hover Auto-Expand when Collapsed ---
-        let sidebarHoverTimer = null;
-        sidebar.addEventListener('mouseenter', function() {
-            if (document.body.classList.contains('sidebar-collapsed')) {
-                clearTimeout(sidebarHoverTimer);
-                sidebarHoverTimer = setTimeout(() => {
-                    sidebar.classList.add('sidebar-hover-expanded');
-                }, 100);
-            }
-        });
-        
-        sidebar.addEventListener('mouseleave', function() {
-            clearTimeout(sidebarHoverTimer);
-            sidebarHoverTimer = setTimeout(() => {
-                sidebar.classList.remove('sidebar-hover-expanded');
-            }, 200);
-        });
-
-        // --- Submenu Hover Expand/Collapse with Gentle Transition ---
-        document.querySelectorAll('.sidebar .nav-item').forEach(navItem => {
-            const collapseEl = navItem.querySelector('.collapse');
-            const trigger = navItem.querySelector('.section-link');
-            if (collapseEl && trigger) {
-                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-                let hoverTimer = null;
-                
-                navItem.addEventListener('mouseenter', function() {
-                    if (window.innerWidth > 768) {
-                        clearTimeout(hoverTimer);
-                        hoverTimer = setTimeout(() => {
-                            // Collapse other non-active submenus gently
-                            document.querySelectorAll('.sidebar .nav-item').forEach(otherItem => {
-                                if (otherItem !== navItem) {
-                                    const otherCollapseEl = otherItem.querySelector('.collapse');
-                                    if (otherCollapseEl && !otherCollapseEl.querySelector('.active-link') && otherCollapseEl.classList.contains('show')) {
-                                        const otherBsCollapse = bootstrap.Collapse.getOrCreateInstance(otherCollapseEl, { toggle: false });
-                                        otherBsCollapse.hide();
-                                    }
-                                }
-                            });
-                            if (!collapseEl.classList.contains('show')) {
-                                bsCollapse.show();
-                            }
-                        }, 180);
-                    }
-                });
-
-                navItem.addEventListener('mouseleave', function() {
-                    clearTimeout(hoverTimer);
-                    if (window.innerWidth > 768 && !collapseEl.querySelector('.active-link')) {
-                        hoverTimer = setTimeout(() => {
-                            if (collapseEl.classList.contains('show')) {
-                                bsCollapse.hide();
-                            }
-                        }, 220);
-                    }
-                });
-            }
-        });
         
         // --- Mobile Sidebar Toggle ---
         document.getElementById('sidebarToggle').addEventListener('click', function() {
