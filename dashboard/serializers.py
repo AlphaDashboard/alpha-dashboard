@@ -890,13 +890,51 @@ class SalPurGroupSerializer(serializers.ModelSerializer):
         return instance
 
 
-from .models.user_master import UserMaster
+from .models.user_master import UserMaster, UserFormPermission
+
+
+class UserFormPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFormPermission
+        fields = ['id', 'form_key', 'form_name', 'section', 'can_read', 'can_write', 'can_delete']
 
 
 class UserMasterSerializer(serializers.ModelSerializer):
+    permissions = UserFormPermissionSerializer(many=True, required=False)
+
     class Meta:
         model = UserMaster
         fields = '__all__'
+
+    def create(self, validated_data):
+        permissions_data = validated_data.pop('permissions', [])
+        user_master = UserMaster.objects.create(**validated_data)
+        for perm in permissions_data:
+            UserFormPermission.objects.create(user=user_master, **perm)
+        return user_master
+
+    def update(self, instance, validated_data):
+        permissions_data = validated_data.pop('permissions', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if permissions_data is not None:
+            existing_perms = {p.form_key: p for p in instance.permissions.all()}
+            for perm in permissions_data:
+                form_key = perm.get('form_key')
+                if form_key in existing_perms:
+                    perm_obj = existing_perms[form_key]
+                    perm_obj.form_name = perm.get('form_name', perm_obj.form_name)
+                    perm_obj.section = perm.get('section', perm_obj.section)
+                    perm_obj.can_read = perm.get('can_read', False)
+                    perm_obj.can_write = perm.get('can_write', False)
+                    perm_obj.can_delete = perm.get('can_delete', False)
+                    perm_obj.save()
+                else:
+                    UserFormPermission.objects.create(user=instance, **perm)
+
+        return instance
 
 
 # ─────────────────────────────────────────────────────────────────────────────

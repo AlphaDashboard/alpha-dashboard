@@ -29,3 +29,29 @@ class UserMaster(models.Model):
 
     def __str__(self):
         return f"{self.user_name} ({self.user_id})"
+
+
+class UserFormPermission(models.Model):
+    user = models.ForeignKey(
+        UserMaster,
+        on_delete=models.CASCADE,
+        related_name='permissions',
+        db_column='user_id',
+        verbose_name=_("User")
+    )
+    form_key = models.CharField(max_length=50, db_column='form_key', verbose_name=_("Form Key"))
+    form_name = models.CharField(max_length=100, db_column='form_name', verbose_name=_("Form Name"))
+    section = models.CharField(max_length=50, default='General', db_column='section', verbose_name=_("Section"))
+    can_read = models.BooleanField(default=False, db_column='can_read', verbose_name=_("Can Read"))
+    can_write = models.BooleanField(default=False, db_column='can_write', verbose_name=_("Can Write"))
+    can_delete = models.BooleanField(default=False, db_column='can_delete', verbose_name=_("Can Delete"))
+
+    class Meta:
+        db_table = 'tblUserFormPermission'
+        verbose_name = _('User Form Permission')
+        verbose_name_plural = _('User Form Permissions')
+        unique_together = ('user', 'form_key')
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.user_id} - {self.form_name} (R:{self.can_read}, W:{self.can_write}, D:{self.can_delete})"

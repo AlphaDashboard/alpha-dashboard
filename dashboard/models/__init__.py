@@ -8,7 +8,7 @@ from .section_c import SectionC, SectionCTran
 from .subsection_b2 import SubsectionB2, SubsectionB2Tran
 from .sal_pur_group import TransactionType, SalPurGroup, SalPurGroupTran
 from .pur_sales import PurSales, PurSalesTran
-from .user_master import UserMaster
+from .user_master import UserMaster, UserFormPermission
 from .grn import GRN, GRNTranMat, GRNTranTest
 from .weighment import Weighment, WeighmentTran
 from .purchase_challan import PurchaseChallan, PurchaseChallanTran
@@ -41,6 +41,7 @@ __all__ = [
     'PurSales',
     'PurSalesTran',
     'UserMaster',
+    'UserFormPermission',
     'GRN',
     'GRNTranMat',
     'GRNTranTest',

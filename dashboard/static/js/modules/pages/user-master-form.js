@@ -2,6 +2,34 @@ import { UserMasterAPI } from '../api/user-master-api.js?v=148';
 import { domUtils } from '../utils/dom.js?v=148';
 import { notifications } from '../utils/notifications.js?v=148';
 
+export const SYSTEM_FORMS = [
+    // Master
+    { form_key: 'account_master', form_name: 'Account Master / Group', section: 'Master' },
+    { form_key: 'accounts', form_name: 'Accounts', section: 'Master' },
+    { form_key: 'sal_pur_group', form_name: 'Sales Purchase Group', section: 'Master' },
+    { form_key: 'products_items', form_name: 'Products / Items', section: 'Master' },
+    { form_key: 'user_master', form_name: 'User Master', section: 'Master' },
+
+    // Transactions
+    { form_key: 'cash_voucher', form_name: 'Cash Voucher', section: 'Transactions' },
+    { form_key: 'bank_transaction', form_name: 'Bank Transaction', section: 'Transactions' },
+    { form_key: 'journal_entry', form_name: 'Journal Entry', section: 'Transactions' },
+
+    // Raw Materials
+    { form_key: 'purchase_order', form_name: 'Purchase Order', section: 'Raw Materials' },
+    { form_key: 'purchase_challan', form_name: 'Purchase Challan', section: 'Raw Materials' },
+    { form_key: 'gate_entry', form_name: 'Gatepass Entry', section: 'Raw Materials' },
+    { form_key: 'grn', form_name: 'GRN (Goods Receipt Note)', section: 'Raw Materials' },
+    { form_key: 'weighment', form_name: 'Weighment', section: 'Raw Materials' },
+    { form_key: 'purchase_bill', form_name: 'Purchase Bill', section: 'Raw Materials' },
+    { form_key: 'purchase_return', form_name: 'Purchase Return', section: 'Raw Materials' },
+    { form_key: 'sales_order', form_name: 'Sales Order', section: 'Raw Materials' },
+    { form_key: 'sale_challan', form_name: 'Sale Challan', section: 'Raw Materials' },
+    { form_key: 'sale_bill', form_name: 'Sale Bill', section: 'Raw Materials' },
+    { form_key: 'sale_return', form_name: 'Sale Return', section: 'Raw Materials' },
+    { form_key: 'stock_transfer', form_name: 'Stock Transfer', section: 'Raw Materials' },
+];
+
 class UserMasterForm {
     constructor(config) {
         this.config = config;
@@ -15,14 +43,23 @@ class UserMasterForm {
         this.isActiveInput = domUtils.getElement('#isActive');
         this.saveBtn = domUtils.getElement('#saveUserBtn');
 
+        this.tableBody = domUtils.getElement('#permissionsTableBody');
+        this.selectAllRead = domUtils.getElement('#selectAllRead');
+        this.selectAllWrite = domUtils.getElement('#selectAllWrite');
+        this.selectAllDelete = domUtils.getElement('#selectAllDelete');
+        this.selectAllGlobal = domUtils.getElement('#selectAllGlobal');
+
         this.init();
     }
 
     async init() {
         this.bindEvents();
+        this.bindPermissionsHeaderEvents();
 
         if (this.config.isEditMode && this.config.userId) {
             await this.loadData(this.config.userId);
+        } else {
+            this.renderPermissionsTable([]);
         }
 
         if (this.config.isViewMode) {
@@ -44,6 +81,247 @@ class UserMasterForm {
                 window.location.href = '/settings/user-master/';
             }
         });
+
+        // If user changes role on create form, auto-suggest permissions
+        if (!this.config.isEditMode && this.roleSelect) {
+            this.roleSelect.addEventListener('change', () => {
+                this.applyRoleDefaults(this.roleSelect.value);
+            });
+        }
+    }
+
+    applyRoleDefaults(role) {
+        if (role === 'Admin') {
+            this.setAllPermissions(true, true, true);
+        } else if (role === 'Maker') {
+            this.setAllPermissions(true, true, false);
+        } else if (role === 'Checker') {
+            this.setAllPermissions(true, false, false);
+        } else {
+            this.setAllPermissions(true, false, false);
+        }
+    }
+
+    setAllPermissions(read, write, del) {
+        if (!this.tableBody) return;
+        this.tableBody.querySelectorAll('tr[data-form-key]').forEach(tr => {
+            const r = tr.querySelector('.perm-read');
+            const w = tr.querySelector('.perm-write');
+            const d = tr.querySelector('.perm-delete');
+            const fa = tr.querySelector('.perm-full-access');
+
+            if (r) r.checked = read;
+            if (w) w.checked = write;
+            if (d) d.checked = del;
+            if (fa) fa.checked = (read && write && del);
+        });
+        this.updateHeaderCheckboxes();
+    }
+
+    renderPermissionsTable(existingPermissions = []) {
+        if (!this.tableBody) return;
+
+        const permMap = {};
+        if (Array.isArray(existingPermissions)) {
+            existingPermissions.forEach(p => {
+                permMap[p.form_key] = p;
+            });
+        }
+
+        let html = '';
+        SYSTEM_FORMS.forEach((form, idx) => {
+            const perm = permMap[form.form_key] || {
+                can_read: false,
+                can_write: false,
+                can_delete: false
+            };
+
+            const isFull = perm.can_read && perm.can_write && perm.can_delete;
+            const sectionBadgeClass = form.section === 'Master' ? 'bg-primary-subtle text-primary border border-primary-subtle' :
+                (form.section === 'Transactions' ? 'bg-success-subtle text-success border border-success-subtle' :
+                'bg-info-subtle text-info border border-info-subtle');
+
+            html += `
+                <tr data-form-key="${form.form_key}" data-form-name="${form.form_name}" data-section="${form.section}">
+                    <td class="text-center text-muted fw-semibold" style="font-size: 11px;">${idx + 1}</td>
+                    <td>
+                        <span class="badge ${sectionBadgeClass}" style="font-size: 10px; font-weight: 600;">
+                            ${form.section}
+                        </span>
+                    </td>
+                    <td class="fw-semibold text-dark">${form.form_name}</td>
+                    <td class="text-center">
+                        <input type="checkbox" class="perm-read perm-checkbox" ${perm.can_read ? 'checked' : ''} title="Read">
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" class="perm-write perm-checkbox" ${perm.can_write ? 'checked' : ''} title="Write">
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" class="perm-delete perm-checkbox" ${perm.can_delete ? 'checked' : ''} title="Delete">
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" class="perm-full-access perm-checkbox" ${isFull ? 'checked' : ''} title="Toggle Full Access for ${form.form_name}">
+                    </td>
+                </tr>
+            `;
+        });
+
+        this.tableBody.innerHTML = html;
+        this.bindRowEvents();
+        this.updateHeaderCheckboxes();
+
+        if (this.config.isViewMode) {
+            this.enableViewMode();
+        }
+    }
+
+    bindRowEvents() {
+        if (!this.tableBody) return;
+
+        this.tableBody.querySelectorAll('tr[data-form-key]').forEach(tr => {
+            const r = tr.querySelector('.perm-read');
+            const w = tr.querySelector('.perm-write');
+            const d = tr.querySelector('.perm-delete');
+            const fa = tr.querySelector('.perm-full-access');
+
+            // Row Full Access toggle
+            if (fa) {
+                fa.addEventListener('change', () => {
+                    const checked = fa.checked;
+                    if (r) r.checked = checked;
+                    if (w) w.checked = checked;
+                    if (d) d.checked = checked;
+                    this.updateHeaderCheckboxes();
+                });
+            }
+
+            // Individual checkboxes update row full access and column headers
+            [r, w, d].forEach(chk => {
+                if (chk) {
+                    chk.addEventListener('change', () => {
+                        if (fa) {
+                            fa.checked = (r && r.checked) && (w && w.checked) && (d && d.checked);
+                        }
+                        this.updateHeaderCheckboxes();
+                    });
+                }
+            });
+        });
+    }
+
+    bindPermissionsHeaderEvents() {
+        if (this.selectAllRead) {
+            this.selectAllRead.addEventListener('change', () => {
+                const checked = this.selectAllRead.checked;
+                this.tableBody.querySelectorAll('.perm-read').forEach(chk => {
+                    chk.checked = checked;
+                    const tr = chk.closest('tr');
+                    this.syncRowFullAccess(tr);
+                });
+                this.updateHeaderCheckboxes();
+            });
+        }
+
+        if (this.selectAllWrite) {
+            this.selectAllWrite.addEventListener('change', () => {
+                const checked = this.selectAllWrite.checked;
+                this.tableBody.querySelectorAll('.perm-write').forEach(chk => {
+                    chk.checked = checked;
+                    const tr = chk.closest('tr');
+                    this.syncRowFullAccess(tr);
+                });
+                this.updateHeaderCheckboxes();
+            });
+        }
+
+        if (this.selectAllDelete) {
+            this.selectAllDelete.addEventListener('change', () => {
+                const checked = this.selectAllDelete.checked;
+                this.tableBody.querySelectorAll('.perm-delete').forEach(chk => {
+                    chk.checked = checked;
+                    const tr = chk.closest('tr');
+                    this.syncRowFullAccess(tr);
+                });
+                this.updateHeaderCheckboxes();
+            });
+        }
+
+        if (this.selectAllGlobal) {
+            this.selectAllGlobal.addEventListener('change', () => {
+                const checked = this.selectAllGlobal.checked;
+                this.setAllPermissions(checked, checked, checked);
+            });
+        }
+    }
+
+    syncRowFullAccess(tr) {
+        if (!tr) return;
+        const r = tr.querySelector('.perm-read');
+        const w = tr.querySelector('.perm-write');
+        const d = tr.querySelector('.perm-delete');
+        const fa = tr.querySelector('.perm-full-access');
+        if (fa) {
+            fa.checked = (r && r.checked) && (w && w.checked) && (d && d.checked);
+        }
+    }
+
+    updateHeaderCheckboxes() {
+        if (!this.tableBody) return;
+
+        const readBoxes = Array.from(this.tableBody.querySelectorAll('.perm-read'));
+        const writeBoxes = Array.from(this.tableBody.querySelectorAll('.perm-write'));
+        const deleteBoxes = Array.from(this.tableBody.querySelectorAll('.perm-delete'));
+
+        if (this.selectAllRead && readBoxes.length > 0) {
+            this.selectAllRead.checked = readBoxes.every(chk => chk.checked);
+            this.selectAllRead.indeterminate = !this.selectAllRead.checked && readBoxes.some(chk => chk.checked);
+        }
+
+        if (this.selectAllWrite && writeBoxes.length > 0) {
+            this.selectAllWrite.checked = writeBoxes.every(chk => chk.checked);
+            this.selectAllWrite.indeterminate = !this.selectAllWrite.checked && writeBoxes.some(chk => chk.checked);
+        }
+
+        if (this.selectAllDelete && deleteBoxes.length > 0) {
+            this.selectAllDelete.checked = deleteBoxes.every(chk => chk.checked);
+            this.selectAllDelete.indeterminate = !this.selectAllDelete.checked && deleteBoxes.some(chk => chk.checked);
+        }
+
+        if (this.selectAllGlobal && readBoxes.length > 0) {
+            const allChecked = readBoxes.every(chk => chk.checked) &&
+                               writeBoxes.every(chk => chk.checked) &&
+                               deleteBoxes.every(chk => chk.checked);
+            const someChecked = readBoxes.some(chk => chk.checked) ||
+                                writeBoxes.some(chk => chk.checked) ||
+                                deleteBoxes.some(chk => chk.checked);
+            this.selectAllGlobal.checked = allChecked;
+            this.selectAllGlobal.indeterminate = !allChecked && someChecked;
+        }
+    }
+
+    collectPermissions() {
+        if (!this.tableBody) return [];
+
+        const permissions = [];
+        this.tableBody.querySelectorAll('tr[data-form-key]').forEach(tr => {
+            const formKey = tr.getAttribute('data-form-key');
+            const formName = tr.getAttribute('data-form-name');
+            const section = tr.getAttribute('data-section');
+            const canRead = tr.querySelector('.perm-read')?.checked || false;
+            const canWrite = tr.querySelector('.perm-write')?.checked || false;
+            const canDelete = tr.querySelector('.perm-delete')?.checked || false;
+
+            permissions.push({
+                form_key: formKey,
+                form_name: formName,
+                section: section,
+                can_read: canRead,
+                can_write: canWrite,
+                can_delete: canDelete
+            });
+        });
+
+        return permissions;
     }
 
     async loadData(userId) {
@@ -57,6 +335,9 @@ class UserMasterForm {
             if (this.roleSelect) this.roleSelect.value = data.role || 'User';
             if (this.empidInput) this.empidInput.value = data.empid;
             if (this.isActiveInput) this.isActiveInput.checked = data.is_active;
+
+            // Render Permissions Table with user permissions
+            this.renderPermissionsTable(data.permissions || []);
 
             // Trigger floating labels updates
             document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
@@ -102,12 +383,15 @@ class UserMasterForm {
             return;
         }
 
+        const permissions = this.collectPermissions();
+
         const payload = {
             user_id: userId,
             user_name: userName,
             role: role,
             empid: empid,
-            is_active: isActive
+            is_active: isActive,
+            permissions: permissions
         };
 
         const originalBtnText = this.saveBtn ? this.saveBtn.innerHTML : '';
