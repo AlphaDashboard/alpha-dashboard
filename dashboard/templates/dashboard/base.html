@@ -75,20 +75,36 @@
     <script>
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
         
-        // --- Mobile Sidebar Toggle ---
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-            if (sidebar.classList.contains('show')) {
-                overlay.classList.add('show-overlay');
+        // Restore sidebar state on desktop
+        const savedState = localStorage.getItem('erp_sidebar_collapsed');
+        if (savedState === 'true' && window.innerWidth > 768) {
+            document.body.classList.add('sidebar-collapsed');
+        }
+
+        // --- Unified Sidebar Toggle (Desktop Collapse & Mobile Drawer) ---
+        sidebarToggle?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.innerWidth > 768) {
+                // Desktop: Toggle collapsed / expanded mini sidebar
+                document.body.classList.toggle('sidebar-collapsed');
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem('erp_sidebar_collapsed', isCollapsed ? 'true' : 'false');
             } else {
-                overlay.classList.remove('show-overlay');
+                // Mobile: Toggle overlay drawer
+                sidebar?.classList.toggle('show');
+                if (sidebar?.classList.contains('show')) {
+                    overlay?.classList.add('show-overlay');
+                } else {
+                    overlay?.classList.remove('show-overlay');
+                }
             }
         });
         
         overlay?.addEventListener('click', function() {
-            sidebar.classList.remove('show');
-            overlay.classList.remove('show-overlay');
+            sidebar?.classList.remove('show');
+            overlay?.classList.remove('show-overlay');
         });
 
         // Rotate carets AND toggle folder icons on collapse

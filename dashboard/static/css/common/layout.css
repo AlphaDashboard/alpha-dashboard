@@ -128,17 +128,35 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     html.sidebar-collapsed-preload body .sidebar {
         width: var(--sidebar-collapsed-width);
     }
+    body.sidebar-collapsed .sidebar .nav-link {
+        font-size: 0 !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 4px 12px !important;
+        border-radius: 8px !important;
+    }
     body.sidebar-collapsed .sidebar .nav-link span,
     body.sidebar-collapsed .sidebar .caret-icon {
-        display: none;
+        display: none !important;
     }
     body.sidebar-collapsed .sidebar .nav-link i {
         margin-right: 0 !important;
-        font-size: 1.25rem;
+        font-size: 1.25rem !important;
+    }
+    body.sidebar-collapsed .sidebar .collapse {
+        display: none !important;
     }
     body.sidebar-collapsed .main-content,
     html.sidebar-collapsed-preload body .main-content {
         margin-left: var(--sidebar-collapsed-width);
+    }
+    body.sidebar-collapsed .erp-list-footer-fixed {
+        left: calc(var(--sidebar-collapsed-width) + 20px) !important;
+    }
+    body.sidebar-collapsed .erp-footer-fixed,
+    body.sidebar-collapsed .main-content .erp-footer-fixed {
+        left: var(--sidebar-collapsed-width) !important;
+        width: calc(100% - var(--sidebar-collapsed-width)) !important;
     }
 }
 
@@ -176,105 +194,6 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     display: flex;
 }
 
-/* --- Collapsed Sidebar Hover Expansion Support --- */
-@media (min-width: 769px) {
-    /* 1. Hide submenus when collapsed and not hovered */
-    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .collapse {
-        display: none !important;
-    }
-    
-    /* 2. Hide text nodes of main links when collapsed and not hovered */
-    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link {
-        font-size: 0 !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 4px 12px !important;
-        border-radius: 8px !important;
-    }
-    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link i {
-        margin-right: 0 !important;
-        font-size: 1.25rem !important;
-    }
-    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .nav-link span {
-        display: none !important;
-    }
-    body.sidebar-collapsed .sidebar:not(.sidebar-hover-expanded) .caret-icon {
-        display: none !important;
-    }
-
-    /* 3. Expand sidebar and restore styles when hover-expanded */
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded {
-        width: var(--sidebar-width) !important;
-        box-shadow: 4px 0 20px rgba(15, 23, 42, 0.15) !important;
-        z-index: 1058 !important; /* Force priority layering during hover states */
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link {
-        font-size: 14px !important;
-        justify-content: flex-start !important;
-        padding: 0 16px !important;
-        margin: 4px 16px !important;
-        border-radius: 8px !important;
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .collapse .nav-link {
-        font-size: 13px !important;
-        padding-left: 42px !important;
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link i {
-        margin-right: 8px !important;
-        font-size: 1rem !important;
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .nav-link span {
-        display: inline-block !important;
-        opacity: 0;
-        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.05s;
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .caret-icon {
-        display: inline-block !important;
-        opacity: 0;
-        animation: fadeInText 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.05s;
-    }
-    
-    body.sidebar-collapsed .sidebar.sidebar-hover-expanded .collapse {
-        opacity: 0;
-        animation: fadeInSubmenu 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 0.1s;
-    }
-
-    /* Shift main content dynamically when sidebar is hovered (prevents content hiding) */
-    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content {
-        margin-left: var(--sidebar-width) !important;
-    }
-
-    /* Shift fixed list footer dynamically when sidebar is hovered */
-    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content .erp-list-footer-fixed {
-        left: calc(var(--sidebar-width) + 20px) !important;
-    }
-
-    /* Shift fixed form footer dynamically when sidebar is hovered */
-    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .erp-footer-fixed,
-    body.sidebar-collapsed #sidebar.sidebar-hover-expanded ~ .main-content .erp-footer-fixed {
-        left: var(--sidebar-width) !important;
-        width: calc(100% - var(--sidebar-width)) !important;
-    }
-}
-
-@keyframes fadeInText {
-    from { opacity: 0; transform: translateX(-6px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes fadeInSubmenu {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 /* Global transitions synchronization overrides */
 .erp-list-footer-fixed {
     transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), right 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -283,3 +202,4 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
 .erp-footer-fixed {
     transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+

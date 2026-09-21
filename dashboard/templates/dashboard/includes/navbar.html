@@ -1,11 +1,10 @@
 <!-- Navbar Component -->
 <nav class="navbar navbar-expand-lg navbar-light navbar-top fixed-top" style="height: 72px; padding: 0 20px; background-color: #ffffff; border-bottom: 1px solid #e5e7eb; z-index: 1060 !important;">
-    <div class="container-fluid">
-        <button class="btn btn-outline-secondary d-md-none me-2" type="button" id="sidebarToggle">
-            <i class="bi bi-list"></i>
+        <button class="btn btn-light erp-sidebar-toggle-btn me-3 d-flex align-items-center justify-content-center" type="button" id="sidebarToggle" aria-label="Toggle Sidebar" style="width: 38px; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; color: #334155; transition: all 0.2s ease;">
+            <i class="bi bi-list fs-4"></i>
         </button>
         
-        <a class="navbar-brand fw-bold text-primary d-flex align-items-center m-0" href="{% url 'dashboard:alpha_list' %}" style="font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">
+        <a class="navbar-brand fw-bold text-primary d-flex align-items-center m-0" href="{% url 'dashboard:alpha_list' %}" style="font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">
             <i class="bi bi-boxes me-2"></i>AccountMaster Prototype
         </a>
         <div class="ms-auto d-flex align-items-center">
