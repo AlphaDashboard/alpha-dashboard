@@ -28,6 +28,21 @@ export const SYSTEM_FORMS = [
     { form_key: 'sale_bill', form_name: 'Sale Bill', section: 'Raw Materials' },
     { form_key: 'sale_return', form_name: 'Sale Return', section: 'Raw Materials' },
     { form_key: 'stock_transfer', form_name: 'Stock Transfer', section: 'Raw Materials' },
+
+    // Finished Goods
+    { form_key: 'fg_purchase_order', form_name: 'Purchase Order', section: 'Finished Goods' },
+    { form_key: 'fg_purchase_challan', form_name: 'Purchase Challan', section: 'Finished Goods' },
+    { form_key: 'fg_gate_entry', form_name: 'Gatepass Entry', section: 'Finished Goods' },
+    { form_key: 'fg_grn', form_name: 'GRN (Goods Receipt Note)', section: 'Finished Goods' },
+    { form_key: 'fg_weighment', form_name: 'Weighment', section: 'Finished Goods' },
+    { form_key: 'fg_purchase_bill', form_name: 'Purchase Bill', section: 'Finished Goods' },
+    { form_key: 'fg_purchase_return', form_name: 'Purchase Return', section: 'Finished Goods' },
+    { form_key: 'fg_sales_order', form_name: 'Sales Order', section: 'Finished Goods' },
+    { form_key: 'fg_sale_challan', form_name: 'Sale Challan', section: 'Finished Goods' },
+    { form_key: 'fg_sale_bill', form_name: 'Sale Bill', section: 'Finished Goods' },
+    { form_key: 'fg_sale_return', form_name: 'Sale Return', section: 'Finished Goods' },
+    { form_key: 'fg_consignment_sales', form_name: 'Consignment Sales', section: 'Finished Goods' },
+    { form_key: 'fg_stock_transfer', form_name: 'Stock Transfer', section: 'Finished Goods' },
 ];
 
 class UserMasterForm {
