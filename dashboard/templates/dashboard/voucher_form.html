@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}{% if is_view_mode %}View Voucher{% else %}{{ object|yesno:"Edit Voucher,New Voucher" }}{% endif %} - AccountMaster Management{% endblock %}
+{% block title %}{% if is_view_mode %}View Journal Voucher{% else %}{{ object|yesno:"Edit Journal Voucher,New Journal Voucher" }}{% endif %} - AccountMaster Management{% endblock %}
 
 {% block extra_css %}
 <link href="{% static 'vendor/select2.min.css' %}" rel="stylesheet" />
@@ -147,7 +147,7 @@
     <!-- Page Header (Matches Subsection B) -->
     <div class="d-flex justify-content-between align-items-center erp-header-bar" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; margin-bottom: 4px !important; margin-top: 0 !important; width: 100% !important; box-sizing: border-box !important;">
         <h2 class="erp-title mb-0" style="font-size: 16px; font-weight: 700; color: #111827; margin: 0 !important; line-height: normal !important;">
-            {% if is_view_mode %}View{% elif object %}Edit{% else %}Create{% endif %} Voucher
+            {% if is_view_mode %}View{% elif object %}Edit{% else %}Create{% endif %} Journal Voucher
         </h2>
         <div class="d-flex align-items-center gap-2">
             {% if is_view_mode %}
