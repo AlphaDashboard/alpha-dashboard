@@ -111,11 +111,19 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     color: #e2e8f0 !important;
     border-radius: 6px !important;
     display: flex !important;
-    justify-content: flex-end !important;
+    justify-content: flex-start !important;
     align-items: center !important;
     gap: 12px;
-    text-align: right;
+    text-align: left;
     transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar .erp-submenu .sub-section-link .sub-icon {
+    order: 1;
+}
+
+.sidebar .erp-submenu .sub-section-link span {
+    order: 2;
 }
 
 .sidebar .erp-submenu .sub-section-link:hover {

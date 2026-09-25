@@ -62,7 +62,6 @@ class UserMasterForm {
         this.selectAllRead = domUtils.getElement('#selectAllRead');
         this.selectAllWrite = domUtils.getElement('#selectAllWrite');
         this.selectAllDelete = domUtils.getElement('#selectAllDelete');
-        this.selectAllGlobal = domUtils.getElement('#selectAllGlobal');
 
         this.init();
     }
@@ -123,12 +122,10 @@ class UserMasterForm {
             const r = tr.querySelector('.perm-read');
             const w = tr.querySelector('.perm-write');
             const d = tr.querySelector('.perm-delete');
-            const fa = tr.querySelector('.perm-full-access');
 
             if (r) r.checked = read;
             if (w) w.checked = write;
             if (d) d.checked = del;
-            if (fa) fa.checked = (read && write && del);
         });
         this.updateHeaderCheckboxes();
     }
@@ -151,7 +148,6 @@ class UserMasterForm {
                 can_delete: false
             };
 
-            const isFull = perm.can_read && perm.can_write && perm.can_delete;
             const sectionBadgeClass = form.section === 'Master' ? 'bg-primary-subtle text-primary border border-primary-subtle' :
                 (form.section === 'Transactions' ? 'bg-success-subtle text-success border border-success-subtle' :
                 'bg-info-subtle text-info border border-info-subtle');
@@ -174,9 +170,6 @@ class UserMasterForm {
                     <td class="text-center">
                         <input type="checkbox" class="perm-delete perm-checkbox" ${perm.can_delete ? 'checked' : ''} title="Delete">
                     </td>
-                    <td class="text-center">
-                        <input type="checkbox" class="perm-full-access perm-checkbox" ${isFull ? 'checked' : ''} title="Toggle Full Access for ${form.form_name}">
-                    </td>
                 </tr>
             `;
         });
@@ -197,26 +190,11 @@ class UserMasterForm {
             const r = tr.querySelector('.perm-read');
             const w = tr.querySelector('.perm-write');
             const d = tr.querySelector('.perm-delete');
-            const fa = tr.querySelector('.perm-full-access');
 
-            // Row Full Access toggle
-            if (fa) {
-                fa.addEventListener('change', () => {
-                    const checked = fa.checked;
-                    if (r) r.checked = checked;
-                    if (w) w.checked = checked;
-                    if (d) d.checked = checked;
-                    this.updateHeaderCheckboxes();
-                });
-            }
-
-            // Individual checkboxes update row full access and column headers
+            // Individual checkboxes update column headers
             [r, w, d].forEach(chk => {
                 if (chk) {
                     chk.addEventListener('change', () => {
-                        if (fa) {
-                            fa.checked = (r && r.checked) && (w && w.checked) && (d && d.checked);
-                        }
                         this.updateHeaderCheckboxes();
                     });
                 }
@@ -230,8 +208,6 @@ class UserMasterForm {
                 const checked = this.selectAllRead.checked;
                 this.tableBody.querySelectorAll('.perm-read').forEach(chk => {
                     chk.checked = checked;
-                    const tr = chk.closest('tr');
-                    this.syncRowFullAccess(tr);
                 });
                 this.updateHeaderCheckboxes();
             });
@@ -242,8 +218,6 @@ class UserMasterForm {
                 const checked = this.selectAllWrite.checked;
                 this.tableBody.querySelectorAll('.perm-write').forEach(chk => {
                     chk.checked = checked;
-                    const tr = chk.closest('tr');
-                    this.syncRowFullAccess(tr);
                 });
                 this.updateHeaderCheckboxes();
             });
@@ -254,29 +228,9 @@ class UserMasterForm {
                 const checked = this.selectAllDelete.checked;
                 this.tableBody.querySelectorAll('.perm-delete').forEach(chk => {
                     chk.checked = checked;
-                    const tr = chk.closest('tr');
-                    this.syncRowFullAccess(tr);
                 });
                 this.updateHeaderCheckboxes();
             });
-        }
-
-        if (this.selectAllGlobal) {
-            this.selectAllGlobal.addEventListener('change', () => {
-                const checked = this.selectAllGlobal.checked;
-                this.setAllPermissions(checked, checked, checked);
-            });
-        }
-    }
-
-    syncRowFullAccess(tr) {
-        if (!tr) return;
-        const r = tr.querySelector('.perm-read');
-        const w = tr.querySelector('.perm-write');
-        const d = tr.querySelector('.perm-delete');
-        const fa = tr.querySelector('.perm-full-access');
-        if (fa) {
-            fa.checked = (r && r.checked) && (w && w.checked) && (d && d.checked);
         }
     }
 
@@ -300,17 +254,6 @@ class UserMasterForm {
         if (this.selectAllDelete && deleteBoxes.length > 0) {
             this.selectAllDelete.checked = deleteBoxes.every(chk => chk.checked);
             this.selectAllDelete.indeterminate = !this.selectAllDelete.checked && deleteBoxes.some(chk => chk.checked);
-        }
-
-        if (this.selectAllGlobal && readBoxes.length > 0) {
-            const allChecked = readBoxes.every(chk => chk.checked) &&
-                               writeBoxes.every(chk => chk.checked) &&
-                               deleteBoxes.every(chk => chk.checked);
-            const someChecked = readBoxes.some(chk => chk.checked) ||
-                                writeBoxes.some(chk => chk.checked) ||
-                                deleteBoxes.some(chk => chk.checked);
-            this.selectAllGlobal.checked = allChecked;
-            this.selectAllGlobal.indeterminate = !allChecked && someChecked;
         }
     }
 
