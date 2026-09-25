@@ -19,6 +19,7 @@ export const SYSTEM_FORMS = [
     { form_key: 'purchase_order', form_name: 'Purchase Order', section: 'Raw Materials' },
     { form_key: 'purchase_challan', form_name: 'Purchase Challan', section: 'Raw Materials' },
     { form_key: 'gate_entry', form_name: 'Gatepass Entry', section: 'Raw Materials' },
+    { form_key: 'grn', form_name: 'GRN (Goods Receipt Note)', section: 'Raw Materials' },
     { form_key: 'weighment', form_name: 'Weighment', section: 'Raw Materials' },
     { form_key: 'purchase_bill', form_name: 'Purchase Bill', section: 'Raw Materials' },
     { form_key: 'purchase_return', form_name: 'Purchase Return', section: 'Raw Materials' },
