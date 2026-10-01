@@ -1054,7 +1054,7 @@ class UserMasterViewSet(viewsets.ModelViewSet):
     queryset = UserMaster.objects.all().order_by('user_id')
     serializer_class = UserMasterSerializer
     lookup_field = 'user_id'
-    pagination_class = StandardResultsSetPagination
+    pagination_class = None  # all records returned — UI scrolls instead of paginating
 
     @action(detail=True, methods=['post'])
     def toggle_status(self, request, user_id=None):
