@@ -1,0 +1,723 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Account Group — Alpha Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/alpha-list.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="list-container d-flex flex-column h-100">
+
+    <!-- Header -->
+    <div class="list-header flex-shrink-0" style="margin-bottom: 8px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Account Group</h2>
+                <p class="text-muted mb-0">Manage accounting category groups (A, B, C, D).</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="toolbar-group">
+                    <a href="#" class="btn btn-light" title="Print (Coming Soon)">
+                        <i class="bi bi-printer-fill fs-5"></i>
+                    </a>
+                    <a href="#" class="btn btn-light" title="Upload/Cloud (Coming Soon)">
+                        <i class="bi bi-cloud-arrow-up-fill fs-5"></i>
+                    </a>
+                </div>
+                <button type="button" class="btn btn-primary shadow-sm hover-lift"
+                    data-bs-toggle="modal" data-bs-target="#createGroupModal"
+                    style="display:inline-flex;align-items:center;justify-content:center;height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;box-sizing:border-box;margin-top:4px;margin-right:7px;">
+                    <i class="bi bi-plus-lg me-2" style="font-size:11px;"></i>New Group
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card border-0 mb-1 shadow-sm" style="border-radius:4px;background:#fff;border:1px solid #e5e7eb!important;position:relative;z-index:1050;">
+            <form method="get" id="filterForm" class="d-flex align-items-center m-0 w-100 filter-bar" style="gap:6px;flex-wrap:nowrap;padding:6px 6px;">
+                <!-- Search Input -->
+                <div style="flex:30;min-width:0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left:8px;top:50%;transform:translateY(-50%);font-size:11px;"></i>
+                        <input type="text" class="form-control bg-light text-dark w-100" name="search" value="{{ search_query }}"
+                            placeholder="Search group name..."
+                            style="height:32px!important;padding:4px 6px 4px 26px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                    </div>
+                </div>
+
+                <!-- Type Filter -->
+                <div style="flex:18;min-width:0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-funnel text-muted position-absolute" style="left:8px;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none;z-index:5;"></i>
+                        <select name="type" class="form-select bg-light text-dark w-100" onchange="this.form.submit()"
+                            style="height:32px!important;padding:4px 24px 4px 26px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                            <option value="">All Types</option>
+                            {% for val, label in type_choices %}
+                            <option value="{{ val }}" {% if type_filter == val %}selected{% endif %}>Type {{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex:12;min-width:0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm"
+                        style="height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex:12;min-width:0;">
+                    <a href="{% url 'dashboard:account_group_list' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm"
+                        style="height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;border-color:#d1d5db;background:#fff;color:#374151;text-decoration:none;">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div><!-- END list-header -->
+
+    <!-- Table -->
+    <div class="erp-table-wrapper flex-grow-1 d-flex flex-column mb-0" style="overflow:hidden;min-height:0;">
+        <div class="erp-table-scroll flex-grow-1" style="overflow-y:auto;overflow-x:auto;min-height:0;">
+            <table class="table mb-0 erp-data-table table-hover align-middle">
+                <thead class="erp-table-header">
+                    <tr class="text-secondary tracking-wider">
+                        <th style="width:10%;">#</th>
+                        <th style="width:50%;">Group Name</th>
+                        <th class="text-center" style="width:20%;">Type</th>
+                        <th class="text-center" style="width:20%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="erp-table-body custom-scrollbar">
+                    {% for cat in categories %}
+                    <tr id="row-{{ cat.pk }}" class="align-middle" style="cursor:pointer;">
+                        <td class="ps-4 fw-semibold text-dark" style="font-size:0.85rem;">{{ forloop.counter }}</td>
+                        <td class="text-dark fw-bold" style="font-size:0.85rem;">{{ cat.categoryName }}</td>
+                        <td class="text-center" style="font-size:0.85rem;">
+                            <span class="badge bg-primary-subtle rounded-pill px-3" style="font-size:11px;background-color:#dbeafe!important;color:#1d4ed8!important;">
+                                Type {{ cat.categoryType }}
+                            </span>
+                        </td>
+                        <td class="text-center" style="vertical-align:middle;">
+                            <div class="dropdown action-dropdown d-flex justify-content-center align-items-center">
+                                <button class="btn btn-light btn-sm hide-caret d-flex align-items-center justify-content-center"
+                                    style="width:26px;height:26px;padding:0;border:1px solid #e5e7eb;background:#fff;color:#374151;border-radius:4px;"
+                                    type="button" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size:13px;min-width:160px;z-index:1055;">
+                                    <li>
+                                        <button type="button" class="dropdown-item py-1 btn-edit-group"
+                                            data-pk="{{ cat.pk }}"
+                                            data-name="{{ cat.categoryName }}"
+                                            data-type="{{ cat.categoryType }}">
+                                            <i class="bi bi-pencil-square me-2 text-primary"></i>Edit
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item py-1 text-danger fw-bold btn-delete-group"
+                                            data-pk="{{ cat.pk }}"
+                                            data-name="{{ cat.categoryName }}">
+                                            <i class="bi bi-trash3 me-2"></i>Delete
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 bg-white border-0">
+                            <div class="empty-state py-4 text-muted">
+                                <i class="bi bi-layers" style="font-size:3rem;opacity:0.3;"></i>
+                                <h5 class="mt-3">No Account Groups Found</h5>
+                                <p class="mb-0" style="font-size:13px;">Click <strong>New Group</strong> to create the first account group.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4" class="border-0 p-0">
+                            <div class="end-of-records">--- End of Records ---</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer total -->
+    <div class="erp-list-footer-fixed" id="erpListFooter">
+        <div class="erp-list-footer-inner" style="display:flex;width:100%;padding:0;gap:0;justify-content:start;">
+            <div style="width:80%;flex-shrink:0;"></div>
+            <div class="d-flex align-items-center justify-content-end text-end" style="width:10%;padding-right:16px;gap:16px;box-sizing:border-box;flex-shrink:0;">
+                <span class="erp-list-footer-label" style="margin:0;">TOTAL RECORDS</span>
+                <span id="totalAmountDisplay" class="erp-list-footer-amount">{{ categories|length }}</span>
+            </div>
+            <div style="width:10%;flex-shrink:0;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CREATE GROUP MODAL
+══════════════════════════════════ -->
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter:blur(4px);background-color:rgba(15,23,42,0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content shadow-lg border-0 bg-white" style="border-radius:8px;overflow:hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size:1.05rem;">Create Account Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right:20px;opacity:0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-5 py-4">
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size:13px;">Group Name <span class="text-danger">*</span></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="createGroupName" class="form-control"
+                            style="border-radius:4px;padding:6px 10px;font-size:13px;height:36px;border-color:#cbd5e1;"
+                            placeholder="e.g. Assets, Liabilities..." required>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size:13px;">Type</label>
+                    <div class="col-sm-8">
+                        <select id="createGroupType" class="form-select"
+                            style="border-radius:4px;padding-top:6px;padding-bottom:6px;padding-left:10px;font-size:13px;height:36px;border-color:#cbd5e1;">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-2 justify-content-center">
+                <button type="button" id="btnSaveGroup" class="btn btn-primary bg-gradient text-white fw-bold shadow-sm"
+                    style="border-radius:4px;width:180px;height:38px;">
+                    Save Group
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     EDIT GROUP MODAL
+══════════════════════════════════ -->
+<div class="modal fade" id="editGroupModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter:blur(4px);background-color:rgba(15,23,42,0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content shadow-lg border-0 bg-white" style="border-radius:8px;overflow:hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" style="font-size:1.05rem;">Edit Account Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right:20px;opacity:0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-5 py-4">
+                <input type="hidden" id="editGroupPk">
+                <div class="mb-3 row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size:13px;">Group Name <span class="text-danger">*</span></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="editGroupName" class="form-control"
+                            style="border-radius:4px;padding:6px 10px;font-size:13px;height:36px;border-color:#cbd5e1;" required>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold text-secondary" style="font-size:13px;">Type</label>
+                    <div class="col-sm-8">
+                        <select id="editGroupType" class="form-select"
+                            style="border-radius:4px;padding-top:6px;padding-bottom:6px;padding-left:10px;font-size:13px;height:36px;border-color:#cbd5e1;">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-2 justify-content-center">
+                <button type="button" id="btnUpdateGroup" class="btn btn-primary bg-gradient text-white fw-bold shadow-sm"
+                    style="border-radius:4px;width:180px;height:38px;">
+                    Update Group
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DELETE CONFIRM MODAL
+══════════════════════════════════ -->
+<div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter:blur(4px);background-color:rgba(15,23,42,0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content shadow-lg border-0 bg-white" style="border-radius:8px;overflow:hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-danger w-100 text-center m-0" style="font-size:1.05rem;">Delete Account Group</h5>
+                <button type="button" class="btn-close position-absolute" style="right:20px;opacity:0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-4 text-center">
+                <input type="hidden" id="deleteGroupPk">
+                <p class="mb-0 fw-medium text-dark" style="font-size:14px;">
+                    Are you sure you want to permanently delete<br>
+                    <span id="deleteGroupName" class="fw-bold text-danger fs-5"></span>?<br><br>
+                    <span class="text-muted" style="font-size:12px;">This cannot be undone. Groups linked to Account Master records cannot be deleted.</span>
+                </p>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-0 justify-content-center gap-2">
+                <button type="button" id="btnConfirmDelete" class="btn btn-danger bg-gradient text-white fw-bold shadow-sm"
+                    style="border-radius:4px;width:180px;height:38px;">PERMANENTLY DELETE</button>
+                <button type="button" class="btn btn-light border fw-semibold text-dark shadow-sm" data-bs-dismiss="modal"
+                    style="border-radius:4px;width:100px;height:38px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1080;" id="agToastContainer"></div>
+
+<style>
+/* Prevent the outer window or page from scrolling */
+html, body {
+    height: 100% !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+}
+
+.main-content {
+    height: calc(100vh - 72px) !important;
+    max-height: calc(100vh - 72px) !important;
+    overflow: hidden !important;
+    padding: 12px 20px 14px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+#dynamic-content-area,
+#main-dashboard-content {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+.list-container {
+    height: 100% !important;
+    max-height: 100% !important;
+    margin-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+.list-header {
+    flex-shrink: 0 !important;
+    margin-bottom: 8px !important;
+}
+
+/* Table card container pinned between header and footer */
+.erp-table-wrapper {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: #ffffff;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px 8px 0 0 !important;
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+/* Only the table body scrolls vertically */
+.erp-table-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+}
+
+/* Sticky table column headers */
+.erp-table-header th,
+.table .erp-table-header th,
+.table thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+/* Docked footer directly attached to the bottom of the table */
+.erp-list-footer-fixed {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    height: 36px !important;
+    border-radius: 0 0 8px 8px !important;
+    margin-top: 0 !important;
+    z-index: 10 !important;
+    border-left: 1px solid #cbd5e1 !important;
+    border-right: 1px solid #cbd5e1 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    border-top: 2px solid #374151 !important;
+    box-shadow: none !important;
+}
+
+.badge { transition: all 0.2s ease; }
+.dropdown-menu { z-index: 1055 !important; }
+
+.table {
+    margin-bottom: 0 !important;
+    background: #fff;
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = '{{ csrf_token }}';
+
+    // ── Detached Dropdown Delegator (Prevents Clipping inside overflow table) ──
+    const tableBody = document.querySelector('.erp-table-body');
+    if (tableBody) {
+        tableBody.addEventListener('click', function(e) {
+            const btn = e.target.closest('.action-dropdown button');
+            if (!btn) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            let menu;
+            if (btn.dataset.menuId) {
+                menu = document.getElementById(btn.dataset.menuId);
+            } else {
+                menu = btn.nextElementSibling;
+                if (!menu || !menu.classList.contains('dropdown-menu')) return;
+
+                const menuId = 'erp-account-group-dropdown-' + Math.random().toString(36).substr(2, 9);
+                btn.dataset.menuId = menuId;
+                menu.id = menuId;
+                menu.classList.add('erp-detached-dropdown');
+                document.body.appendChild(menu);
+            }
+
+            if (!menu) return;
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                btn.setAttribute('aria-expanded', 'false');
+            } else {
+                // Close all other detached dropdowns
+                document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                    m.classList.remove('show');
+                });
+
+                // Temporarily show with hidden visibility to measure its height
+                menu.style.position = 'fixed';
+                menu.style.visibility = 'hidden';
+                menu.classList.add('show');
+                const menuHeight = menu.offsetHeight;
+                menu.style.visibility = '';
+
+                // Calculate position relative to viewport
+                const rect = btn.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                // Check if it fits below the button
+                const fitsBelow = (rect.bottom + 4 + menuHeight) <= viewportHeight;
+
+                if (fitsBelow) {
+                    menu.style.top = (rect.bottom + 4) + 'px';
+                    menu.style.bottom = 'auto';
+                } else {
+                    menu.style.top = 'auto';
+                    menu.style.bottom = (viewportHeight - rect.top + 4) + 'px';
+                }
+
+                // Align to right edge of button
+                menu.style.left = 'auto';
+                menu.style.right = (document.documentElement.clientWidth - rect.right) + 'px';
+                menu.style.zIndex = '9999';
+
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+
+    // Close detached dropdowns on outside click or dropdown-item click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+        const dropdownItem = e.target.closest('.erp-detached-dropdown .dropdown-item');
+        if (dropdownItem) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+    });
+
+    // Close detached dropdowns on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+                m.classList.remove('show');
+            });
+        }
+    });
+
+    // Close detached dropdowns when scrolling table or window
+    window.addEventListener('scroll', function() {
+        document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => {
+            m.classList.remove('show');
+        });
+    }, true);
+
+    // ── Toast Helper ──
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('agToastContainer');
+        const bg = type === 'success' ? 'bg-success' : 'bg-danger';
+        const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        const id = 'toast-' + Date.now();
+        container.insertAdjacentHTML('beforeend', `
+            <div id="${id}" class="toast align-items-center text-white ${bg} border-0 mb-2 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <i class="bi ${icon} me-2 fs-5"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>`);
+        const el = document.getElementById(id);
+        const t = new bootstrap.Toast(el, { autohide: true, delay: 4000 });
+        t.show();
+    }
+
+    // ── Row Refresh Helper ──
+    function refreshRow(pk, name, type) {
+        const row = document.getElementById('row-' + pk);
+        if (!row) return;
+        const cells = row.querySelectorAll('td');
+        if (cells[1]) cells[1].textContent = name;
+        if (cells[2]) cells[2].innerHTML = `<span class="badge rounded-pill px-3" style="font-size:11px;background-color:#dbeafe!important;color:#1d4ed8!important;">Type ${type}</span>`;
+    }
+
+    // ── CREATE ──
+    document.getElementById('btnSaveGroup').addEventListener('click', function () {
+        const name = document.getElementById('createGroupName').value.trim();
+        const type = document.getElementById('createGroupType').value;
+        if (!name) { showToast('Group Name is required.', 'error'); return; }
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+        const fd = new FormData();
+        fd.append('categoryName', name);
+        fd.append('categoryType', type);
+        fd.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch('{% url "dashboard:account_group_create" %}', {
+            method: 'POST', body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.textContent = 'Save Group';
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('createGroupModal')).hide();
+                document.getElementById('createGroupName').value = '';
+                document.getElementById('createGroupType').value = 'A';
+                showToast(data.message);
+                // Add row to table without reload
+                addRowToTable(data.id, data.categoryName, data.categoryType);
+            } else {
+                showToast(data.message || 'Error saving group.', 'error');
+            }
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = 'Save Group'; showToast('Server error. Please try again.', 'error'); });
+    });
+
+    function addRowToTable(pk, name, type) {
+        const tbody = document.querySelector('.erp-table-body');
+        const emptyRow = tbody.querySelector('td[colspan]')?.closest('tr');
+        if (emptyRow) emptyRow.remove();
+
+        const rowCount = tbody.querySelectorAll('tr[id^="row-"]').length + 1;
+        const tr = document.createElement('tr');
+        tr.id = 'row-' + pk;
+        tr.className = 'align-middle';
+        tr.style.cursor = 'pointer';
+        tr.innerHTML = `
+            <td class="ps-4 fw-semibold text-dark" style="font-size:0.85rem;">${rowCount}</td>
+            <td class="text-dark fw-bold" style="font-size:0.85rem;">${name}</td>
+            <td class="text-center" style="font-size:0.85rem;">
+                <span class="badge rounded-pill px-3" style="font-size:11px;background-color:#dbeafe!important;color:#1d4ed8!important;">Type ${type}</span>
+            </td>
+            <td class="text-center" style="vertical-align:middle;">
+                <div class="dropdown action-dropdown d-flex justify-content-center align-items-center">
+                    <button class="btn btn-light btn-sm hide-caret d-flex align-items-center justify-content-center"
+                        style="width:26px;height:26px;padding:0;border:1px solid #e5e7eb;background:#fff;color:#374151;border-radius:4px;"
+                        type="button" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size:13px;min-width:160px;z-index:1055;">
+                        <li>
+                            <button type="button" class="dropdown-item py-1 btn-edit-group"
+                                data-pk="${pk}" data-name="${name}" data-type="${type}">
+                                <i class="bi bi-pencil-square me-2 text-primary"></i>Edit
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button type="button" class="dropdown-item py-1 text-danger fw-bold btn-delete-group"
+                                data-pk="${pk}" data-name="${name}">
+                                <i class="bi bi-trash3 me-2"></i>Delete
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </td>`;
+        // Insert before the "End of Records" spacer row
+        const spacer = tbody.querySelector('tr:not([id])');
+        tbody.insertBefore(tr, spacer);
+        updateTotal();
+    }
+
+    // ── EDIT — open modal ──
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-edit-group');
+        if (!btn) return;
+        document.getElementById('editGroupPk').value = btn.dataset.pk;
+        document.getElementById('editGroupName').value = btn.dataset.name;
+        document.getElementById('editGroupType').value = btn.dataset.type;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('editGroupModal')).show();
+    });
+
+    // ── EDIT — save ──
+    document.getElementById('btnUpdateGroup').addEventListener('click', function () {
+        const pk = document.getElementById('editGroupPk').value;
+        const name = document.getElementById('editGroupName').value.trim();
+        const type = document.getElementById('editGroupType').value;
+        if (!name) { showToast('Group Name is required.', 'error'); return; }
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+        const fd = new FormData();
+        fd.append('categoryName', name);
+        fd.append('categoryType', type);
+        fd.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch(`{% url 'dashboard:account_group_edit' 0 %}`.replace('/0/', `/${pk}/`), {
+            method: 'POST', body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.textContent = 'Update Group';
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('editGroupModal')).hide();
+                refreshRow(pk, data.categoryName, data.categoryType);
+                showToast(data.message);
+                // Update data attrs on action buttons for this row
+                document.querySelectorAll(`.btn-edit-group[data-pk="${pk}"]`).forEach(b => {
+                    b.dataset.name = data.categoryName;
+                    b.dataset.type = data.categoryType;
+                });
+                document.querySelectorAll(`.btn-delete-group[data-pk="${pk}"]`).forEach(b => {
+                    b.dataset.name = data.categoryName;
+                });
+            } else {
+                showToast(data.message || 'Error updating group.', 'error');
+            }
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = 'Update Group'; showToast('Server error. Please try again.', 'error'); });
+    });
+
+    // ── DELETE — open modal ──
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-delete-group');
+        if (!btn) return;
+        document.getElementById('deleteGroupPk').value = btn.dataset.pk;
+        document.getElementById('deleteGroupName').textContent = btn.dataset.name;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteGroupModal')).show();
+    });
+
+    // ── DELETE — confirm ──
+    document.getElementById('btnConfirmDelete').addEventListener('click', function () {
+        const pk = document.getElementById('deleteGroupPk').value;
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
+
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch(`{% url 'dashboard:account_group_delete' 0 %}`.replace('/0/', `/${pk}/`), {
+            method: 'POST', body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = 'PERMANENTLY DELETE';
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('deleteGroupModal')).hide();
+                const row = document.getElementById('row-' + pk);
+                if (row) {
+                    const actionBtn = row.querySelector('.action-dropdown button');
+                    if (actionBtn && actionBtn.dataset.menuId) {
+                        const detachedMenu = document.getElementById(actionBtn.dataset.menuId);
+                        if (detachedMenu) detachedMenu.remove();
+                    }
+                    row.remove();
+                }
+                updateTotal();
+                showToast(data.message);
+            } else {
+                showToast(data.message || 'Cannot delete this group.', 'error');
+                bootstrap.Modal.getInstance(document.getElementById('deleteGroupModal')).hide();
+            }
+        })
+        .catch(() => { btn.disabled = false; btn.innerHTML = 'PERMANENTLY DELETE'; showToast('Server error. Please try again.', 'error'); });
+    });
+
+    // ── Total Records counter ──
+    function updateTotal() {
+        const count = document.querySelectorAll('tr[id^="row-"]').length;
+        const el = document.getElementById('totalAmountDisplay');
+        if (el) el.textContent = count;
+    }
+});
+</script>
+{% endblock %}

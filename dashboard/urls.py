@@ -42,7 +42,11 @@ from .views import (
     PurchaseChallanListView,
     PurchaseChallanCreateView,
     PurchaseBillListView,
-    PurchaseBillCreateView
+    PurchaseBillCreateView,
+    AccountGroupListView,
+    AccountGroupCreateView,
+    AccountGroupUpdateView,
+    AccountGroupDeleteView,
 )
 from rest_framework.routers import DefaultRouter
 from .api_views import (
@@ -82,6 +86,12 @@ router.register(r'api/purchase-challan', PurchaseChallanViewSet, basename='api_p
 app_name = 'dashboard'
 
 urlpatterns = [
+    # Account Group (Category) URLs
+    path('account-group/', AccountGroupListView.as_view(), name='account_group_list'),
+    path('account-group/create/', AccountGroupCreateView.as_view(), name='account_group_create'),
+    path('account-group/<int:pk>/edit/', AccountGroupUpdateView.as_view(), name='account_group_edit'),
+    path('account-group/<int:pk>/delete/', AccountGroupDeleteView.as_view(), name='account_group_delete'),
+
     # Clean REST-like URLs for AccountMaster
     path('account_master/', AccountMasterListView.as_view(), name='alpha_list'),
     path('account_master/create/', AccountMasterCreateView.as_view(), name='alpha_create'),

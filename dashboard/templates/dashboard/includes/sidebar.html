@@ -20,10 +20,12 @@
                 </div>
                 <i class="fas fa-chevron-down caret-icon"></i>
             </a>
-            <div class="collapse {% if request.resolver_match.url_name == 'alpha_list' or request.resolver_match.url_name == 'alpha_create' or request.resolver_match.url_name == 'alpha_edit' or request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' or request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}show{% endif %}" id="masterMenu">
+            <div class="collapse {% if request.resolver_match.url_name == 'account_group_list' or request.resolver_match.url_name == 'alpha_list' or request.resolver_match.url_name == 'alpha_create' or request.resolver_match.url_name == 'alpha_edit' or request.resolver_match.url_name == 'sal_pur_group_list' or request.resolver_match.url_name == 'sal_pur_group_create' or request.resolver_match.url_name == 'sal_pur_group_edit' or request.resolver_match.url_name == 'user_master_list' or request.resolver_match.url_name == 'user_master_create' or request.resolver_match.url_name == 'user_master_edit' %}show{% endif %}" id="masterMenu">
                 <ul class="nav flex-column erp-submenu ps-2">
                     <li>
-                        <a class="nav-link sub-section-link" href="#" data-section="Master" data-subsection="Account Group">
+                        <a class="nav-link sub-section-link {% if request.resolver_match.url_name == 'account_group_list' %}active-link{% endif %}"
+                           href="{% url 'dashboard:account_group_list' %}"
+                           data-section="Master" data-subsection="Account Group">
                             <span>Account Group</span>
                             <i class="fas fa-layer-group sub-icon"></i>
                         </a>

@@ -1,3 +1,9 @@
+from .category_views import (
+    AccountGroupListView,
+    AccountGroupCreateView,
+    AccountGroupUpdateView,
+    AccountGroupDeleteView,
+)
 from .accountmaster_views import (
     AccountMasterListView,
     AccountMasterCreateView,
@@ -26,6 +32,10 @@ from .gate_entry_views import (
 )
 
 __all__ = [
+    'AccountGroupListView',
+    'AccountGroupCreateView',
+    'AccountGroupUpdateView',
+    'AccountGroupDeleteView',
     'AccountMasterListView',
     'AccountMasterCreateView',
     'AccountMasterUpdateView',
