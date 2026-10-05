@@ -41,6 +41,14 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Modals must ALWAYS float above the sidebar and overlay */
+.modal-backdrop {
+    z-index: 1065 !important;
+}
+.modal {
+    z-index: 1070 !important;
+}
+
 .sidebar a {
     color: #cbd5e1;
     text-decoration: none;
