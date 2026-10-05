@@ -4,6 +4,13 @@ from .category_views import (
     AccountGroupUpdateView,
     AccountGroupDeleteView,
 )
+from .product_item_views import (
+    ProductItemListView,
+    ProductItemCreateView,
+    ProductItemUpdateView,
+    ProductItemDeleteView,
+    ProductItemDetailJSONView,
+)
 from .accountmaster_views import (
     AccountMasterListView,
     AccountMasterCreateView,
@@ -36,6 +43,11 @@ __all__ = [
     'AccountGroupCreateView',
     'AccountGroupUpdateView',
     'AccountGroupDeleteView',
+    'ProductItemListView',
+    'ProductItemCreateView',
+    'ProductItemUpdateView',
+    'ProductItemDeleteView',
+    'ProductItemDetailJSONView',
     'AccountMasterListView',
     'AccountMasterCreateView',
     'AccountMasterUpdateView',

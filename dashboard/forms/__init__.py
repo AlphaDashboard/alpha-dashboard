@@ -1,6 +1,7 @@
 from .accountmaster_forms import AccountMasterForm
 from .voucher_forms import VoucherForm, VoucherFactFormSet, VoucherFactForm
 from .gate_entry_forms import GateEntryForm, MaterialForm
+from .product_item_forms import ItemProductForm, ItemGroupForm
 
 __all__ = [
     'AccountMasterForm',
@@ -8,5 +9,7 @@ __all__ = [
     'VoucherFactFormSet',
     'VoucherFactForm',
     'GateEntryForm',
-    'MaterialForm'
+    'MaterialForm',
+    'ItemProductForm',
+    'ItemGroupForm',
 ]

@@ -13,6 +13,7 @@ from .grn import GRN, GRNTranMat, GRNTranTest
 from .weighment import Weighment, WeighmentTran
 from .purchase_challan import PurchaseChallan, PurchaseChallanTran
 from .purchase_bill import PurchaseBill, PurchaseBillItem
+from .product_item import ItemGroup, ItemProduct
 
 __all__ = [
     'Category',
@@ -51,4 +52,6 @@ __all__ = [
     'PurchaseChallanTran',
     'PurchaseBill',
     'PurchaseBillItem',
+    'ItemGroup',
+    'ItemProduct',
 ]

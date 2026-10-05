@@ -1,0 +1,936 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Products / Items — Alpha Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/alpha-list.css' %}?v={% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<div class="list-container d-flex flex-column h-100">
+
+    <!-- Header -->
+    <div class="list-header flex-shrink-0" style="margin-bottom: 8px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Products / Items Group</h2>
+                <p class="text-muted mb-0">Manage product master, inventory attributes, tax codes & rates.</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="toolbar-group">
+                    <a href="#" class="btn btn-light" title="Print (Coming Soon)">
+                        <i class="bi bi-printer-fill fs-5"></i>
+                    </a>
+                    <a href="#" class="btn btn-light" title="Upload/Cloud (Coming Soon)">
+                        <i class="bi bi-cloud-arrow-up-fill fs-5"></i>
+                    </a>
+                </div>
+                <button type="button" class="btn btn-primary shadow-sm hover-lift btn-open-create-modal"
+                    style="display:inline-flex;align-items:center;justify-content:center;height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;box-sizing:border-box;margin-top:4px;margin-right:7px;">
+                    <i class="bi bi-plus-lg me-2" style="font-size:11px;"></i>New Product
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card border-0 mb-1 shadow-sm" style="border-radius:4px;background:#fff;border:1px solid #e5e7eb!important;position:relative;z-index:1050;">
+            <form method="get" id="filterForm" class="d-flex align-items-center m-0 w-100 filter-bar" style="gap:6px;flex-wrap:nowrap;padding:6px 6px;">
+                <!-- Search Input -->
+                <div style="flex:28;min-width:0;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search text-muted position-absolute" style="left:8px;top:50%;transform:translateY(-50%);font-size:11px;"></i>
+                        <input type="text" class="form-control bg-light text-dark w-100" name="search" value="{{ search_query }}"
+                            placeholder="Search text..."
+                            style="height:32px!important;padding:4px 6px 4px 26px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                    </div>
+                </div>
+
+                <!-- Search By Dropdown -->
+                <div style="flex:16;min-width:0;">
+                    <select name="search_by" class="form-select bg-light text-dark w-100"
+                        style="height:32px!important;padding:4px 24px 4px 8px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                        <option value="item_name" {% if search_by == 'item_name' %}selected{% endif %}>Item Name</option>
+                        <option value="item_code" {% if search_by == 'item_code' %}selected{% endif %}>Item Code (F4)</option>
+                        <option value="rack_no" {% if search_by == 'rack_no' %}selected{% endif %}>Rack No.</option>
+                        <option value="hsn_sac_code" {% if search_by == 'hsn_sac_code' %}selected{% endif %}>HSN/SAC</option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div style="flex:16;min-width:0;">
+                    <select name="status" class="form-select bg-light text-dark w-100" onchange="this.form.submit()"
+                        style="height:32px!important;padding:4px 24px 4px 8px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                        <option value="">All Statuses</option>
+                        <option value="CONTINUE" {% if status_filter == 'CONTINUE' %}selected{% endif %}>CONTINUE</option>
+                        <option value="DISCONTINUE" {% if status_filter == 'DISCONTINUE' %}selected{% endif %}>DISCONTINUE</option>
+                    </select>
+                </div>
+
+                <!-- Unit Filter -->
+                <div style="flex:16;min-width:0;">
+                    <select name="unit" class="form-select bg-light text-dark w-100" onchange="this.form.submit()"
+                        style="height:32px!important;padding:4px 24px 4px 8px!important;border-radius:4px;font-size:12px;font-weight:500;border:1px solid #d1d5db;box-shadow:none;">
+                        <option value="">All Units</option>
+                        {% for u in units %}
+                        <option value="{{ u }}" {% if unit_filter == u %}selected{% endif %}>{{ u }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Search Button -->
+                <div style="flex:12;min-width:0;">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center shadow-sm"
+                        style="height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="flex:12;min-width:0;">
+                    <a href="{% url 'dashboard:product_item_list' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center shadow-sm"
+                        style="height:32px!important;padding:4px 12px!important;border-radius:4px!important;font-size:12px!important;font-weight:600!important;border-color:#d1d5db;background:#fff;color:#374151;text-decoration:none;">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div><!-- END list-header -->
+
+    <!-- Table Component -->
+    <div class="erp-table-wrapper flex-grow-1 d-flex flex-column mb-0" style="overflow:hidden;min-height:0;">
+        <div class="erp-table-scroll flex-grow-1" style="overflow-y:auto;overflow-x:auto;min-height:0;">
+            <table class="table mb-0 erp-data-table table-hover align-middle">
+                <thead class="erp-table-header">
+                    <tr class="text-secondary tracking-wider">
+                        <th style="width:5%;">#</th>
+                        <th style="width:25%;" class="text-start ps-3">Item Name</th>
+                        <th style="width:10%;">Rack No.</th>
+                        <th style="width:10%;">Unit</th>
+                        <th style="width:12%;">HSN/SAC</th>
+                        <th style="width:12%;" class="text-end pe-3">M.R.P.</th>
+                        <th style="width:12%;" class="text-end pe-3">P.Rate</th>
+                        <th class="text-center" style="width:8%;">Status</th>
+                        <th class="text-center" style="width:6%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="erp-table-body custom-scrollbar">
+                    {% for p in products %}
+                    <tr id="row-{{ p.pk }}" class="align-middle" style="cursor:pointer;" onclick="openProductEditModal('{{ p.pk }}')">
+                        <td class="text-center fw-semibold text-secondary" style="font-size:0.85rem;">{{ forloop.counter }}</td>
+                        <td class="text-start ps-3 text-dark fw-bold" style="font-size:0.85rem;">{{ p.item_name }}</td>
+                        <td class="text-center text-muted" style="font-size:0.85rem;">{{ p.rack_no|default:"-" }}</td>
+                        <td class="text-center text-dark fw-semibold" style="font-size:0.85rem;">{{ p.unit }}</td>
+                        <td class="text-center text-muted" style="font-size:0.85rem;">{{ p.hsn_sac_code|default:"-" }}</td>
+                        <td class="text-end pe-3 text-dark fw-semibold" style="font-size:0.85rem;">{{ p.mrp|floatformat:2 }}</td>
+                        <td class="text-end pe-3 text-dark fw-semibold" style="font-size:0.85rem;">{{ p.p_rate|floatformat:2 }}</td>
+                        <td class="text-center" style="font-size:0.85rem;">
+                            {% if p.status == 'CONTINUE' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3" style="font-size:11px;">
+                                CONTINUE
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3" style="font-size:11px;">
+                                {{ p.status }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center" style="vertical-align:middle;" onclick="event.stopPropagation();">
+                            <div class="dropdown action-dropdown d-flex justify-content-center align-items-center">
+                                <button class="btn btn-light btn-sm hide-caret d-flex align-items-center justify-content-center"
+                                    style="width:26px;height:26px;padding:0;border:1px solid #e5e7eb;background:#fff;color:#374151;border-radius:4px;"
+                                    type="button" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size:13px;min-width:160px;z-index:1055;">
+                                    <li>
+                                        <button type="button" class="dropdown-item py-1 btn-edit-product"
+                                            data-pk="{{ p.pk }}">
+                                            <i class="bi bi-pencil-square me-2 text-primary"></i>Modify Product
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item py-1 text-danger fw-bold btn-delete-product"
+                                            data-pk="{{ p.pk }}"
+                                            data-name="{{ p.item_name }}">
+                                            <i class="bi bi-trash3 me-2"></i>Delete
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 bg-white border-0">
+                            <div class="empty-state py-4 text-muted">
+                                <i class="bi bi-box-seam" style="font-size:3rem;opacity:0.3;"></i>
+                                <h5 class="mt-3">No Products or Items Found</h5>
+                                <p class="mb-0" style="font-size:13px;">Click <strong>New Product</strong> to add your first item.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="9" class="border-0 p-0">
+                            <div class="end-of-records">--- End of Records ---</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Docked Footer -->
+    <div class="erp-list-footer-fixed" id="erpListFooter">
+        <div class="erp-list-footer-inner" style="display:flex;width:100%;padding:0;gap:0;justify-content:start;">
+            <div style="width:80%;flex-shrink:0;"></div>
+            <div class="d-flex align-items-center justify-content-end text-end" style="width:10%;padding-right:16px;gap:16px;box-sizing:border-box;flex-shrink:0;">
+                <span class="erp-list-footer-label" style="margin:0;">TOTAL RECORDS</span>
+                <span id="totalAmountDisplay" class="erp-list-footer-amount">{{ products|length }}</span>
+            </div>
+            <div style="width:10%;flex-shrink:0;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════
+     "MODIFY PRODUCT" MODAL (Exact match to manager's screen)
+══════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter:blur(4px);background-color:rgba(15,23,42,0.45);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:1080px;width:95vw;">
+        <div class="modal-content shadow-lg border border-secondary bg-white" style="border-radius:6px;overflow:hidden;">
+            <!-- Legacy Header -->
+            <div class="modal-header px-4 py-2 text-white d-flex align-items-center justify-content-between"
+                style="background:#243342;border-bottom:2px solid #1e293b;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-box-fill text-info" style="font-size:14px;"></i>
+                    <h6 class="modal-title fw-bold text-uppercase m-0" id="productModalTitle" style="font-size:13px;letter-spacing:0.05em;">MODIFY PRODUCT</h6>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="opacity:0.8;font-size:11px;"></button>
+            </div>
+
+            <form id="productForm" method="post" action="{% url 'dashboard:product_item_create' %}">
+                {% csrf_token %}
+                <input type="hidden" id="productId" name="product_id" value="">
+
+                <div class="modal-body p-4" style="background:#f1f5f9;font-size:12px;">
+
+                    <!-- ── TOP ZONE: Item Attributes ── -->
+                    <div class="card border border-light-subtle shadow-sm p-3 mb-3 bg-white" style="border-radius:6px;">
+                        <!-- Row 1: STATUS, TYPE, HIDE -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">STATUS :</label>
+                                <select name="status" id="f_status" class="form-select form-select-sm bg-light">
+                                    <option value="CONTINUE">CONTINUE</option>
+                                    <option value="DISCONTINUE">DISCONTINUE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">TYPE :</label>
+                                <input type="text" name="product_type" id="f_product_type" value="NORMAL" class="form-control form-control-sm bg-light">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">HIDE :</label>
+                                <select name="hide" id="f_hide" class="form-select form-select-sm bg-light">
+                                    <option value="NO">NO</option>
+                                    <option value="YES">YES</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: ITEM Name -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-8 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">ITEM :</label>
+                                <input type="text" name="item_name" id="f_item_name" required placeholder="e.g. DEXORANGE" class="form-control form-control-sm fw-bold bg-light text-primary" style="font-size:13px;">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">CODE :</label>
+                                <input type="text" name="item_code" id="f_item_code" placeholder="F4-Item Code" class="form-control form-control-sm bg-light">
+                            </div>
+                        </div>
+
+                        <!-- Row 3: RACK NO. -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">RACK NO. :</label>
+                                <input type="text" name="rack_no" id="f_rack_no" value="a1" class="form-control form-control-sm bg-light">
+                            </div>
+                        </div>
+
+                        <!-- Row 4: UNIT, DECIMAL -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">UNIT :</label>
+                                <input type="text" name="unit" id="f_unit" value="PCS" class="form-control form-control-sm bg-light">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">DECIMAL :</label>
+                                <select name="decimal_allowed" id="f_decimal_allowed" class="form-select form-select-sm bg-light">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 5: FAST SEARCH -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">FAST SEARCH:</label>
+                                <select name="fast_search" id="f_fast_search" class="form-select form-select-sm bg-light">
+                                    <option value="YES">YES</option>
+                                    <option value="NO">NO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 6: COLOR TYPE, STORE, ITEM TYPE -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">COLOR TYPE :</label>
+                                <input type="text" name="color_type" id="f_color_type" value="NORMAL" class="form-control form-control-sm bg-light">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">STORE :</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="store" id="f_store" value="Default" class="form-control bg-light">
+                                    <input type="number" name="store_code" id="f_store_code" value="0" style="max-width:55px;" class="form-control text-end bg-light">
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:80px;">ITEM TYPE :</label>
+                                <input type="text" name="item_type_code" id="f_item_type_code" value="1 NORMAL" class="form-control form-control-sm bg-light">
+                            </div>
+                        </div>
+
+                        <!-- Row 7: GROUP -->
+                        <div class="row g-3 align-items-center mb-2">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">GROUP :</label>
+                                <select name="group_allowed" id="f_group_allowed" class="form-select form-select-sm bg-light" style="max-width:80px;">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                                <select name="item_group" id="f_item_group" class="form-select form-select-sm bg-light ms-2">
+                                    <option value="">-- General Group --</option>
+                                    {% for g in item_groups %}
+                                    <option value="{{ g.id }}">{{ g.group_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 8: HSN/SAC -->
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label class="fw-bold text-secondary text-uppercase mb-0 me-2" style="width:110px;">HSN/SAC :</label>
+                                <select name="hsn_sac_allowed" id="f_hsn_sac_allowed" class="form-select form-select-sm bg-light" style="max-width:80px;">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                                <input type="text" name="hsn_sac_code" id="f_hsn_sac_code" value="-BLANK-" class="form-control form-control-sm bg-light ms-2" placeholder="HSN/SAC Code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── BOTTOM ZONE: 3-Column Pricing & GST Controls ── -->
+                    <div class="card border border-light-subtle shadow-sm p-3 bg-white" style="border-radius:6px;">
+                        <div class="row g-4">
+                            <!-- COLUMN 1: Taxes, Basic Pricing & Margins -->
+                            <div class="col-md-4 border-end">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">LOCAL :</label>
+                                    <select name="local_tax" id="f_local_tax" class="form-select form-select-sm bg-light" style="width:130px;">
+                                        <option value="Taxable">Taxable</option>
+                                        <option value="Exempt">Exempt</option>
+                                        <option value="Nil Rated">Nil Rated</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">CENTRAL :</label>
+                                    <select name="central_tax" id="f_central_tax" class="form-select form-select-sm bg-light" style="width:130px;">
+                                        <option value="Taxable">Taxable</option>
+                                        <option value="Exempt">Exempt</option>
+                                        <option value="Nil Rated">Nil Rated</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">M.R.P. :</label>
+                                    <input type="number" step="0.01" name="mrp" id="f_mrp" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">Rate-A :</label>
+                                    <input type="number" step="0.01" name="rate_a" id="f_rate_a" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">CONV.BOX :</label>
+                                    <input type="number" step="0.001" name="conv_box" id="f_conv_box" value="0.000" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">MINIMUM QTY :</label>
+                                    <input type="number" step="0.01" name="min_qty" id="f_min_qty" value="0" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">MAXIMUM DISCOUNT : %</label>
+                                    <input type="number" step="0.01" name="max_discount" id="f_max_discount" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:100px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">MINIMUM MARGIN % :</label>
+                                    <input type="number" step="0.001" name="min_margin" id="f_min_margin" value="0.000" class="form-control form-control-sm text-end bg-light" style="width:100px;">
+                                </div>
+                            </div>
+
+                            <!-- COLUMN 2: GST Breakdown & Purchase Rate -->
+                            <div class="col-md-4 border-end">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">SGST % :</label>
+                                    <input type="number" step="0.01" name="sgst_pct" id="f_sgst_pct" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">IGST % :</label>
+                                    <input type="number" step="0.01" name="igst_pct" id="f_igst_pct" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">P.RATE :</label>
+                                    <input type="number" step="0.01" name="p_rate" id="f_p_rate" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">Rate-B :</label>
+                                    <input type="number" step="0.01" name="rate_b" id="f_rate_b" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">CONV.CAS :</label>
+                                    <input type="number" step="0.001" name="conv_case" id="f_conv_case" value="0.000" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">MAXIMUM QTY :</label>
+                                    <input type="number" step="0.01" name="max_qty" id="f_max_qty" value="0" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">PURC Disc :</label>
+                                    <input type="number" step="0.01" name="purc_disc" id="f_purc_disc" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">DISC LESS :</label>
+                                    <input type="number" step="0.01" name="disc_less" id="f_disc_less" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                            </div>
+
+                            <!-- COLUMN 3: CGST, Costing, Tier C & Stock Controls -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">CGST % :</label>
+                                    <input type="number" step="0.01" name="cgst_pct" id="f_cgst_pct" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">COST/PCS :</label>
+                                    <input type="number" step="0.00001" name="cost_per_pcs" id="f_cost_per_pcs" value="0.00000" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">Rate-C :</label>
+                                    <input type="number" step="0.01" name="rate_c" id="f_rate_c" value="0.00" class="form-control form-control-sm text-end bg-light" style="width:130px;">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">NEGATIVE :</label>
+                                    <select name="negative_billing" id="f_negative_billing" class="form-select form-select-sm bg-light" style="width:130px;">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">REORDER QTY :</label>
+                                    <div class="d-flex align-items-center gap-1" style="width:130px;">
+                                        <input type="number" step="0.01" name="reorder_qty" id="f_reorder_qty" value="0" class="form-control form-control-sm text-end bg-light" style="width:65px;">
+                                        <span class="fw-bold text-secondary text-uppercase" style="font-size:10px;">DAYS:</span>
+                                        <input type="number" name="reorder_days" id="f_reorder_days" value="0" class="form-control form-control-sm text-end bg-light" style="width:45px;">
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">F6/RATE± :</label>
+                                    <select name="rate_mod_allowed" id="f_rate_mod_allowed" class="form-select form-select-sm bg-light" style="width:130px;">
+                                        <option value="YES">YES</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="fw-bold text-secondary text-uppercase mb-0">Mfr F3 :</label>
+                                    <input type="text" name="manufacturer" id="f_manufacturer" placeholder="Manufacturer" class="form-control form-control-sm bg-light" style="width:130px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Legacy Hotkey Footer & Action Buttons -->
+                <div class="modal-footer px-4 py-2 d-flex align-items-center justify-content-between"
+                    style="background:#1e293b;border-top:1px solid #334155;">
+                    <div class="text-info fw-semibold font-monospace" style="font-size:12px;">
+                        <i class="bi bi-keyboard me-1"></i> F4-Item Code &nbsp;|&nbsp; F3-Manufacturer &nbsp;|&nbsp; F6-Rate Mod
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm px-3 fw-bold" data-bs-dismiss="modal" style="border-radius:4px;">
+                            Cancel
+                        </button>
+                        <button type="submit" id="btnSaveProduct" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" style="border-radius:4px;min-width:140px;">
+                            Save Product
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════
+     DELETE CONFIRMATION MODAL
+══════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true"
+    style="backdrop-filter:blur(4px);background-color:rgba(15,23,42,0.4);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content shadow-lg border-0 bg-white" style="border-radius:8px;overflow:hidden;">
+            <div class="modal-header border-bottom px-4 py-3 d-flex align-items-center position-relative">
+                <h5 class="modal-title fw-bold text-danger w-100 text-center m-0" style="font-size:1.05rem;">Delete Product</h5>
+                <button type="button" class="btn-close position-absolute" style="right:20px;opacity:0.6;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white px-4 py-4 text-center">
+                <input type="hidden" id="deleteProductPk">
+                <p class="mb-0 fw-medium text-dark" style="font-size:14px;">
+                    Are you sure you want to delete<br>
+                    <span id="deleteProductName" class="fw-bold text-danger fs-5"></span>?<br><br>
+                    <span class="text-muted" style="font-size:12px;">This action cannot be undone.</span>
+                </p>
+            </div>
+            <div class="modal-footer border-0 pb-4 pt-0 justify-content-center gap-2">
+                <button type="button" id="btnConfirmDeleteProduct" class="btn btn-danger bg-gradient text-white fw-bold shadow-sm"
+                    style="border-radius:4px;width:180px;height:38px;">DELETE PRODUCT</button>
+                <button type="button" class="btn btn-light border fw-semibold text-dark shadow-sm" data-bs-dismiss="modal"
+                    style="border-radius:4px;width:100px;height:38px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1080;" id="agToastContainer"></div>
+
+<style>
+/* Viewport and row-only vertical scroll containment */
+html, body {
+    height: 100% !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+}
+
+.main-content {
+    height: calc(100vh - 72px) !important;
+    max-height: calc(100vh - 72px) !important;
+    overflow: hidden !important;
+    padding: 12px 20px 14px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+#dynamic-content-area,
+#main-dashboard-content {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+.list-container {
+    height: 100% !important;
+    max-height: 100% !important;
+    margin-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+.list-header {
+    flex-shrink: 0 !important;
+    margin-bottom: 8px !important;
+}
+
+.erp-table-wrapper {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: #ffffff;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px 8px 0 0 !important;
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+.erp-table-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+}
+
+.erp-table-header th,
+.table .erp-table-header th,
+.table thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+.erp-list-footer-fixed {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    height: 36px !important;
+    border-radius: 0 0 8px 8px !important;
+    margin-top: 0 !important;
+    z-index: 10 !important;
+    border-left: 1px solid #cbd5e1 !important;
+    border-right: 1px solid #cbd5e1 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    border-top: 2px solid #374151 !important;
+    box-shadow: none !important;
+}
+
+.badge { transition: all 0.2s ease; }
+.dropdown-menu { z-index: 1055 !important; }
+
+.table {
+    margin-bottom: 0 !important;
+    background: #fff;
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = '{{ csrf_token }}';
+
+    // ── Toast Helper ──
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('agToastContainer');
+        const bg = type === 'success' ? 'bg-success' : 'bg-danger';
+        const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        const id = 'toast-' + Date.now();
+        container.insertAdjacentHTML('beforeend', `
+            <div id="${id}" class="toast align-items-center text-white ${bg} border-0 mb-2 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <i class="bi ${icon} me-2 fs-5"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>`);
+        const el = document.getElementById(id);
+        const t = new bootstrap.Toast(el, { autohide: true, delay: 4000 });
+        t.show();
+    }
+
+    // ── Detached Dropdown Delegator (Prevents Clipping inside overflow table) ──
+    const tableBody = document.querySelector('.erp-table-body');
+    if (tableBody) {
+        tableBody.addEventListener('click', function(e) {
+            const btn = e.target.closest('.action-dropdown button');
+            if (!btn) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            let menu;
+            if (btn.dataset.menuId) {
+                menu = document.getElementById(btn.dataset.menuId);
+            } else {
+                menu = btn.nextElementSibling;
+                if (!menu || !menu.classList.contains('dropdown-menu')) return;
+
+                const menuId = 'erp-product-dropdown-' + Math.random().toString(36).substr(2, 9);
+                btn.dataset.menuId = menuId;
+                menu.id = menuId;
+                menu.classList.add('erp-detached-dropdown');
+                document.body.appendChild(menu);
+            }
+
+            if (!menu) return;
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                btn.setAttribute('aria-expanded', 'false');
+            } else {
+                document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+
+                menu.style.position = 'fixed';
+                menu.style.visibility = 'hidden';
+                menu.classList.add('show');
+                const menuHeight = menu.offsetHeight;
+                menu.style.visibility = '';
+
+                const rect = btn.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                const fitsBelow = (rect.bottom + 4 + menuHeight) <= viewportHeight;
+
+                if (fitsBelow) {
+                    menu.style.top = (rect.bottom + 4) + 'px';
+                    menu.style.bottom = 'auto';
+                } else {
+                    menu.style.top = 'auto';
+                    menu.style.bottom = (viewportHeight - rect.top + 4) + 'px';
+                }
+
+                menu.style.left = 'auto';
+                menu.style.right = (document.documentElement.clientWidth - rect.right) + 'px';
+                menu.style.zIndex = '9999';
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+
+    // Close detached dropdowns on click outside or on item
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown') && !e.target.closest('.erp-detached-dropdown')) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+        }
+        if (e.target.closest('.erp-detached-dropdown .dropdown-item')) {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
+    window.addEventListener('scroll', function() {
+        document.querySelectorAll('.erp-detached-dropdown.show').forEach(m => m.classList.remove('show'));
+    }, true);
+
+    // ── Open CREATE Modal ──
+    document.querySelectorAll('.btn-open-create-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = document.getElementById('productForm');
+            form.reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('productModalTitle').textContent = 'NEW PRODUCT ENTRY';
+            form.action = '{% url "dashboard:product_item_create" %}';
+
+            // Set default values matching legacy screen
+            document.getElementById('f_status').value = 'CONTINUE';
+            document.getElementById('f_product_type').value = 'NORMAL';
+            document.getElementById('f_hide').value = 'NO';
+            document.getElementById('f_rack_no').value = 'a1';
+            document.getElementById('f_unit').value = 'PCS';
+            document.getElementById('f_decimal_allowed').value = 'No';
+            document.getElementById('f_fast_search').value = 'YES';
+            document.getElementById('f_color_type').value = 'NORMAL';
+            document.getElementById('f_store').value = 'Default';
+            document.getElementById('f_store_code').value = '0';
+            document.getElementById('f_item_type_code').value = '1 NORMAL';
+            document.getElementById('f_group_allowed').value = 'Yes';
+            document.getElementById('f_hsn_sac_allowed').value = 'Yes';
+            document.getElementById('f_hsn_sac_code').value = '-BLANK-';
+            document.getElementById('f_local_tax').value = 'Taxable';
+            document.getElementById('f_central_tax').value = 'Taxable';
+            document.getElementById('f_negative_billing').value = 'No';
+            document.getElementById('f_rate_mod_allowed').value = 'YES';
+
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('productModal')).show();
+        });
+    });
+
+    // ── Open EDIT Modal ──
+    window.openProductEditModal = function(pk) {
+        fetch(`/products/${pk}/detail/`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('productId').value = data.id;
+                document.getElementById('productModalTitle').textContent = `MODIFY PRODUCT : ${data.item_name}`;
+                document.getElementById('productForm').action = `/products/${data.id}/edit/`;
+
+                // Populate Top Zone
+                document.getElementById('f_status').value = data.status;
+                document.getElementById('f_product_type').value = data.product_type;
+                document.getElementById('f_hide').value = data.hide;
+                document.getElementById('f_item_name').value = data.item_name;
+                document.getElementById('f_item_code').value = data.item_code;
+                document.getElementById('f_rack_no').value = data.rack_no;
+                document.getElementById('f_unit').value = data.unit;
+                document.getElementById('f_decimal_allowed').value = data.decimal_allowed;
+                document.getElementById('f_fast_search').value = data.fast_search;
+                document.getElementById('f_color_type').value = data.color_type;
+                document.getElementById('f_store').value = data.store;
+                document.getElementById('f_store_code').value = data.store_code;
+                document.getElementById('f_item_type_code').value = data.item_type_code;
+                document.getElementById('f_group_allowed').value = data.group_allowed;
+                if (document.getElementById('f_item_group')) {
+                    document.getElementById('f_item_group').value = data.item_group_id || '';
+                }
+                document.getElementById('f_hsn_sac_allowed').value = data.hsn_sac_allowed;
+                document.getElementById('f_hsn_sac_code').value = data.hsn_sac_code;
+
+                // Column 1
+                document.getElementById('f_local_tax').value = data.local_tax;
+                document.getElementById('f_central_tax').value = data.central_tax;
+                document.getElementById('f_mrp').value = parseFloat(data.mrp).toFixed(2);
+                document.getElementById('f_rate_a').value = parseFloat(data.rate_a).toFixed(2);
+                document.getElementById('f_conv_box').value = parseFloat(data.conv_box).toFixed(3);
+                document.getElementById('f_min_qty').value = parseFloat(data.min_qty).toFixed(0);
+                document.getElementById('f_max_discount').value = parseFloat(data.max_discount).toFixed(2);
+                document.getElementById('f_min_margin').value = parseFloat(data.min_margin).toFixed(3);
+
+                // Column 2
+                document.getElementById('f_sgst_pct').value = parseFloat(data.sgst_pct).toFixed(2);
+                document.getElementById('f_igst_pct').value = parseFloat(data.igst_pct).toFixed(2);
+                document.getElementById('f_p_rate').value = parseFloat(data.p_rate).toFixed(2);
+                document.getElementById('f_rate_b').value = parseFloat(data.rate_b).toFixed(2);
+                document.getElementById('f_conv_case').value = parseFloat(data.conv_case).toFixed(3);
+                document.getElementById('f_max_qty').value = parseFloat(data.max_qty).toFixed(0);
+                document.getElementById('f_purc_disc').value = parseFloat(data.purc_disc).toFixed(2);
+                document.getElementById('f_disc_less').value = parseFloat(data.disc_less).toFixed(2);
+
+                // Column 3
+                document.getElementById('f_cgst_pct').value = parseFloat(data.cgst_pct).toFixed(2);
+                document.getElementById('f_cost_per_pcs').value = parseFloat(data.cost_per_pcs).toFixed(5);
+                document.getElementById('f_rate_c').value = parseFloat(data.rate_c).toFixed(2);
+                document.getElementById('f_negative_billing').value = data.negative_billing;
+                document.getElementById('f_reorder_qty').value = parseFloat(data.reorder_qty).toFixed(0);
+                document.getElementById('f_reorder_days').value = data.reorder_days;
+                document.getElementById('f_rate_mod_allowed').value = data.rate_mod_allowed;
+                document.getElementById('f_manufacturer').value = data.manufacturer;
+
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('productModal')).show();
+            })
+            .catch(() => showToast('Could not load product details.', 'error'));
+    };
+
+    // Edit button click delegator
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-edit-product');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProductEditModal(btn.dataset.pk);
+        }
+    });
+
+    // ── Form Submit (AJAX) ──
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btnSaveProduct');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
+
+        const fd = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Product';
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                let errText = 'Validation error occurred.';
+                if (data.errors) {
+                    errText = Object.entries(data.errors).map(([k, v]) => `${k}: ${v.join(' ')}`).join('\n');
+                }
+                showToast(errText, 'error');
+            }
+        })
+        .catch(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Product';
+            showToast('Server error. Please try again.', 'error');
+        });
+    });
+
+    // ── DELETE MODAL ──
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-delete-product');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('deleteProductPk').value = btn.dataset.pk;
+            document.getElementById('deleteProductName').textContent = btn.dataset.name;
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteProductModal')).show();
+        }
+    });
+
+    document.getElementById('btnConfirmDeleteProduct').addEventListener('click', function() {
+        const pk = document.getElementById('deleteProductPk').value;
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Deleting...';
+
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch(`/products/${pk}/delete/`, {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.textContent = 'DELETE PRODUCT';
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('deleteProductModal')).hide();
+                const row = document.getElementById('row-' + pk);
+                if (row) {
+                    const actionBtn = row.querySelector('.action-dropdown button');
+                    if (actionBtn && actionBtn.dataset.menuId) {
+                        const detachedMenu = document.getElementById(actionBtn.dataset.menuId);
+                        if (detachedMenu) detachedMenu.remove();
+                    }
+                    row.remove();
+                }
+                const count = document.querySelectorAll('tr[id^="row-"]').length;
+                const el = document.getElementById('totalAmountDisplay');
+                if (el) el.textContent = count;
+                showToast(data.message);
+            } else {
+                showToast(data.message || 'Error deleting product.', 'error');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.textContent = 'DELETE PRODUCT';
+            showToast('Server error.', 'error');
+        });
+    });
+});
+</script>
+{% endblock %}

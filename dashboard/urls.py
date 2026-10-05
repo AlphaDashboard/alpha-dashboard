@@ -47,6 +47,11 @@ from .views import (
     AccountGroupCreateView,
     AccountGroupUpdateView,
     AccountGroupDeleteView,
+    ProductItemListView,
+    ProductItemCreateView,
+    ProductItemUpdateView,
+    ProductItemDeleteView,
+    ProductItemDetailJSONView,
 )
 from rest_framework.routers import DefaultRouter
 from .api_views import (
@@ -91,6 +96,13 @@ urlpatterns = [
     path('account-group/create/', AccountGroupCreateView.as_view(), name='account_group_create'),
     path('account-group/<int:pk>/edit/', AccountGroupUpdateView.as_view(), name='account_group_edit'),
     path('account-group/<int:pk>/delete/', AccountGroupDeleteView.as_view(), name='account_group_delete'),
+
+    # Products / Items URLs
+    path('products/', ProductItemListView.as_view(), name='product_item_list'),
+    path('products/create/', ProductItemCreateView.as_view(), name='product_item_create'),
+    path('products/<int:pk>/edit/', ProductItemUpdateView.as_view(), name='product_item_edit'),
+    path('products/<int:pk>/delete/', ProductItemDeleteView.as_view(), name='product_item_delete'),
+    path('products/<int:pk>/detail/', ProductItemDetailJSONView.as_view(), name='product_item_detail'),
 
     # Clean REST-like URLs for AccountMaster
     path('account_master/', AccountMasterListView.as_view(), name='alpha_list'),
