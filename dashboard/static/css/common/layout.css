@@ -219,6 +219,10 @@ h4, h5, h6 { font-weight: 600 !important; color: #0f172a; }
     body.sidebar-collapsed .erp-list-footer-fixed {
         left: calc(var(--sidebar-collapsed-width) + 20px) !important;
     }
+    body.sidebar-collapsed .list-container .erp-list-footer-fixed,
+    body.sidebar-collapsed .erp-table-wrapper .erp-list-footer-fixed {
+        left: 0 !important;
+    }
     body.sidebar-collapsed .erp-footer-fixed,
     body.sidebar-collapsed .main-content .erp-footer-fixed {
         left: var(--sidebar-collapsed-width) !important;

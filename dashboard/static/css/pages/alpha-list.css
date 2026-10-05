@@ -425,6 +425,10 @@
     html.sidebar-collapsed-preload body .erp-list-footer-fixed {
         left: calc(var(--sidebar-collapsed-width, 78px) + 20px);
     }
+    body.sidebar-collapsed .list-container .erp-list-footer-fixed,
+    body.sidebar-collapsed .erp-table-wrapper .erp-list-footer-fixed {
+        left: 0 !important;
+    }
 }
 
 @media (max-width: 768px) {
