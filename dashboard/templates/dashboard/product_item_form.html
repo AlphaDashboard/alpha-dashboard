@@ -1,89 +1,201 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}{% if is_edit %}Modify Product{% else %}New Product Entry{% endif %} — Alpha Management{% endblock %}
+{% block title %}{% if is_edit %}Modify Product{% else %}Create Product{% endif %} - Alpha Management{% endblock %}
 
 {% block extra_css %}
 <style>
-    body { background-color: #f4f6f9; color: #334155; }
-    .page-title { font-size: 1.15rem; font-weight: 700; color: #0f172a !important; margin-bottom: 0.15rem; }
-    .card { border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.03); background-color: #ffffff; padding: 12px 18px !important; margin-bottom: 10px !important; }
-    .section-title { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
-
-    .prod-field-label {
-        font-size: 11.5px !important;
-        font-weight: 700 !important;
-        color: #475569 !important;
-        text-transform: uppercase !important;
-        white-space: nowrap !important;
-        letter-spacing: 0.02em !important;
-        margin-bottom: 0 !important;
-        flex-shrink: 0 !important;
-        line-height: 1.2 !important;
+    body {
+        background-color: #f4f6f9;
+        color: #334155;
     }
 
+    /* ── Full page scrollable flex container ── */
+    .erp-container-flex {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 85px);
+        gap: 6px;
+        padding: 0 14px 14px 14px;
+        margin-top: -20px !important;
+    }
+
+    .page-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #000000 !important;
+        margin-bottom: 0;
+    }
+
+    /* ── Cards matching Screenshot ── */
+    .card {
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        background-color: #ffffff;
+        padding: 10px 14px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .section-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 4px;
+    }
+
+    /* ── Floating / Notch Label Styling matching Purchase Challan Screenshot ── */
+    .form-group {
+        position: relative;
+        margin-bottom: 1px !important;
+    }
+
+    .form-group label.floating-label {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        color: #64748b;
+        font-size: 11px;
+        pointer-events: none;
+        transition: 0.15s ease all;
+        background: #ffffff !important;
+        padding: 0 4px;
+        line-height: 1;
+        z-index: 5 !important;
+    }
+
+    .form-group input:focus + label.floating-label,
+    .form-group input:not(:placeholder-shown) + label.floating-label,
+    .form-group select + label.floating-label,
+    .form-group select ~ label.floating-label,
+    .form-group input[readonly] + label.floating-label,
+    .form-group textarea:focus + label.floating-label,
+    .form-group textarea:not(:placeholder-shown) + label.floating-label,
+    .form-group.is-focused label.floating-label,
+    .form-group.has-value label.floating-label {
+        top: -6px !important;
+        left: 6px !important;
+        font-size: 9.5px !important;
+        color: #334155 !important;
+        font-weight: 600 !important;
+        z-index: 5 !important;
+    }
+
+    /* ── Controls matching Screenshot ── */
     .form-control, .form-select {
-        height: 30px !important;
-        min-height: 30px !important;
-        font-size: 12px !important;
+        height: 31px !important;
+        font-size: 11.5px !important;
         border-radius: 4px !important;
         border: 1px solid #cbd5e1 !important;
         color: #1e293b !important;
         background-color: #ffffff !important;
-        padding: 2px 8px !important;
-        box-shadow: none !important;
+        padding: 3px 8px !important;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
         outline: none !important;
     }
 
-    .form-row-item {
-        margin-bottom: 6px !important;
+    .form-control::placeholder {
+        color: #94a3b8 !important;
+        font-size: 11px !important;
     }
 
-    .price-row {
+    /* ── Row gutter ── */
+    .row.g-2 > [class*="col-"] {
+        padding: 2px 4px;
+    }
+
+    /* ── Pinned Bottom Footer Bar matching Screenshot ── */
+    .erp-table-footer-bar {
+        height: 38px;
+        min-height: 38px;
+        max-height: 38px;
+        background-color: #536479;
+        color: #ffffff;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 6px !important;
+        border-top: 2px solid #475569;
+        border-radius: 4px;
+        z-index: 15;
+        box-sizing: border-box;
+        margin-top: 2px;
     }
 
-    .hotkey-badge {
+    .erp-footer-label {
         font-size: 11px;
-        font-family: monospace;
-        color: #0284c7;
-        background-color: #e0f2fe;
-        padding: 3px 8px;
-        border-radius: 4px;
-        border: 1px solid #bae6fd;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #ffffff;
+    }
+
+    .erp-footer-item {
+        font-size: 11.5px;
+        color: #cbd5e1;
+        font-weight: 500;
+    }
+
+    .erp-footer-item strong {
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff !important;
+        margin-left: 2px;
+    }
+
+    /* ── Save Record Button matching Screenshot ── */
+    .erp-btn-save {
+        height: 28px !important;
+        line-height: 28px !important;
+        padding: 0 16px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+        border-radius: 4px !important;
+        background-color: #10b981 !important;
+        border: 1px solid #059669 !important;
+        color: #ffffff !important;
+        cursor: pointer;
+        gap: 6px;
+        white-space: nowrap !important;
+        transition: all 0.15s ease;
+    }
+
+    .erp-btn-save:hover {
+        background-color: #059669 !important;
+        border-color: #047857 !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 py-1" style="max-width: 100% !important; margin: 0 auto; margin-top: -20px !important;">
+<div class="erp-container-flex">
 
-    <!-- Top Header Bar matching ERP Standard -->
-    <div class="d-flex justify-content-between align-items-center mb-2" style="min-height: 38px;">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-box-fill text-primary fs-5"></i>
-            <div>
-                <h2 class="page-title mb-0">
-                    {% if is_edit %}Modify Product / Item{% else %}New Product Entry{% endif %}
-                </h2>
-                <p class="text-muted mb-0" style="font-size: 11px;">Configure product master, pricing matrix, taxes and inventory attributes.</p>
-            </div>
+    <!-- ══════════════════════════════════════════════════
+         PAGE HEADER (Matching Screenshot Header Bar)
+    ══════════════════════════════════════════════════ -->
+    <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 36px;">
+        <div>
+            <h1 class="page-title">
+                {% if is_edit %}Modify Product{% else %}Create Product{% endif %}
+            </h1>
+            <p class="text-muted mb-0" style="font-size: 10.5px; margin-top: 1px;">
+                {% if is_edit %}Product: <strong>{{ product.item_name }}</strong>{% else %}New Product / Item Entry{% endif %}
+            </p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{% url 'dashboard:product_item_list' %}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1" style="font-size: 12px; font-weight: 500; height: 30px; border-radius: 4px; padding: 0 14px; border-color: #cbd5e1; color: #475569; background: #fff;" title="Back to Products List">
-                <i class="bi bi-arrow-left"></i> Back to List
+        <div class="d-flex gap-2 align-items-center">
+            <a href="{% url 'dashboard:product_item_list' %}" class="btn btn-sm btn-outline-secondary" style="height:28px; font-size:11px; padding:2px 10px; border-radius:4px; background:#fff;">
+                <i class="bi bi-arrow-left me-1"></i>Back
             </a>
-            <button type="submit" form="productItemForm" class="btn btn-primary d-inline-flex align-items-center gap-1 shadow-sm" style="font-size: 12px; font-weight: 600; height: 30px; border-radius: 4px; padding: 0 18px; background-color: #2563eb; border-color: #2563eb;">
-                <i class="bi bi-save me-1"></i> Save Product
-            </button>
         </div>
     </div>
 
@@ -107,282 +219,409 @@
     <form method="post" id="productItemForm" novalidate>
         {% csrf_token %}
 
-        <!-- ══════════════════════════════════════════════════════════
-             CARD 1: PRODUCT ATTRIBUTES & MASTER SETTINGS
-        ═══════════════════════════════════════════════════════════ -->
-        <div class="card mb-2">
-            <h5 class="section-title"><i class="bi bi-info-circle me-1 text-primary"></i> Product Attributes & Classification</h5>
-            
-            <!-- Row 1: STATUS, TYPE, HIDE -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">STATUS :</span>
-                    <select name="status" id="id_status" class="form-select" style="max-width: 220px;">
-                        <option value="CONTINUE" {% if form.status.value == 'CONTINUE' or not form.status.value %}selected{% endif %}>CONTINUE</option>
-                        <option value="DISCONTINUE" {% if form.status.value == 'DISCONTINUE' %}selected{% endif %}>DISCONTINUE</option>
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">TYPE :</span>
-                    <input type="text" name="product_type" id="id_product_type" value="{{ form.product_type.value|default:'NORMAL' }}" class="form-control" style="max-width: 220px;">
-                </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">HIDE :</span>
-                    <select name="hide" id="id_hide" class="form-select" style="max-width: 180px;">
-                        <option value="NO" {% if form.hide.value == 'NO' or not form.hide.value %}selected{% endif %}>NO</option>
-                        <option value="YES" {% if form.hide.value == 'YES' %}selected{% endif %}>YES</option>
-                    </select>
-                </div>
+        <!-- ══════════════════════════════════════════════════
+             CARD 1: PRODUCT ATTRIBUTES & CLASSIFICATION
+             (4-Column Floating Notch Labels Layout)
+        ══════════════════════════════════════════════════ -->
+        <div class="card flex-shrink-0">
+            <div class="section-title">
+                <i class="bi bi-box-seam me-1 text-primary"></i> Product Attributes &amp; Master Classification
             </div>
 
-            <!-- Row 2: ITEM Name & Code -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-8 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">ITEM : <span class="text-danger">*</span></span>
-                    <input type="text" name="item_name" id="id_item_name" value="{{ form.item_name.value|default:'' }}" required placeholder="e.g. DEXORANGE" class="form-control fw-bold text-primary" style="font-size: 13px !important;">
-                </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">CODE :</span>
-                    <input type="text" name="item_code" id="id_item_code" value="{{ form.item_code.value|default:'' }}" placeholder="F4-Item Code" class="form-control" style="max-width: 220px;">
-                </div>
-            </div>
-
-            <!-- Row 3: RACK NO. -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">RACK NO. :</span>
-                    <input type="text" name="rack_no" id="id_rack_no" value="{{ form.rack_no.value|default:'a1' }}" class="form-control" style="max-width: 220px;">
-                </div>
-            </div>
-
-            <!-- Row 4: UNIT, DECIMAL -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">UNIT :</span>
-                    <input type="text" name="unit" id="id_unit" value="{{ form.unit.value|default:'PCS' }}" class="form-control" style="max-width: 220px;">
-                </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">DECIMAL :</span>
-                    <select name="decimal_allowed" id="id_decimal_allowed" class="form-select" style="max-width: 180px;">
-                        <option value="No" {% if form.decimal_allowed.value == 'No' or not form.decimal_allowed.value %}selected{% endif %}>No</option>
-                        <option value="Yes" {% if form.decimal_allowed.value == 'Yes' %}selected{% endif %}>Yes</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Row 5: FAST SEARCH -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">FAST SEARCH:</span>
-                    <select name="fast_search" id="id_fast_search" class="form-select" style="max-width: 220px;">
-                        <option value="YES" {% if form.fast_search.value == 'YES' or not form.fast_search.value %}selected{% endif %}>YES</option>
-                        <option value="NO" {% if form.fast_search.value == 'NO' %}selected{% endif %}>NO</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Row 6: COLOR TYPE, STORE, ITEM TYPE -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">COLOR TYPE :</span>
-                    <input type="text" name="color_type" id="id_color_type" value="{{ form.color_type.value|default:'NORMAL' }}" class="form-control" style="max-width: 220px;">
-                </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">STORE :</span>
-                    <div class="d-flex align-items-center gap-1" style="max-width: 220px; width: 100%;">
-                        <input type="text" name="store" id="id_store" value="{{ form.store.value|default:'Default' }}" class="form-control">
-                        <input type="number" name="store_code" id="id_store_code" value="{{ form.store_code.value|default:0 }}" style="width: 55px; flex-shrink: 0;" class="form-control text-end">
+            <!-- ROW 1: Item Name (2 cols) | Item Code | Status -->
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="form-group has-value">
+                        <input type="text" name="item_name" id="id_item_name" value="{{ form.item_name.value|default:'' }}" required placeholder=" " class="form-control fw-bold text-primary">
+                        <label for="id_item_name" class="floating-label">Item Name <span class="text-danger">*</span></label>
                     </div>
                 </div>
-                <div class="col-md-4 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 80px;">ITEM TYPE :</span>
-                    <input type="text" name="item_type_code" id="id_item_type_code" value="{{ form.item_type_code.value|default:'1 NORMAL' }}" class="form-control" style="max-width: 220px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="item_code" id="id_item_code" value="{{ form.item_code.value|default:'' }}" placeholder=" " class="form-control">
+                        <label for="id_item_code" class="floating-label">Item Code (F4)</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="status" id="id_status" class="form-select">
+                            <option value="CONTINUE" {% if form.status.value == 'CONTINUE' or not form.status.value %}selected{% endif %}>CONTINUE</option>
+                            <option value="DISCONTINUE" {% if form.status.value == 'DISCONTINUE' %}selected{% endif %}>DISCONTINUE</option>
+                        </select>
+                        <label for="id_status" class="floating-label">Status</label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Row 7: GROUP -->
-            <div class="row g-3 align-items-center form-row-item">
-                <div class="col-md-8 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">GROUP :</span>
-                    <select name="group_allowed" id="id_group_allowed" class="form-select" style="max-width: 85px;">
-                        <option value="Yes" {% if form.group_allowed.value == 'Yes' or not form.group_allowed.value %}selected{% endif %}>Yes</option>
-                        <option value="No" {% if form.group_allowed.value == 'No' %}selected{% endif %}>No</option>
-                    </select>
-                    <select name="item_group" id="id_item_group" class="form-select" style="max-width: 320px;">
-                        <option value="">-- General Group --</option>
-                        {% for g in item_groups %}
-                        <option value="{{ g.id }}" {% if form.item_group.value|stringformat:"s" == g.id|stringformat:"s" %}selected{% endif %}>{{ g.group_name }}</option>
-                        {% endfor %}
-                    </select>
+            <!-- ROW 2: Product Type | Hide | Rack No | Unit -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="product_type" id="id_product_type" value="{{ form.product_type.value|default:'NORMAL' }}" placeholder=" " class="form-control">
+                        <label for="id_product_type" class="floating-label">Product Type</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="hide" id="id_hide" class="form-select">
+                            <option value="NO" {% if form.hide.value == 'NO' or not form.hide.value %}selected{% endif %}>NO</option>
+                            <option value="YES" {% if form.hide.value == 'YES' %}selected{% endif %}>YES</option>
+                        </select>
+                        <label for="id_hide" class="floating-label">Hide Product</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="rack_no" id="id_rack_no" value="{{ form.rack_no.value|default:'a1' }}" placeholder=" " class="form-control">
+                        <label for="id_rack_no" class="floating-label">Rack No.</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="unit" id="id_unit" value="{{ form.unit.value|default:'PCS' }}" placeholder=" " class="form-control">
+                        <label for="id_unit" class="floating-label">Unit</label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Row 8: HSN/SAC -->
-            <div class="row g-3 align-items-center form-row-item mb-0">
-                <div class="col-md-8 d-flex align-items-center gap-2">
-                    <span class="prod-field-label" style="width: 100px;">HSN/SAC :</span>
-                    <select name="hsn_sac_allowed" id="id_hsn_sac_allowed" class="form-select" style="max-width: 85px;">
-                        <option value="Yes" {% if form.hsn_sac_allowed.value == 'Yes' or not form.hsn_sac_allowed.value %}selected{% endif %}>Yes</option>
-                        <option value="No" {% if form.hsn_sac_allowed.value == 'No' %}selected{% endif %}>No</option>
-                    </select>
-                    <input type="text" name="hsn_sac_code" id="id_hsn_sac_code" value="{{ form.hsn_sac_code.value|default:'-BLANK-' }}" class="form-control" style="max-width: 320px;" placeholder="HSN/SAC Code">
+            <!-- ROW 3: Decimal Allowed | Fast Search | Color Type | Item Type Code -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="decimal_allowed" id="id_decimal_allowed" class="form-select">
+                            <option value="No" {% if form.decimal_allowed.value == 'No' or not form.decimal_allowed.value %}selected{% endif %}>No</option>
+                            <option value="Yes" {% if form.decimal_allowed.value == 'Yes' %}selected{% endif %}>Yes</option>
+                        </select>
+                        <label for="id_decimal_allowed" class="floating-label">Decimal Allowed</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="fast_search" id="id_fast_search" class="form-select">
+                            <option value="YES" {% if form.fast_search.value == 'YES' or not form.fast_search.value %}selected{% endif %}>YES</option>
+                            <option value="NO" {% if form.fast_search.value == 'NO' %}selected{% endif %}>NO</option>
+                        </select>
+                        <label for="id_fast_search" class="floating-label">Fast Search</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="color_type" id="id_color_type" value="{{ form.color_type.value|default:'NORMAL' }}" placeholder=" " class="form-control">
+                        <label for="id_color_type" class="floating-label">Color Type</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="item_type_code" id="id_item_type_code" value="{{ form.item_type_code.value|default:'1 NORMAL' }}" placeholder=" " class="form-control">
+                        <label for="id_item_type_code" class="floating-label">Item Type Code</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 4: Store | Store Code | Item Group | Group Allowed -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="store" id="id_store" value="{{ form.store.value|default:'Default' }}" placeholder=" " class="form-control">
+                        <label for="id_store" class="floating-label">Store</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" name="store_code" id="id_store_code" value="{{ form.store_code.value|default:0 }}" placeholder=" " class="form-control text-end">
+                        <label for="id_store_code" class="floating-label">Store Code</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="item_group" id="id_item_group" class="form-select">
+                            <option value="">-- General Group --</option>
+                            {% for g in item_groups %}
+                            <option value="{{ g.id }}" {% if form.item_group.value|stringformat:'s' == g.id|stringformat:'s' %}selected{% endif %}>{{ g.group_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="id_item_group" class="floating-label">Item Group</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="group_allowed" id="id_group_allowed" class="form-select">
+                            <option value="Yes" {% if form.group_allowed.value == 'Yes' or not form.group_allowed.value %}selected{% endif %}>Yes</option>
+                            <option value="No" {% if form.group_allowed.value == 'No' %}selected{% endif %}>No</option>
+                        </select>
+                        <label for="id_group_allowed" class="floating-label">Group Allowed</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 5: HSN/SAC Code | HSN/SAC Allowed | Manufacturer (F3) -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="hsn_sac_code" id="id_hsn_sac_code" value="{{ form.hsn_sac_code.value|default:'-BLANK-' }}" placeholder=" " class="form-control">
+                        <label for="id_hsn_sac_code" class="floating-label">HSN/SAC Code</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="hsn_sac_allowed" id="id_hsn_sac_allowed" class="form-select">
+                            <option value="Yes" {% if form.hsn_sac_allowed.value == 'Yes' or not form.hsn_sac_allowed.value %}selected{% endif %}>Yes</option>
+                            <option value="No" {% if form.hsn_sac_allowed.value == 'No' %}selected{% endif %}>No</option>
+                        </select>
+                        <label for="id_hsn_sac_allowed" class="floating-label">HSN/SAC Allowed</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group has-value">
+                        <input type="text" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default:'' }}" placeholder=" " class="form-control">
+                        <label for="id_manufacturer" class="floating-label">Manufacturer (F3)</label>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ══════════════════════════════════════════════════════════
-             CARD 2: 3-COLUMN PRICING, TAXES & INVENTORY CONTROLS
-        ═══════════════════════════════════════════════════════════ -->
-        <div class="card mb-3">
-            <h5 class="section-title"><i class="bi bi-currency-rupee me-1 text-primary"></i> Pricing Matrix, Tax Slabs & Stock Thresholds</h5>
-            <div class="row g-4">
-                
-                <!-- COLUMN 1: Taxes & Base Price Matrix -->
-                <div class="col-md-4 border-end pe-md-4">
-                    <div class="price-row">
-                        <span class="prod-field-label">LOCAL :</span>
-                        <select name="local_tax" id="id_local_tax" class="form-select" style="width: 150px;">
+        <!-- ══════════════════════════════════════════════════
+             CARD 2: PRICING, TAXES & INVENTORY PARAMETERS
+             (4-Column Floating Notch Labels Layout)
+        ══════════════════════════════════════════════════ -->
+        <div class="card flex-shrink-0">
+            <div class="section-title">
+                <i class="bi bi-currency-rupee me-1 text-primary"></i> Pricing Matrix, Tax Slabs &amp; Stock Controls
+            </div>
+
+            <!-- ROW 1: Local Tax | Central Tax | SGST % | CGST % -->
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="local_tax" id="id_local_tax" class="form-select">
                             <option value="Taxable" {% if form.local_tax.value == 'Taxable' or not form.local_tax.value %}selected{% endif %}>Taxable</option>
                             <option value="Exempt" {% if form.local_tax.value == 'Exempt' %}selected{% endif %}>Exempt</option>
                             <option value="Nil Rated" {% if form.local_tax.value == 'Nil Rated' %}selected{% endif %}>Nil Rated</option>
                         </select>
+                        <label for="id_local_tax" class="floating-label">Local Tax</label>
                     </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">CENTRAL :</span>
-                        <select name="central_tax" id="id_central_tax" class="form-select" style="width: 150px;">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="central_tax" id="id_central_tax" class="form-select">
                             <option value="Taxable" {% if form.central_tax.value == 'Taxable' or not form.central_tax.value %}selected{% endif %}>Taxable</option>
                             <option value="Exempt" {% if form.central_tax.value == 'Exempt' %}selected{% endif %}>Exempt</option>
                             <option value="Nil Rated" {% if form.central_tax.value == 'Nil Rated' %}selected{% endif %}>Nil Rated</option>
                         </select>
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">M.R.P. :</span>
-                        <input type="number" step="0.01" name="mrp" id="id_mrp" value="{{ form.mrp.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">Rate-A :</span>
-                        <input type="number" step="0.01" name="rate_a" id="id_rate_a" value="{{ form.rate_a.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">CONV.BOX :</span>
-                        <input type="number" step="0.001" name="conv_box" id="id_conv_box" value="{{ form.conv_box.value|default:'0.000' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">MINIMUM QTY :</span>
-                        <input type="number" step="0.01" name="min_qty" id="id_min_qty" value="{{ form.min_qty.value|default:'0' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">MAXIMUM DISCOUNT : %</span>
-                        <input type="number" step="0.01" name="max_discount" id="id_max_discount" value="{{ form.max_discount.value|default:'0.00' }}" class="form-control text-end" style="width: 120px;">
-                    </div>
-                    <div class="price-row mb-0">
-                        <span class="prod-field-label">MINIMUM MARGIN % :</span>
-                        <input type="number" step="0.001" name="min_margin" id="id_min_margin" value="{{ form.min_margin.value|default:'0.000' }}" class="form-control text-end" style="width: 120px;">
+                        <label for="id_central_tax" class="floating-label">Central Tax</label>
                     </div>
                 </div>
-
-                <!-- COLUMN 2: GST Breakdown & Purchase Rates -->
-                <div class="col-md-4 border-end px-md-4">
-                    <div class="price-row">
-                        <span class="prod-field-label">SGST % :</span>
-                        <input type="number" step="0.01" name="sgst_pct" id="id_sgst_pct" value="{{ form.sgst_pct.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">IGST % :</span>
-                        <input type="number" step="0.01" name="igst_pct" id="id_igst_pct" value="{{ form.igst_pct.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">P.RATE :</span>
-                        <input type="number" step="0.01" name="p_rate" id="id_p_rate" value="{{ form.p_rate.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">Rate-B :</span>
-                        <input type="number" step="0.01" name="rate_b" id="id_rate_b" value="{{ form.rate_b.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">CONV.CAS :</span>
-                        <input type="number" step="0.001" name="conv_case" id="id_conv_case" value="{{ form.conv_case.value|default:'0.000' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">MAXIMUM QTY :</span>
-                        <input type="number" step="0.01" name="max_qty" id="id_max_qty" value="{{ form.max_qty.value|default:'0' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">PURC Disc :</span>
-                        <input type="number" step="0.01" name="purc_disc" id="id_purc_disc" value="{{ form.purc_disc.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
-                    </div>
-                    <div class="price-row mb-0">
-                        <span class="prod-field-label">DISC LESS :</span>
-                        <input type="number" step="0.01" name="disc_less" id="id_disc_less" value="{{ form.disc_less.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="sgst_pct" id="id_sgst_pct" value="{{ form.sgst_pct.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_sgst_pct" class="floating-label">SGST %</label>
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="cgst_pct" id="id_cgst_pct" value="{{ form.cgst_pct.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_cgst_pct" class="floating-label">CGST %</label>
+                    </div>
+                </div>
+            </div>
 
-                <!-- COLUMN 3: CGST, Costing, Tier C & Inventory Parameters -->
-                <div class="col-md-4 ps-md-4">
-                    <div class="price-row">
-                        <span class="prod-field-label">CGST % :</span>
-                        <input type="number" step="0.01" name="cgst_pct" id="id_cgst_pct" value="{{ form.cgst_pct.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
+            <!-- ROW 2: IGST % | M.R.P. | P.Rate | Cost Per Piece -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="igst_pct" id="id_igst_pct" value="{{ form.igst_pct.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_igst_pct" class="floating-label">IGST %</label>
                     </div>
-                    <!-- Blank spacer aligning with CENTRAL / IGST % row -->
-                    <div class="price-row" style="height: 30px;"></div>
-                    <div class="price-row">
-                        <span class="prod-field-label">COST/PCS :</span>
-                        <input type="number" step="0.00001" name="cost_per_pcs" id="id_cost_per_pcs" value="{{ form.cost_per_pcs.value|default:'0.00000' }}" class="form-control text-end" style="width: 150px;">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="mrp" id="id_mrp" value="{{ form.mrp.value|default:'0.00' }}" placeholder=" " class="form-control text-end fw-semibold">
+                        <label for="id_mrp" class="floating-label">M.R.P.</label>
                     </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">Rate-C :</span>
-                        <input type="number" step="0.01" name="rate_c" id="id_rate_c" value="{{ form.rate_c.value|default:'0.00' }}" class="form-control text-end" style="width: 150px;">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="p_rate" id="id_p_rate" value="{{ form.p_rate.value|default:'0.00' }}" placeholder=" " class="form-control text-end fw-semibold">
+                        <label for="id_p_rate" class="floating-label">P.Rate (Purchase Rate)</label>
                     </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">NEGATIVE :</span>
-                        <select name="negative_billing" id="id_negative_billing" class="form-select" style="width: 150px;">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.00001" name="cost_per_pcs" id="id_cost_per_pcs" value="{{ form.cost_per_pcs.value|default:'0.00000' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_cost_per_pcs" class="floating-label">Cost / Pcs</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 3: Rate-A | Rate-B | Rate-C | Purchase Discount % -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="rate_a" id="id_rate_a" value="{{ form.rate_a.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_rate_a" class="floating-label">Rate-A</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="rate_b" id="id_rate_b" value="{{ form.rate_b.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_rate_b" class="floating-label">Rate-B</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="rate_c" id="id_rate_c" value="{{ form.rate_c.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_rate_c" class="floating-label">Rate-C</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="purc_disc" id="id_purc_disc" value="{{ form.purc_disc.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_purc_disc" class="floating-label">Purchase Disc %</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 4: Max Discount % | Min Margin % | Conv.Box | Conv.Case -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="max_discount" id="id_max_discount" value="{{ form.max_discount.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_max_discount" class="floating-label">Maximum Discount %</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.001" name="min_margin" id="id_min_margin" value="{{ form.min_margin.value|default:'0.000' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_min_margin" class="floating-label">Minimum Margin %</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.001" name="conv_box" id="id_conv_box" value="{{ form.conv_box.value|default:'0.000' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_conv_box" class="floating-label">Conv. Box</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.001" name="conv_case" id="id_conv_case" value="{{ form.conv_case.value|default:'0.000' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_conv_case" class="floating-label">Conv. Case</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 5: Min Qty | Max Qty | Reorder Qty | Reorder Days -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="min_qty" id="id_min_qty" value="{{ form.min_qty.value|default:'0' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_min_qty" class="floating-label">Minimum Qty</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="max_qty" id="id_max_qty" value="{{ form.max_qty.value|default:'0' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_max_qty" class="floating-label">Maximum Qty</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="reorder_qty" id="id_reorder_qty" value="{{ form.reorder_qty.value|default:'0' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_reorder_qty" class="floating-label">Reorder Qty</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" name="reorder_days" id="id_reorder_days" value="{{ form.reorder_days.value|default:'0' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_reorder_days" class="floating-label">Reorder Days</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 6: Disc Less | Negative Billing | Rate Mod (F6) | Active Status -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="number" step="0.01" name="disc_less" id="id_disc_less" value="{{ form.disc_less.value|default:'0.00' }}" placeholder=" " class="form-control text-end">
+                        <label for="id_disc_less" class="floating-label">Disc Less</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="negative_billing" id="id_negative_billing" class="form-select">
                             <option value="No" {% if form.negative_billing.value == 'No' or not form.negative_billing.value %}selected{% endif %}>No</option>
                             <option value="Yes" {% if form.negative_billing.value == 'Yes' %}selected{% endif %}>Yes</option>
                         </select>
+                        <label for="id_negative_billing" class="floating-label">Negative Billing</label>
                     </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">REORDER QTY :</span>
-                        <div class="d-flex align-items-center gap-1" style="width: 150px;">
-                            <input type="number" step="0.01" name="reorder_qty" id="id_reorder_qty" value="{{ form.reorder_qty.value|default:'0' }}" class="form-control text-end" style="width: 70px;">
-                            <span class="prod-field-label" style="font-size: 10px !important;">DAYS:</span>
-                            <input type="number" name="reorder_days" id="id_reorder_days" value="{{ form.reorder_days.value|default:'0' }}" class="form-control text-end" style="width: 45px;">
-                        </div>
-                    </div>
-                    <div class="price-row">
-                        <span class="prod-field-label">F6/RATE± :</span>
-                        <select name="rate_mod_allowed" id="id_rate_mod_allowed" class="form-select" style="width: 150px;">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="rate_mod_allowed" id="id_rate_mod_allowed" class="form-select">
                             <option value="YES" {% if form.rate_mod_allowed.value == 'YES' or not form.rate_mod_allowed.value %}selected{% endif %}>YES</option>
                             <option value="NO" {% if form.rate_mod_allowed.value == 'NO' %}selected{% endif %}>NO</option>
                         </select>
-                    </div>
-                    <div class="price-row mb-0">
-                        <span class="prod-field-label">Mfr F3 :</span>
-                        <input type="text" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default:'' }}" placeholder="Manufacturer" class="form-control" style="width: 150px;">
+                        <label for="id_rate_mod_allowed" class="floating-label">Rate Mod Allowed (F6)</label>
                     </div>
                 </div>
-
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check form-switch ps-4 pt-1">
+                        <input class="form-check-input" type="checkbox" role="switch" name="is_active" id="id_is_active" {% if form.is_active.value != False %}checked{% endif %}>
+                        <label class="form-check-label fw-bold text-dark" for="id_is_active" style="font-size: 11.5px; margin-left: 6px;">
+                            Active in Catalog
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ══════════════════════════════════════════════════════════
-             BOTTOM ACTIONS BAR & HOTKEY HINTS
-        ═══════════════════════════════════════════════════════════ -->
-        <div class="d-flex justify-content-between align-items-center p-2 bg-white border rounded shadow-sm">
-            <div class="d-flex align-items-center gap-2">
-                <span class="hotkey-badge"><i class="bi bi-keyboard me-1"></i> F4 - Item Code</span>
-                <span class="hotkey-badge"><i class="bi bi-keyboard me-1"></i> F3 - Manufacturer</span>
-                <span class="hotkey-badge"><i class="bi bi-keyboard me-1"></i> F6 - Rate Mod</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <a href="{% url 'dashboard:product_item_list' %}" class="btn btn-outline-secondary btn-sm px-3" style="font-size: 12px; font-weight: 500; height: 32px; border-radius: 4px;">
-                    Cancel
-                </a>
-                <button type="submit" class="btn btn-primary btn-sm px-4 fw-semibold shadow-sm" style="font-size: 12px; height: 32px; border-radius: 4px; background-color: #2563eb; border-color: #2563eb;">
-                    <i class="bi bi-save me-1"></i> Save Product
-                </button>
+        <!-- ══════════════════════════════════════════════════
+             PINNED BOTTOM FOOTER BAR (Matching Screenshot Footer)
+        ══════════════════════════════════════════════════ -->
+        <div class="erp-table-footer-bar">
+            <div class="d-flex align-items-center justify-content-between w-100 px-3">
+                <div class="d-flex align-items-center gap-4">
+                    <span class="erp-footer-label">SHORTCUTS:</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="erp-footer-item"><span class="badge bg-light text-dark fw-bold me-1">F4</span>Item Code</span>
+                        <span class="erp-footer-item"><span class="badge bg-light text-dark fw-bold me-1">F3</span>Manufacturer</span>
+                        <span class="erp-footer-item"><span class="badge bg-light text-dark fw-bold me-1">F6</span>Rate Mod</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'dashboard:product_item_list' %}" class="btn btn-sm btn-light border text-dark fw-semibold" style="height:28px; font-size:11.5px; padding:2px 14px; border-radius:4px;">
+                        Cancel
+                    </a>
+                    <button type="submit" class="erp-btn-save shadow-sm">
+                        <i class="bi bi-floppy"></i> Save Record
+                    </button>
+                </div>
             </div>
         </div>
 
     </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Notch / Floating label dynamic listener
+    function toggleFloat(el) {
+        const grp = el.closest('.form-group');
+        if (!grp) return;
+        if (el.tagName === 'SELECT' || (el.value && el.value.toString().trim() !== '')) {
+            grp.classList.add('has-value');
+        } else {
+            grp.classList.remove('has-value');
+        }
+    }
+
+    document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
+        toggleFloat(el);
+        el.addEventListener('input', () => toggleFloat(el));
+        el.addEventListener('change', () => toggleFloat(el));
+        el.addEventListener('blur', () => toggleFloat(el));
+    });
+});
+</script>
 {% endblock %}
