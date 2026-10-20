@@ -10,20 +10,25 @@ User = get_user_model()
 class Material(models.Model):
     """
     Model representing Material Master list (tblMaterial).
+    Unified master for all materials, products, and inventory items.
     """
     material_code = models.CharField(
-        max_length=20,
+        max_length=50,
         unique=True,
+        null=True,
+        blank=True,
         verbose_name=_("Material Code")
     )
     material_name = models.CharField(
-        max_length=50,
+        max_length=255,
         verbose_name=_("Material Name")
     )
     is_active = models.BooleanField(
         default=True,
         verbose_name=_("Is Active")
     )
+
+    # ── Legacy GST & Calculation Columns ──
     PurchaseGST = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -61,6 +66,256 @@ class Material(models.Model):
         verbose_name=_("Is Rate Incl GST Y1N0")
     )
 
+    # ── Enterprise Product Attributes: Classification & Storage ──
+    status = models.CharField(
+        max_length=20,
+        default='CONTINUE',
+        choices=[('CONTINUE', 'CONTINUE'), ('DISCONTINUE', 'DISCONTINUE')],
+        verbose_name=_("Status")
+    )
+    product_type = models.CharField(
+        max_length=50,
+        default='NORMAL',
+        verbose_name=_("Type")
+    )
+    hide = models.CharField(
+        max_length=10,
+        default='NO',
+        choices=[('NO', 'NO'), ('YES', 'YES')],
+        verbose_name=_("Hide")
+    )
+    rack_no = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        default='a1',
+        verbose_name=_("Rack No.")
+    )
+    unit = models.CharField(
+        max_length=20,
+        default='PCS',
+        verbose_name=_("Unit")
+    )
+    decimal_allowed = models.CharField(
+        max_length=10,
+        default='No',
+        choices=[('No', 'No'), ('Yes', 'Yes')],
+        verbose_name=_("Decimal")
+    )
+    fast_search = models.CharField(
+        max_length=10,
+        default='YES',
+        choices=[('YES', 'YES'), ('NO', 'NO')],
+        verbose_name=_("Fast Search")
+    )
+    color_type = models.CharField(
+        max_length=50,
+        default='NORMAL',
+        verbose_name=_("Color Type")
+    )
+    store = models.CharField(
+        max_length=50,
+        default='Default',
+        verbose_name=_("Store")
+    )
+    store_code = models.IntegerField(
+        default=0,
+        verbose_name=_("Store Code")
+    )
+    item_type_code = models.CharField(
+        max_length=50,
+        default='1 NORMAL',
+        verbose_name=_("Item Type")
+    )
+    group_allowed = models.CharField(
+        max_length=10,
+        default='Yes',
+        choices=[('Yes', 'Yes'), ('No', 'No')],
+        verbose_name=_("Group")
+    )
+    item_group = models.ForeignKey(
+        'dashboard.ItemGroup',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='materials',
+        verbose_name=_("Item Group")
+    )
+    group_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        default='General',
+        verbose_name=_("Group Name Text")
+    )
+    hsn_sac_allowed = models.CharField(
+        max_length=10,
+        default='Yes',
+        choices=[('Yes', 'Yes'), ('No', 'No')],
+        verbose_name=_("HSN/SAC Allowed")
+    )
+    hsn_sac_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        default='-BLANK-',
+        verbose_name=_("HSN/SAC Code")
+    )
+
+    # ── Pricing Matrix: Taxes, Rates & Controls ──
+    local_tax = models.CharField(
+        max_length=20,
+        default='Taxable',
+        choices=[('Taxable', 'Taxable'), ('Exempt', 'Exempt'), ('Nil Rated', 'Nil Rated')],
+        verbose_name=_("LOCAL Tax")
+    )
+    central_tax = models.CharField(
+        max_length=20,
+        default='Taxable',
+        choices=[('Taxable', 'Taxable'), ('Exempt', 'Exempt'), ('Nil Rated', 'Nil Rated')],
+        verbose_name=_("CENTRAL Tax")
+    )
+    mrp = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("M.R.P.")
+    )
+    rate_a = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("Rate-A")
+    )
+    conv_box = models.DecimalField(
+        max_digits=18,
+        decimal_places=3,
+        default=0.000,
+        verbose_name=_("CONV.BOX")
+    )
+    min_qty = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("MINIMUM QTY")
+    )
+    max_discount = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("MAXIMUM DISCOUNT %")
+    )
+    min_margin = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        default=0.000,
+        verbose_name=_("MINIMUM MARGIN %")
+    )
+    sgst_pct = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("SGST %")
+    )
+    igst_pct = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("IGST %")
+    )
+    p_rate = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("P.RATE")
+    )
+    rate_b = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("Rate-B")
+    )
+    conv_case = models.DecimalField(
+        max_digits=18,
+        decimal_places=3,
+        default=0.000,
+        verbose_name=_("CONV.CAS")
+    )
+    max_qty = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("MAXIMUM QTY")
+    )
+    purc_disc = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("PURC Disc")
+    )
+    disc_less = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("DISC LESS")
+    )
+    cgst_pct = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("CGST %")
+    )
+    cost_per_pcs = models.DecimalField(
+        max_digits=18,
+        decimal_places=5,
+        default=0.00000,
+        verbose_name=_("COST/PCS")
+    )
+    rate_c = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("Rate-C")
+    )
+    negative_billing = models.CharField(
+        max_length=10,
+        default='No',
+        choices=[('No', 'No'), ('Yes', 'Yes')],
+        verbose_name=_("NEGATIVE")
+    )
+    reorder_qty = models.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        default=0.00,
+        verbose_name=_("Reorder Qty")
+    )
+    reorder_days = models.IntegerField(
+        default=0,
+        verbose_name=_("Days")
+    )
+    rate_mod_allowed = models.CharField(
+        max_length=10,
+        default='YES',
+        choices=[('YES', 'YES'), ('NO', 'NO')],
+        verbose_name=_("F6/RATE±")
+    )
+    manufacturer = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name=_("Mfr (F3)")
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
+
     class Meta:
         db_table = 'tblMaterial'
         verbose_name = _('Material')
@@ -69,6 +324,23 @@ class Material(models.Model):
 
     def __str__(self):
         return f"{self.material_name} ({self.material_code})"
+
+    # ── Backward & Form Compatibility Properties ──
+    @property
+    def item_name(self):
+        return self.material_name
+
+    @item_name.setter
+    def item_name(self, value):
+        self.material_name = value
+
+    @property
+    def item_code(self):
+        return self.material_code
+
+    @item_code.setter
+    def item_code(self, value):
+        self.material_code = value
 
 
 class GateEntry(models.Model):

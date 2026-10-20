@@ -208,14 +208,14 @@
             <div class="row g-2">
                 <div class="col-md-3">
                     <div class="form-group has-value">
-                        <input type="text" name="item_name" id="id_item_name" value="{{ form.item_name.value|default:'' }}" required placeholder=" " class="form-control fw-bold text-primary">
-                        <label for="id_item_name" class="floating-label">Item Name <span class="text-danger">*</span></label>
+                        <input type="text" name="material_name" id="id_material_name" value="{{ form.material_name.value|default:form.item_name.value|default:'' }}" required placeholder=" " class="form-control fw-bold text-primary">
+                        <label for="id_material_name" class="floating-label">Item Name <span class="text-danger">*</span></label>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group has-value">
-                        <input type="text" name="item_code" id="id_item_code" value="{{ form.item_code.value|default:'' }}" placeholder=" " class="form-control">
-                        <label for="id_item_code" class="floating-label">Item Code (F4)</label>
+                        <input type="text" name="material_code" id="id_material_code" value="{{ form.material_code.value|default:form.item_code.value|default:'' }}" placeholder=" " class="form-control">
+                        <label for="id_material_code" class="floating-label">Item Code (F4)</label>
                     </div>
                 </div>
                 <div class="col-md-3">

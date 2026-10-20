@@ -1,5 +1,5 @@
 from django import forms
-from dashboard.models import ItemProduct, ItemGroup
+from dashboard.models import Material, ItemGroup
 
 
 class ItemGroupForm(forms.ModelForm):
@@ -14,11 +14,16 @@ class ItemGroupForm(forms.ModelForm):
 
 
 class ItemProductForm(forms.ModelForm):
+    # Backward compatibility aliases for item_name and item_code
+    item_name = forms.CharField(required=False, widget=forms.HiddenInput())
+    item_code = forms.CharField(required=False, widget=forms.HiddenInput())
+
     class Meta:
-        model = ItemProduct
+        model = Material
         fields = [
+            'material_name', 'material_code',
             # Top Zone
-            'status', 'product_type', 'hide', 'item_name', 'item_code',
+            'status', 'product_type', 'hide',
             'rack_no', 'unit', 'decimal_allowed', 'fast_search', 'color_type',
             'store', 'store_code', 'item_type_code', 'group_allowed', 'item_group',
             'group_name', 'hsn_sac_allowed', 'hsn_sac_code',
@@ -35,11 +40,11 @@ class ItemProductForm(forms.ModelForm):
         ]
         widgets = {
             # Top Zone
+            'material_name': forms.TextInput(attrs={'class': 'form-control form-control-sm fw-bold', 'placeholder': 'e.g. DEXORANGE', 'required': 'required'}),
+            'material_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'F4-Item Code'}),
             'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'product_type': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'hide': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'item_name': forms.TextInput(attrs={'class': 'form-control form-control-sm fw-bold', 'placeholder': 'e.g. DEXORANGE', 'required': 'required'}),
-            'item_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'F4-Item Code'}),
             'rack_no': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'e.g. a1'}),
             'unit': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'e.g. PCS'}),
             'decimal_allowed': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -85,3 +90,60 @@ class ItemProductForm(forms.ModelForm):
             'manufacturer': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Manufacturer'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        if 'data' in kwargs and kwargs['data']:
+            data = kwargs['data'].copy()
+            if 'item_name' in data and not data.get('material_name'):
+                data['material_name'] = data['item_name']
+            if 'item_code' in data and not data.get('material_code'):
+                data['material_code'] = data['item_code']
+            kwargs['data'] = data
+        elif len(args) > 0 and args[0]:
+            data = args[0].copy()
+            if 'item_name' in data and not data.get('material_name'):
+                data['material_name'] = data['item_name']
+            if 'item_code' in data and not data.get('material_code'):
+                data['material_code'] = data['item_code']
+            args = (data,) + args[1:]
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ['material_name', 'item_name']:
+                field.required = False
+        if self.instance and self.instance.pk:
+            self.initial['item_name'] = self.instance.material_name
+            self.initial['item_code'] = self.instance.material_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('material_name') or cleaned_data.get('item_name')
+        if name:
+            cleaned_data['material_name'] = name
+            cleaned_data['item_name'] = name
+        else:
+            self.add_error('material_name', 'Item Name is required.')
+
+        code = cleaned_data.get('material_code') or cleaned_data.get('item_code')
+        if code:
+            cleaned_data['material_code'] = code
+            cleaned_data['item_code'] = code
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        name = self.cleaned_data.get('material_name') or self.cleaned_data.get('item_name')
+        if name:
+            instance.material_name = name
+        code = self.cleaned_data.get('material_code') or self.cleaned_data.get('item_code')
+        if code:
+            instance.material_code = code
+        elif not instance.material_code:
+            count = Material.objects.count() + 1
+            code_candidate = f"ITM-{count:04d}"
+            while Material.objects.filter(material_code=code_candidate).exists():
+                count += 1
+                code_candidate = f"ITM-{count:04d}"
+            instance.material_code = code_candidate
+        if commit:
+            instance.save()
+        return instance

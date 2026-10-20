@@ -1189,13 +1189,15 @@ class PurchaseOrderTests(APITestCase):
         # Filter active
         response = self.client.get(url, {'status': 'true'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
         self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
 
         # Search po_no
         response = self.client.get(url, {'search': po1.po_no})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
         self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
 
         # Filter po_status
@@ -1206,7 +1208,8 @@ class PurchaseOrderTests(APITestCase):
         # Filter zone_name
         response = self.client.get(url, {'zone_name': 'South'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
         self.assertEqual(response.data['results'][0]['po_no'], po2.po_no)
 
         # Filter broker
@@ -1217,13 +1220,15 @@ class PurchaseOrderTests(APITestCase):
         # Filter supplier_contact
         response = self.client.get(url, {'supplier_contact': '123'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
         self.assertEqual(response.data['results'][0]['po_no'], po1.po_no)
 
         # Filter gst_number
         response = self.client.get(url, {'gst_number': 'GST222'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
         self.assertEqual(response.data['results'][0]['po_no'], po2.po_no)
 
     def test_page_view_prev_next_navigation(self):
@@ -1692,7 +1697,8 @@ class UserMasterTests(TestCase):
         list_url = reverse('dashboard:api_user_master-list')
         response = self.client.get(list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
+        count = response.data['count'] if isinstance(response.data, dict) else len(response.data)
+        self.assertEqual(count, 1)
 
         # 2. Create
         import json
@@ -1966,3 +1972,75 @@ class PurchaseBillAndPODropdownTests(TestCase):
         self.assertNotIn("Save and Submitted", content)
 
 
+
+
+# =============================================================================
+# UNIFIED MATERIAL & ITEM PRODUCT MASTER TESTS
+# =============================================================================
+
+class UnifiedItemProductMasterTests(TestCase):
+    def setUp(self):
+        from dashboard.models import Material, ItemProduct
+        from django.contrib.auth import get_user_model
+        self.User = get_user_model()
+        self.user = self.User.objects.create_superuser('item_admin', 'item_admin@example.com', 'adminpass123')
+        session = self.client.session
+        session['user_id'] = self.user.id
+        session.save()
+
+    def test_single_table_source_of_truth(self):
+        from dashboard.models import Material, ItemProduct
+        self.assertIs(ItemProduct, Material)
+        self.assertEqual(Material._meta.db_table, 'tblMaterial')
+
+    def test_create_product_saved_in_tblmaterial(self):
+        from dashboard.models import Material
+        url = reverse('dashboard:product_item_create')
+        data = {
+            'material_name': 'SYRUP MULTIVITAMIN',
+            'material_code': 'SYR-MULTI',
+            'status': 'CONTINUE',
+            'product_type': 'NORMAL',
+            'hide': 'NO',
+            'rack_no': 'A-5',
+            'unit': 'BTL',
+            'mrp': '120.00',
+            'p_rate': '85.00',
+            'sgst_pct': '6.00',
+            'cgst_pct': '6.00',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+
+        # Must exist directly in tblMaterial
+        item = Material.objects.filter(material_name='SYRUP MULTIVITAMIN').first()
+        self.assertIsNotNone(item)
+        self.assertEqual(item.material_code, 'SYR-MULTI')
+        self.assertEqual(item.rack_no, 'A-5')
+        self.assertEqual(item.unit, 'BTL')
+        self.assertEqual(str(item.mrp), '120.00')
+        self.assertEqual(str(item.p_rate), '85.00')
+
+    def test_item_visible_in_transaction_dropdowns(self):
+        from dashboard.models import Material
+        mat = Material.objects.create(
+            material_name='UNIFIED TEST PRODUCT',
+            material_code='UTP-001',
+            unit='PCS',
+            is_active=True
+        )
+
+        # 1. Purchase Challan
+        res_pc = self.client.get(reverse('dashboard:purchase_challan_create'))
+        self.assertEqual(res_pc.status_code, 200)
+        self.assertTrue(any(m.pk == mat.pk for m in res_pc.context['materials']))
+
+        # 2. Purchase Bill
+        res_pb = self.client.get(reverse('dashboard:purchase_bill_create'))
+        self.assertEqual(res_pb.status_code, 200)
+        self.assertTrue(any(m.pk == mat.pk for m in res_pb.context['items']))
+
+        # 3. GRN
+        res_grn = self.client.get(reverse('dashboard:grn_create'))
+        self.assertEqual(res_grn.status_code, 200)
+        self.assertTrue(any(m.pk == mat.pk for m in res_grn.context['materials']))

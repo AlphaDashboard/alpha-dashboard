@@ -4,19 +4,20 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.db.models import Q
 
-from dashboard.models import ItemProduct, ItemGroup
+from dashboard.models import Material, ItemProduct, ItemGroup
 from dashboard.forms import ItemProductForm
 
 
 class ProductItemListView(View):
     """
-    Displays the unified enterprise list of Products / Items.
+    Displays the unified enterprise list of Products / Materials / Items.
+    Sourced directly from tblMaterial (Material master).
     Supports filtering by search query, status, and unit.
     """
     template_name = 'dashboard/product_item_list.html'
 
     def get(self, request, *args, **kwargs):
-        queryset = ItemProduct.objects.all().order_by('item_name')
+        queryset = Material.objects.all().order_by('material_name')
 
         search_query = request.GET.get('search', '').strip()
         search_by = request.GET.get('search_by', 'item_name')
@@ -24,14 +25,14 @@ class ProductItemListView(View):
         unit_filter = request.GET.get('unit', '').strip()
 
         if search_query:
-            if search_by == 'item_code':
-                queryset = queryset.filter(item_code__icontains=search_query)
+            if search_by in ['item_code', 'material_code']:
+                queryset = queryset.filter(material_code__icontains=search_query)
             elif search_by == 'rack_no':
                 queryset = queryset.filter(rack_no__icontains=search_query)
             elif search_by == 'hsn_sac_code':
                 queryset = queryset.filter(hsn_sac_code__icontains=search_query)
             else:
-                queryset = queryset.filter(item_name__icontains=search_query)
+                queryset = queryset.filter(material_name__icontains=search_query)
 
         if status_filter:
             if status_filter in ['CONTINUE', 'DISCONTINUE']:
@@ -44,7 +45,7 @@ class ProductItemListView(View):
         if unit_filter:
             queryset = queryset.filter(unit__iexact=unit_filter)
 
-        units = ItemProduct.objects.values_list('unit', flat=True).distinct()
+        units = Material.objects.values_list('unit', flat=True).distinct()
         item_groups = ItemGroup.objects.filter(is_active=True)
 
         context = {
@@ -61,7 +62,7 @@ class ProductItemListView(View):
 
 
 class ProductItemCreateView(View):
-    """Handles creating a new ItemProduct."""
+    """Handles creating a new Material/Product in tblMaterial."""
     template_name = 'dashboard/product_item_form.html'
 
     def get(self, request, *args, **kwargs):
@@ -81,15 +82,16 @@ class ProductItemCreateView(View):
                 return JsonResponse({
                     'success': True,
                     'id': product.pk,
-                    'item_name': product.item_name,
+                    'item_name': product.material_name,
+                    'material_name': product.material_name,
                     'rack_no': product.rack_no or '',
                     'unit': product.unit,
                     'status': product.status,
                     'mrp': str(product.mrp),
                     'p_rate': str(product.p_rate),
-                    'message': f"Product '{product.item_name}' created successfully!"
+                    'message': f"Product '{product.material_name}' created successfully!"
                 })
-            messages.success(request, f"Product '{product.item_name}' created successfully!")
+            messages.success(request, f"Product '{product.material_name}' created successfully!")
             return redirect('dashboard:product_item_list')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -104,18 +106,20 @@ class ProductItemCreateView(View):
 
 
 class ProductItemDetailJSONView(View):
-    """Fetches full JSON details of a single product to prefill forms or modals."""
+    """Fetches full JSON details of a single product/material to prefill forms or modals."""
 
-    def get(self, request, pk, *args, **kwargs):
-        product = get_object_or_404(ItemProduct, pk=pk)
+    def get(self, pk, *args, **kwargs):
+        product = get_object_or_404(Material, pk=pk)
         data = {
             'id': product.pk,
             # Top Zone
             'status': product.status,
             'product_type': product.product_type,
             'hide': product.hide,
-            'item_name': product.item_name,
-            'item_code': product.item_code or '',
+            'item_name': product.material_name,
+            'material_name': product.material_name,
+            'item_code': product.material_code or '',
+            'material_code': product.material_code or '',
             'rack_no': product.rack_no or '',
             'unit': product.unit,
             'decimal_allowed': product.decimal_allowed,
@@ -162,11 +166,11 @@ class ProductItemDetailJSONView(View):
 
 
 class ProductItemUpdateView(View):
-    """Handles updating an existing ItemProduct."""
+    """Handles updating an existing Material/Product."""
     template_name = 'dashboard/product_item_form.html'
 
     def get(self, request, pk, *args, **kwargs):
-        product = get_object_or_404(ItemProduct, pk=pk)
+        product = get_object_or_404(Material, pk=pk)
         form = ItemProductForm(instance=product)
         item_groups = ItemGroup.objects.filter(is_active=True)
         return render(request, self.template_name, {
@@ -177,7 +181,7 @@ class ProductItemUpdateView(View):
         })
 
     def post(self, request, pk, *args, **kwargs):
-        product = get_object_or_404(ItemProduct, pk=pk)
+        product = get_object_or_404(Material, pk=pk)
         form = ItemProductForm(request.POST, instance=product)
         if form.is_valid():
             product = form.save()
@@ -185,15 +189,16 @@ class ProductItemUpdateView(View):
                 return JsonResponse({
                     'success': True,
                     'id': product.pk,
-                    'item_name': product.item_name,
+                    'item_name': product.material_name,
+                    'material_name': product.material_name,
                     'rack_no': product.rack_no or '',
                     'unit': product.unit,
                     'status': product.status,
                     'mrp': str(product.mrp),
                     'p_rate': str(product.p_rate),
-                    'message': f"Product '{product.item_name}' updated successfully!"
+                    'message': f"Product '{product.material_name}' updated successfully!"
                 })
-            messages.success(request, f"Product '{product.item_name}' updated successfully!")
+            messages.success(request, f"Product '{product.material_name}' updated successfully!")
             return redirect('dashboard:product_item_list')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -209,11 +214,11 @@ class ProductItemUpdateView(View):
 
 
 class ProductItemDeleteView(View):
-    """Handles deleting an ItemProduct."""
+    """Handles deleting an Item / Material."""
 
     def post(self, request, pk, *args, **kwargs):
-        product = get_object_or_404(ItemProduct, pk=pk)
-        name = product.item_name
+        product = get_object_or_404(Material, pk=pk)
+        name = product.material_name
         product.delete()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'message': f"Product '{name}' deleted successfully!"})
