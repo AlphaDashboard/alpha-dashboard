@@ -62,6 +62,16 @@ class ProductItemListView(View):
 
 class ProductItemCreateView(View):
     """Handles creating a new ItemProduct."""
+    template_name = 'dashboard/product_item_form.html'
+
+    def get(self, request, *args, **kwargs):
+        form = ItemProductForm()
+        item_groups = ItemGroup.objects.filter(is_active=True)
+        return render(request, self.template_name, {
+            'form': form,
+            'item_groups': item_groups,
+            'is_edit': False,
+        })
 
     def post(self, request, *args, **kwargs):
         form = ItemProductForm(request.POST)
@@ -85,11 +95,16 @@ class ProductItemCreateView(View):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': False, 'errors': form.errors}, status=400)
             messages.error(request, "Please correct the errors below.")
-            return redirect('dashboard:product_item_list')
+            item_groups = ItemGroup.objects.filter(is_active=True)
+            return render(request, self.template_name, {
+                'form': form,
+                'item_groups': item_groups,
+                'is_edit': False,
+            })
 
 
 class ProductItemDetailJSONView(View):
-    """Fetches full JSON details of a single product to prefill the MODIFY PRODUCT modal."""
+    """Fetches full JSON details of a single product to prefill forms or modals."""
 
     def get(self, request, pk, *args, **kwargs):
         product = get_object_or_404(ItemProduct, pk=pk)
@@ -148,6 +163,18 @@ class ProductItemDetailJSONView(View):
 
 class ProductItemUpdateView(View):
     """Handles updating an existing ItemProduct."""
+    template_name = 'dashboard/product_item_form.html'
+
+    def get(self, request, pk, *args, **kwargs):
+        product = get_object_or_404(ItemProduct, pk=pk)
+        form = ItemProductForm(instance=product)
+        item_groups = ItemGroup.objects.filter(is_active=True)
+        return render(request, self.template_name, {
+            'form': form,
+            'product': product,
+            'item_groups': item_groups,
+            'is_edit': True,
+        })
 
     def post(self, request, pk, *args, **kwargs):
         product = get_object_or_404(ItemProduct, pk=pk)
@@ -172,7 +199,13 @@ class ProductItemUpdateView(View):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': False, 'errors': form.errors}, status=400)
             messages.error(request, "Please correct the errors below.")
-            return redirect('dashboard:product_item_list')
+            item_groups = ItemGroup.objects.filter(is_active=True)
+            return render(request, self.template_name, {
+                'form': form,
+                'product': product,
+                'item_groups': item_groups,
+                'is_edit': True,
+            })
 
 
 class ProductItemDeleteView(View):
