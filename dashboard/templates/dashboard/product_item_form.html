@@ -27,7 +27,7 @@
         margin-bottom: 0;
     }
 
-    /* ── Cards matching Screenshot ── */
+    /* ── Card matching Reference Screenshot ── */
     .card {
         border-radius: 6px;
         border: 1px solid #e2e8f0;
@@ -37,18 +37,7 @@
         margin-bottom: 6px !important;
     }
 
-    .section-title {
-        font-size: 11px;
-        font-weight: 700;
-        color: #475569;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid #f1f5f9;
-        padding-bottom: 4px;
-    }
-
-    /* ── Floating / Notch Label Styling matching Purchase Challan Screenshot ── */
+    /* ── Floating / Notch Label Styling: ALWAYS positioned in the top border notch ── */
     .form-group {
         position: relative;
         margin-bottom: 1px !important;
@@ -57,43 +46,34 @@
     .form-group label.floating-label {
         position: absolute;
         left: 8px;
-        top: 8px;
-        color: #64748b;
-        font-size: 11px;
-        pointer-events: none;
-        transition: 0.15s ease all;
+        top: -6px !important;
+        color: #64748b !important;
+        font-size: 9.5px !important;
+        font-weight: 600 !important;
         background: #ffffff !important;
         padding: 0 4px;
         line-height: 1;
         z-index: 5 !important;
+        pointer-events: none;
+        transition: color 0.15s ease;
     }
 
     .form-group input:focus + label.floating-label,
-    .form-group input:not(:placeholder-shown) + label.floating-label,
-    .form-group select + label.floating-label,
-    .form-group select ~ label.floating-label,
-    .form-group input[readonly] + label.floating-label,
-    .form-group textarea:focus + label.floating-label,
-    .form-group textarea:not(:placeholder-shown) + label.floating-label,
-    .form-group.is-focused label.floating-label,
-    .form-group.has-value label.floating-label {
-        top: -6px !important;
-        left: 6px !important;
-        font-size: 9.5px !important;
-        color: #334155 !important;
-        font-weight: 600 !important;
-        z-index: 5 !important;
+    .form-group select:focus + label.floating-label {
+        color: #2563eb !important;
     }
 
-    /* ── Controls matching Screenshot ── */
+    /* ── Controls matching Reference Screenshot ── */
     .form-control, .form-select {
         height: 31px !important;
+        min-height: 31px !important;
         font-size: 11.5px !important;
         border-radius: 4px !important;
         border: 1px solid #cbd5e1 !important;
         color: #1e293b !important;
         background-color: #ffffff !important;
         padding: 3px 8px !important;
+        box-shadow: none !important;
     }
 
     .form-control:focus, .form-select:focus {
@@ -112,7 +92,7 @@
         padding: 2px 4px;
     }
 
-    /* ── Pinned Bottom Footer Bar matching Screenshot ── */
+    /* ── Pinned Bottom Footer Bar matching Reference Screenshot ── */
     .erp-table-footer-bar {
         height: 38px;
         min-height: 38px;
@@ -149,7 +129,7 @@
         margin-left: 2px;
     }
 
-    /* ── Save Record Button matching Screenshot ── */
+    /* ── Save Record Button matching Reference Screenshot ── */
     .erp-btn-save {
         height: 28px !important;
         line-height: 28px !important;
@@ -181,7 +161,7 @@
 <div class="erp-container-flex">
 
     <!-- ══════════════════════════════════════════════════
-         PAGE HEADER (Matching Screenshot Header Bar)
+         PAGE HEADER (Matching Reference Screenshot)
     ══════════════════════════════════════════════════ -->
     <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 36px;">
         <div>
@@ -220,17 +200,13 @@
         {% csrf_token %}
 
         <!-- ══════════════════════════════════════════════════
-             CARD 1: PRODUCT ATTRIBUTES & CLASSIFICATION
-             (4-Column Floating Notch Labels Layout)
+             UNIFIED ERP FORM CARD (Matching Reference Layout)
         ══════════════════════════════════════════════════ -->
         <div class="card flex-shrink-0">
-            <div class="section-title">
-                <i class="bi bi-box-seam me-1 text-primary"></i> Product Attributes &amp; Master Classification
-            </div>
 
-            <!-- ROW 1: Item Name (2 cols) | Item Code | Status -->
+            <!-- ─── ROW 1: Item Name | Item Code (F4) | Status | Product Type ─── -->
             <div class="row g-2">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group has-value">
                         <input type="text" name="item_name" id="id_item_name" value="{{ form.item_name.value|default:'' }}" required placeholder=" " class="form-control fw-bold text-primary">
                         <label for="id_item_name" class="floating-label">Item Name <span class="text-danger">*</span></label>
@@ -251,16 +227,16 @@
                         <label for="id_status" class="floating-label">Status</label>
                     </div>
                 </div>
-            </div>
-
-            <!-- ROW 2: Product Type | Hide | Rack No | Unit -->
-            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <input type="text" name="product_type" id="id_product_type" value="{{ form.product_type.value|default:'NORMAL' }}" placeholder=" " class="form-control">
                         <label for="id_product_type" class="floating-label">Product Type</label>
                     </div>
                 </div>
+            </div>
+
+            <!-- ─── ROW 2: Hide Product | Rack No. | Unit | Decimal Allowed ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <select name="hide" id="id_hide" class="form-select">
@@ -282,10 +258,6 @@
                         <label for="id_unit" class="floating-label">Unit</label>
                     </div>
                 </div>
-            </div>
-
-            <!-- ROW 3: Decimal Allowed | Fast Search | Color Type | Item Type Code -->
-            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <select name="decimal_allowed" id="id_decimal_allowed" class="form-select">
@@ -295,6 +267,10 @@
                         <label for="id_decimal_allowed" class="floating-label">Decimal Allowed</label>
                     </div>
                 </div>
+            </div>
+
+            <!-- ─── ROW 3: Fast Search | Color Type | Store | Store Code ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <select name="fast_search" id="id_fast_search" class="form-select">
@@ -312,16 +288,6 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group has-value">
-                        <input type="text" name="item_type_code" id="id_item_type_code" value="{{ form.item_type_code.value|default:'1 NORMAL' }}" placeholder=" " class="form-control">
-                        <label for="id_item_type_code" class="floating-label">Item Type Code</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ROW 4: Store | Store Code | Item Group | Group Allowed -->
-            <div class="row g-2" style="margin-top: 1px;">
-                <div class="col-md-3">
-                    <div class="form-group has-value">
                         <input type="text" name="store" id="id_store" value="{{ form.store.value|default:'Default' }}" placeholder=" " class="form-control">
                         <label for="id_store" class="floating-label">Store</label>
                     </div>
@@ -330,6 +296,16 @@
                     <div class="form-group has-value">
                         <input type="number" name="store_code" id="id_store_code" value="{{ form.store_code.value|default:0 }}" placeholder=" " class="form-control text-end">
                         <label for="id_store_code" class="floating-label">Store Code</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── ROW 4: Item Type Code | Item Group | Group Allowed | HSN/SAC Code ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <input type="text" name="item_type_code" id="id_item_type_code" value="{{ form.item_type_code.value|default:'1 NORMAL' }}" placeholder=" " class="form-control">
+                        <label for="id_item_type_code" class="floating-label">Item Type Code</label>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -352,16 +328,16 @@
                         <label for="id_group_allowed" class="floating-label">Group Allowed</label>
                     </div>
                 </div>
-            </div>
-
-            <!-- ROW 5: HSN/SAC Code | HSN/SAC Allowed | Manufacturer (F3) -->
-            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <input type="text" name="hsn_sac_code" id="id_hsn_sac_code" value="{{ form.hsn_sac_code.value|default:'-BLANK-' }}" placeholder=" " class="form-control">
                         <label for="id_hsn_sac_code" class="floating-label">HSN/SAC Code</label>
                     </div>
                 </div>
+            </div>
+
+            <!-- ─── ROW 5: HSN/SAC Allowed | Active in Catalog | Manufacturer (F3) ─── -->
+            <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
                         <select name="hsn_sac_allowed" id="id_hsn_sac_allowed" class="form-select">
@@ -371,6 +347,15 @@
                         <label for="id_hsn_sac_allowed" class="floating-label">HSN/SAC Allowed</label>
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="form-group has-value">
+                        <select name="is_active" id="id_is_active" class="form-select">
+                            <option value="True" {% if form.is_active.value != False %}selected{% endif %}>YES</option>
+                            <option value="False" {% if form.is_active.value == False %}selected{% endif %}>NO</option>
+                        </select>
+                        <label for="id_is_active" class="floating-label">Active in Catalog</label>
+                    </div>
+                </div>
                 <div class="col-md-6">
                     <div class="form-group has-value">
                         <input type="text" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default:'' }}" placeholder=" " class="form-control">
@@ -378,18 +363,17 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ══════════════════════════════════════════════════
-             CARD 2: PRICING, TAXES & INVENTORY PARAMETERS
-             (4-Column Floating Notch Labels Layout)
-        ══════════════════════════════════════════════════ -->
-        <div class="card flex-shrink-0">
-            <div class="section-title">
-                <i class="bi bi-currency-rupee me-1 text-primary"></i> Pricing Matrix, Tax Slabs &amp; Stock Controls
+            <!-- ─── SECTION DIVIDER: Pricing Matrix, Tax Slabs & Stock Controls ─── -->
+            <div class="row g-2 my-2">
+                <div class="col-12">
+                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">
+                        Pricing Matrix, Taxes &amp; Stock Controls
+                    </div>
+                </div>
             </div>
 
-            <!-- ROW 1: Local Tax | Central Tax | SGST % | CGST % -->
+            <!-- ─── ROW 6: Local Tax | Central Tax | SGST % | CGST % ─── -->
             <div class="row g-2">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -425,7 +409,7 @@
                 </div>
             </div>
 
-            <!-- ROW 2: IGST % | M.R.P. | P.Rate | Cost Per Piece -->
+            <!-- ─── ROW 7: IGST % | M.R.P. | P.Rate (Purchase Rate) | Cost / Pcs ─── -->
             <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -453,7 +437,7 @@
                 </div>
             </div>
 
-            <!-- ROW 3: Rate-A | Rate-B | Rate-C | Purchase Discount % -->
+            <!-- ─── ROW 8: Rate-A | Rate-B | Rate-C | Purchase Disc % ─── -->
             <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -481,7 +465,7 @@
                 </div>
             </div>
 
-            <!-- ROW 4: Max Discount % | Min Margin % | Conv.Box | Conv.Case -->
+            <!-- ─── ROW 9: Maximum Discount % | Minimum Margin % | Conv. Box | Conv. Case ─── -->
             <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -509,7 +493,7 @@
                 </div>
             </div>
 
-            <!-- ROW 5: Min Qty | Max Qty | Reorder Qty | Reorder Days -->
+            <!-- ─── ROW 10: Minimum Qty | Maximum Qty | Reorder Qty | Reorder Days ─── -->
             <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -537,7 +521,7 @@
                 </div>
             </div>
 
-            <!-- ROW 6: Disc Less | Negative Billing | Rate Mod (F6) | Active Status -->
+            <!-- ─── ROW 11: Disc Less | Negative Billing | Rate Mod Allowed (F6) ─── -->
             <div class="row g-2" style="margin-top: 1px;">
                 <div class="col-md-3">
                     <div class="form-group has-value">
@@ -563,20 +547,13 @@
                         <label for="id_rate_mod_allowed" class="floating-label">Rate Mod Allowed (F6)</label>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group has-value">
-                        <select name="is_active" id="id_is_active" class="form-select">
-                            <option value="True" {% if form.is_active.value != False %}selected{% endif %}>YES</option>
-                            <option value="False" {% if form.is_active.value == False %}selected{% endif %}>NO</option>
-                        </select>
-                        <label for="id_is_active" class="floating-label">Active in Catalog</label>
-                    </div>
-                </div>
+                <div class="col-md-3"></div>
             </div>
+
         </div>
 
         <!-- ══════════════════════════════════════════════════
-             PINNED BOTTOM FOOTER BAR (Matching Screenshot Footer)
+             PINNED BOTTOM FOOTER BAR (Matching Reference Screenshot)
         ══════════════════════════════════════════════════ -->
         <div class="erp-table-footer-bar">
             <div class="d-flex align-items-center justify-content-between w-100 px-3">
@@ -601,28 +578,4 @@
 
     </form>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Notch / Floating label dynamic listener
-    function toggleFloat(el) {
-        const grp = el.closest('.form-group');
-        if (!grp) return;
-        if (el.tagName === 'SELECT' || (el.value && el.value.toString().trim() !== '')) {
-            grp.classList.add('has-value');
-        } else {
-            grp.classList.remove('has-value');
-        }
-    }
-
-    document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
-        toggleFloat(el);
-        el.addEventListener('input', () => toggleFloat(el));
-        el.addEventListener('change', () => toggleFloat(el));
-        el.addEventListener('blur', () => toggleFloat(el));
-    });
-});
-</script>
 {% endblock %}
