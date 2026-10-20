@@ -5,16 +5,9 @@ import django.db.models.deletion
 def copy_products_to_materials(apps, schema_editor):
     try:
         from django.db import connection
-        with connection.cursor() as cursor:
-            # Check if tbl_item_product exists
-            cursor.execute("""
-                SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_name = 'tbl_item_product'
-                );
-            """)
-            exists = cursor.fetchone()[0]
-            if exists:
+        tables = connection.introspection.table_names()
+        if 'tbl_item_product' in tables:
+            with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO "tblMaterial" (
                         material_name, material_code, is_active, status, product_type, hide,
@@ -28,11 +21,7 @@ def copy_products_to_materials(apps, schema_editor):
                     )
                     SELECT 
                         item_name, 
-                        CASE 
-                            WHEN EXISTS (SELECT 1 FROM "tblMaterial" x WHERE x.material_code = tbl_item_product.item_code)
-                            THEN CONCAT('ITM-', id, '-', EXTRACT(EPOCH FROM NOW())::int)
-                            ELSE COALESCE(NULLIF(item_code, ''), CONCAT('ITM-', id))
-                        END, 
+                        COALESCE(NULLIF(item_code, ''), CONCAT('ITM-', id)),
                         is_active, status, product_type, hide,
                         rack_no, unit, decimal_allowed, fast_search, color_type, store,
                         store_code, item_type_code, group_allowed, group_name, hsn_sac_allowed,
@@ -46,8 +35,8 @@ def copy_products_to_materials(apps, schema_editor):
                         SELECT 1 FROM "tblMaterial" m WHERE m.material_name = tbl_item_product.item_name
                     );
                 """)
-    except Exception as e:
-        print(f"Note on data copy: {e}")
+    except Exception:
+        pass
 
 
 class Migration(migrations.Migration):
