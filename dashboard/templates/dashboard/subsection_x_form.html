@@ -114,25 +114,57 @@
         color: #0f172a !important;
     }
 
-    /* Items table row sizing — matches Subsection B */
-    #itemsTable tbody tr { height: 31px !important; }
+    /* Items table row sizing — compact matching Product Item Group */
+    #itemsTable {
+        margin-bottom: 0 !important;
+    }
+    #itemsTable thead th {
+        height: 28px !important;
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        vertical-align: middle !important;
+        background-color: #475569 !important;
+        color: #ffffff !important;
+        border: none !important;
+    }
+    #itemsTable tbody tr { height: 30px !important; }
     #itemsTable tbody td {
-        height: 31px !important;
-        padding: 2px 6px !important;
+        height: 30px !important;
+        padding: 2px 4px !important;
         vertical-align: middle !important;
         background-color: #ffffff;
         box-sizing: border-box !important;
     }
     #itemsTable tbody td select.form-select,
-    #itemsTable tbody td input.form-control {
+    #itemsTable tbody td input.form-control,
+    #itemsTable .form-select,
+    #itemsTable .form-control {
         height: 26px !important;
         min-height: 26px !important;
+        max-height: 26px !important;
         padding: 1px 6px !important;
         font-size: 11.5px !important;
-        border-radius: 3px !important;
+        border-radius: 4px !important;
         box-shadow: none !important;
         border: 1px solid #cbd5e1 !important;
         box-sizing: border-box !important;
+        color: #1e293b !important;
+    }
+    #itemsTable select.form-select {
+        padding: 1px 20px 1px 6px !important;
+        background-position: right 6px center !important;
+        background-size: 10px 8px !important;
+    }
+    #itemsTable tfoot tr {
+        height: 28px !important;
+    }
+    #itemsTable tfoot td {
+        padding: 3px 8px !important;
+        vertical-align: middle !important;
+        background-color: #475569 !important;
+        color: #ffffff !important;
     }
     #itemsTable tbody td .erp-action-btn {
         height: 24px !important;
@@ -141,6 +173,7 @@
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+        border-radius: 4px !important;
     }
 
     /* ── Validation ── */
@@ -573,21 +606,21 @@
         <div id="section-items">
             <!-- Item Table Card -->
             <div class="card shadow-sm" style="border-radius: 6px; border: 1px solid #e2e8f0; padding: 8px 12px !important; margin-bottom: 6px !important; background: #fff;">
-                <div class="mb-3">
-                    <h5 class="section-title mb-0" style="font-size: 13px; font-weight: 700; color: #1e293b;">Purchase Order Items</h5>
+                <div style="margin-bottom: 4px !important;">
+                    <h5 class="section-title mb-0" style="font-size: 12.5px; font-weight: 700; color: #1e293b;">Purchase Order Items</h5>
                 </div>
                 <div class="table-responsive erp-items-table-wrapper">
                     <table class="table table-bordered align-middle" id="itemsTable" style="font-size:13px;">
                         <thead class="shadow-sm" style="border-top:none;">
                             <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center">#</th>
-                                <th style="width:30%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Item Name <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Order Qty <span class="text-danger">*</span></th>
-                                <th style="width:10%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">UOM <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Unit Rate <span class="text-danger">*</span></th>
-                                <th style="width:12%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-end">Amount</th>
-                                <th style="width:14%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;">Remarks</th>
-                                <th style="width:5%; border:none; padding:12px 16px; background:#64748b !important; color:white !important;" class="text-center border-end-0">Action</th>
+                                <th style="width:5%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;" class="text-center">#</th>
+                                <th style="width:30%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;">Item Name <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;" class="text-end">Order Qty <span class="text-danger">*</span></th>
+                                <th style="width:10%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;">UOM <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;" class="text-end">Unit Rate <span class="text-danger">*</span></th>
+                                <th style="width:12%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;" class="text-end">Amount</th>
+                                <th style="width:14%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;">Remarks</th>
+                                <th style="width:5%; border:none; padding:4px 8px !important; background:#475569 !important; color:white !important;" class="text-center border-end-0">Action</th>
                             </tr>
                         </thead>
                         <tbody id="itemsTableBody">
@@ -596,14 +629,14 @@
                         <tfoot>
                             <tr>
                                 <td colspan="5" class="text-end align-middle fw-bold border-0"
-                                    style="text-align: right !important; padding-right: 16px; letter-spacing: 0.5px; font-size: 11px; background-color: #64748b !important; color: white !important;">TOTAL BASIC AMOUNT
+                                    style="text-align: right !important; padding-right: 16px; letter-spacing: 0.5px; font-size: 11px; background-color: #475569 !important; color: white !important;">TOTAL BASIC AMOUNT
                                 </td>
-                                <td class="align-middle border-0 p-0" style="background-color: #64748b !important;">
+                                <td class="align-middle border-0 p-0" style="background-color: #475569 !important;">
                                     <input type="text" id="tableTotalBasicAmountDisplay"
                                         class="form-control text-end fw-bold m-0 w-100" value="0.00"
-                                        style="background-color: transparent !important; border: none !important; color: white !important; padding: 8px 12px; box-shadow: none !important;" readonly>
+                                        style="background-color: transparent !important; border: none !important; color: white !important; padding: 2px 8px !important; height: 24px !important; font-size: 11.5px !important; box-shadow: none !important;" readonly>
                                 </td>
-                                <td colspan="2" class="border-0 align-middle text-end p-0" style="background-color: #64748b !important;">
+                                <td colspan="2" class="border-0 align-middle text-end p-0" style="background-color: #475569 !important;">
                                 </td>
                             </tr>
                         </tfoot>
@@ -611,20 +644,20 @@
                 </div>
             </div>
             
-            <!-- Summary Card -->
-            <div class="card shadow-sm" style="border-radius: 6px; border: 1px solid #e2e8f0; padding: 8px 12px !important; margin-bottom: 6px !important; background: #fff;">
-                <h5 class="section-title" style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 6px !important;">Order Summary</h5>
+            <!-- Summary Card (Compact & Fitted) -->
+            <div class="card shadow-sm" style="border-radius: 6px; border: 1px solid #e2e8f0; padding: 6px 12px !important; margin-bottom: 6px !important; background: #fff;">
+                <h5 class="section-title" style="font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 4px !important;">Order Summary</h5>
                 <div class="row g-2">
                     <div class="col-md-6">
-                        <div class="summary-box p-2 rounded" style="background:#f8f9fa; border:1px solid #e5e7eb;">
-                            <h6 style="font-size:12px;font-weight:600;color:#4b5563;text-transform:uppercase;margin-bottom:4px;">Total Basic Amount</h6>
-                            <h4 id="totalBasicAmountDisplay" class="mb-0 fw-bold" style="color:#1f2937;font-size:15px;">0.00</h4>
+                        <div class="summary-box rounded d-flex justify-content-between align-items-center" style="background:#f8f9fa; border:1px solid #e2e8f0; padding: 5px 12px !important; height: 32px !important;">
+                            <span style="font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.3px;">Total Basic Amount</span>
+                            <span id="totalBasicAmountDisplay" class="fw-bold" style="color:#1e293b;font-size:13.5px;">0.00</span>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="summary-box p-2 rounded" style="background:#e0f2fe; border:1px solid #bae6fd;">
-                            <h6 style="font-size:12px;font-weight:600;color:#0284c7;text-transform:uppercase;margin-bottom:4px;">Grand Total</h6>
-                            <h4 id="grandTotalDisplay" class="mb-0 fw-bold" style="color:#0369a1;font-size:15px;">0.00</h4>
+                        <div class="summary-box rounded d-flex justify-content-between align-items-center" style="background:#f0f9ff; border:1px solid #bae6fd; padding: 5px 12px !important; height: 32px !important;">
+                            <span style="font-size:10.5px;font-weight:700;color:#0284c7;text-transform:uppercase;letter-spacing:0.3px;">Grand Total</span>
+                            <span id="grandTotalDisplay" class="fw-bold" style="color:#0369a1;font-size:13.5px;">0.00</span>
                         </div>
                     </div>
                 </div>
@@ -758,10 +791,10 @@
 
 <!-- Dynamic Row Template -->
 <template id="rowTemplate">
-    <tr class="item-row">
-        <td class="row-num text-center align-middle fw-semibold text-secondary">1</td>
-        <td class="align-middle">
-            <select class="form-select row-item" required>
+    <tr class="item-row" style="height: 30px !important;">
+        <td class="row-num text-center align-middle fw-semibold text-secondary" style="padding: 2px 4px !important; font-size: 11px !important;">1</td>
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <select class="form-select row-item" required style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 20px 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
                 <option value="">Select Item</option>
                 <option value="add_new" class="text-primary fw-bold" style="color: #0d6efd; font-weight: 600;">+ Add New Item</option>
                 {% for item in items %}
@@ -771,37 +804,37 @@
                 {% endfor %}
             </select>
         </td>
-        <td class="align-middle">
-            <input type="number" step="0.0001" min="0" class="form-control text-end row-qty" required>
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <input type="number" step="0.0001" min="0" class="form-control text-end row-qty" required style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
         </td>
-        <td class="align-middle">
-            <select class="form-select row-uom" required>
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <select class="form-select row-uom" required style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 20px 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
                 <option value="MT">MT</option>
                 <option value="KG">KG</option>
                 <option value="TON">TON</option>
             </select>
         </td>
-        <td class="align-middle">
-            <input type="number" step="0.0001" min="0" class="form-control text-end row-rate" required>
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <input type="number" step="0.0001" min="0" class="form-control text-end row-rate" required style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
         </td>
-        <td class="align-middle">
-            <input type="number" class="form-control text-end row-amount bg-light" readonly value="0.00">
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <input type="number" class="form-control text-end row-amount bg-light" readonly value="0.00" style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
         </td>
-        <td class="align-middle">
-            <input type="text" class="form-control row-remarks" maxlength="200">
+        <td class="align-middle" style="padding: 2px 4px !important;">
+            <input type="text" class="form-control row-remarks" maxlength="200" style="height: 26px !important; min-height: 26px !important; font-size: 11.5px !important; padding: 1px 6px !important; border-radius: 4px !important; border: 1px solid #cbd5e1 !important;">
         </td>
-        <td class="text-center align-middle" style="white-space:nowrap;">
+        <td class="text-center align-middle" style="white-space:nowrap; padding: 2px 4px !important;">
             <button type="button" class="erp-action-btn erp-btn-add add-row-btn" tabindex="-1" title="Add Row"
                     style="background:transparent;border:1.5px solid #0d6efd;color:#0d6efd;border-radius:4px;
-                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
-                           cursor:pointer;font-size:15px;font-weight:bold;margin-right:3px;
+                           width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+                           cursor:pointer;font-size:13px;font-weight:bold;margin-right:2px;
                            transition:background .15s,color .15s;">
                 <i class="bi bi-plus-lg"></i>
             </button>
             <button type="button" class="erp-action-btn erp-btn-delete remove-row-btn" tabindex="-1" title="Delete Row"
                     style="background:transparent;border:1.5px solid #ef4444;color:#ef4444;border-radius:4px;
-                           width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
-                           cursor:pointer;font-size:14px;
+                           width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+                           cursor:pointer;font-size:13px;
                            transition:background .15s,color .15s;">
                 <i class="bi bi-trash"></i>
             </button>
