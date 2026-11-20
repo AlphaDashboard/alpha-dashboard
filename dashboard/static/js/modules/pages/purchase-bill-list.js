@@ -265,6 +265,12 @@ class PurchaseBillList {
                 params.ordering = (this.sortOrder === 'desc') ? `-${this.sortField}` : this.sortField;
             }
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const tranType = urlParams.get('type') || urlParams.get('tran_type') || window.APP_CONFIG?.tranType || 'RMPBL';
+            if (tranType) {
+                params.tran_type = tranType;
+            }
+
             params.page = this.currentPage;
 
             const response = await PurchaseBillAPI.getAll(params);
@@ -457,9 +463,12 @@ class PurchaseBillList {
             const editLocked   = EDIT_LOCKED.includes(billStatus) && !isApprover;
             const deleteLocked = DELETE_LOCKED.includes(billStatus);
 
+            const currentUrlParams = new URLSearchParams(window.location.search);
+            const activeTranType = currentUrlParams.get('type') || currentUrlParams.get('tran_type') || window.APP_CONFIG?.tranType || 'RMPBL';
+
             let actionItemsHtml = `
                     <li>
-                        <a class="dropdown-item" href="/purchase-bill/${t.bill_no}/edit/?mode=view">
+                        <a class="dropdown-item" href="/purchase-bill/${t.bill_no}/edit/?mode=view&type=${activeTranType}">
                             <i class="bi bi-eye me-2 text-secondary"></i> View
                         </a>
                     </li>`;
@@ -468,7 +477,7 @@ class PurchaseBillList {
                 if (!editLocked) {
                     actionItemsHtml += `
                     <li>
-                        <a class="dropdown-item" href="/purchase-bill/${t.bill_no}/edit/">
+                        <a class="dropdown-item" href="/purchase-bill/${t.bill_no}/edit/?type=${activeTranType}">
                             <i class="bi bi-pencil-square me-2 text-primary"></i> Edit
                         </a>
                     </li>`;

@@ -225,7 +225,7 @@ def execute_sp_purchase_bill(operation, header_data, items_data, username):
 
         bill = PurchaseBill(
             bill_no=bill_no,
-            tran_type='RMPBL',
+            tran_type=header_data.get('tran_type') or 'RMPBL',
             bill_date=header_data.get('bill_date') or timezone.now(),
             expected_delivery_date=header_data.get('expected_delivery_date'),
             invoice_no=invoice_no,
@@ -276,6 +276,8 @@ def execute_sp_purchase_bill(operation, header_data, items_data, username):
 
     elif operation == 'UPDATE':
         bill = PurchaseBill.objects.get(bill_no=bill_no)
+        if header_data.get('tran_type'):
+            bill.tran_type = header_data.get('tran_type')
         if header_data.get('bill_date'):
             bill.bill_date = header_data.get('bill_date')
         bill.expected_delivery_date = header_data.get('expected_delivery_date')

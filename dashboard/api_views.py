@@ -760,6 +760,11 @@ class PurchaseBillViewSet(viewsets.ModelViewSet):
         broker_q = self.request.query_params.get('broker')
         supplier_contact_q = self.request.query_params.get('supplier_contact')
         gst_number_q = self.request.query_params.get('gst_number')
+        tran_type = self.request.query_params.get('tran_type') or self.request.query_params.get('type')
+
+        if tran_type:
+            queryset = queryset.filter(tran_type=tran_type.strip().upper())
+
 
         if bill_no_q:
             queryset = queryset.filter(bill_no__icontains=bill_no_q)

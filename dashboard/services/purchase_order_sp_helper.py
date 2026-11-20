@@ -192,8 +192,14 @@ def execute_sp_purchase_order(operation, header_data, items_data, username):
 
             if operation == 'INSERT':
                 row = cursor.fetchone()
-                if row:
-                    return row[0]          # INOUT p_po_no is returned as first column
+                result_no = row[0] if row else po_no
+                if result_no and po_type:
+                    cursor.execute('UPDATE "tblPurchaseOrder" SET po_type = %s WHERE po_no = %s', [po_type, result_no])
+                return result_no
+            elif operation == 'UPDATE':
+                if po_no and po_type:
+                    cursor.execute('UPDATE "tblPurchaseOrder" SET po_type = %s WHERE po_no = %s', [po_type, po_no])
+                return po_no
 
         return po_no
 

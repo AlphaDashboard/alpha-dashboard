@@ -460,6 +460,7 @@
         isEditMode: {% if voucher_no %}true{% else %}false{% endif %},
         isViewMode: {% if is_view_mode %}true{% else %}false{% endif %},
         billStatus: "{{ bill_status|default:'Draft' }}",
+        tranType:   "{{ tran_type|default:'RMPBL' }}",
     };
 </script>
 {% endblock %}
@@ -473,14 +474,14 @@
     <div class="d-flex justify-content-between align-items-center flex-shrink-0" style="min-height: 32px;">
         <div class="d-flex align-items-center gap-2">
             <h1 class="page-title">
-                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} Purchase Voucher
+                {% if is_view_mode %}View{% elif voucher_no %}Edit{% else %}Create{% endif %} {{ bill_type_title|default:"Purchase Voucher" }}
             </h1>
-            <span class="badge" style="font-size: 10.5px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 6px;">RMPBL</span>
+            <span class="dynamic-badge" style="background-color: #1abc9c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px;">{{ bill_type_badge|default:"Raw Materials" }}</span>
         </div>
         <div class="d-flex align-items-center gap-2">
             {% if is_view_mode %}
                 {% if prev_pk %}
-                    <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view"
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=prev_pk %}?mode=view&type={{ tran_type }}"
                        id="prevRecordBtn"
                        class="btn btn-sm btn-outline-secondary erp-btn-prev px-2 py-1"
                        style="font-size:11px;font-weight:500;border-radius:4px;" title="Previous">
@@ -488,7 +489,7 @@
                     </a>
                 {% endif %}
                 {% if next_pk %}
-                    <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view"
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=next_pk %}?mode=view&type={{ tran_type }}"
                        id="nextRecordBtn"
                        class="btn btn-sm btn-outline-secondary erp-btn-next px-2 py-1"
                        style="font-size:11px;font-weight:500;border-radius:4px;" title="Next">
@@ -496,14 +497,14 @@
                     </a>
                 {% endif %}
                 {% if bill_status != 'Submitted' and bill_status != 'Approved' %}
-                    <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}"
+                    <a href="{% url 'dashboard:purchase_bill_edit' pk=voucher_no %}?type={{ tran_type }}"
                        class="btn btn-sm btn-success erp-btn-edit-mode px-2 py-1"
                        style="font-size:11px;font-weight:600;border-radius:4px;background-color:#10b981;border-color:#10b981;color:white;">
                         <i class="bi bi-pencil-square"></i> Edit
                     </a>
                 {% endif %}
             {% endif %}
-            <a href="{% url 'dashboard:purchase_bill_list' %}" class="btn btn-sm btn-outline-secondary erp-btn-back" id="backBtn" style="height:28px; font-size:11px; padding:2px 10px;">
+            <a href="{% url 'dashboard:purchase_bill_list' %}?type={{ tran_type }}" class="btn btn-sm btn-outline-secondary erp-btn-back" id="backBtn" style="height:28px; font-size:11px; padding:2px 10px;">
                 <i class="bi bi-arrow-left me-1"></i> Back
             </a>
         </div>

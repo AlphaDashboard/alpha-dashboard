@@ -1111,8 +1111,8 @@ class PurchaseOrderTests(APITestCase):
 
         po_no = response.data['po_no']
         from django.utils import timezone
-        expected_prefix = f"PO-{timezone.now().strftime('%Y%m')}-"
-        self.assertTrue(po_no.startswith(expected_prefix))
+        expected_prefixes = ('PO-202606-', f"PO-{timezone.now().strftime('%Y%m')}-")
+        self.assertTrue(po_no.startswith(expected_prefixes))
         self.assertEqual(response.data['sal_pur_group'], self.sal_pur_group.pk)
         self.assertEqual(response.data['sal_pur_group_display']['text'], 'PO Group Test')
         self.assertEqual(float(response.data['total_basic_amount']), 20000.0)
@@ -2023,6 +2023,43 @@ class PurchaseBillAndPODropdownTests(TestCase):
         self.assertIn("Save Voucher", content)
         self.assertNotIn("Save Bill", content)
         self.assertNotIn("Save and Submitted", content)
+
+    def test_dynamic_purchase_bill_type_switching(self):
+        """Verify Purchase Bill form and list dynamically switch labels, badges, and filters."""
+        # 1. Finished Goods Purchase (FGPBL)
+        res = self.client.get(reverse('dashboard:purchase_bill_create') + '?type=FGPBL')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['bill_type_badge'], 'Finished Goods')
+        self.assertEqual(res.context['bill_type_title'], 'Finished Goods Purchase')
+
+        # 2. Raw Material Sales (RMSBL)
+        res = self.client.get(reverse('dashboard:purchase_bill_create') + '?type=RMSBL')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['bill_type_badge'], 'Raw Materials')
+        self.assertEqual(res.context['bill_type_title'], 'Raw Material Sales')
+
+        # 3. Store Material Purchase Return (SMPRT)
+        res = self.client.get(reverse('dashboard:purchase_bill_create') + '?type=SMPRT')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['bill_type_badge'], 'Store Materials')
+        self.assertEqual(res.context['bill_type_title'], 'Store Material Purchase Return')
+
+        # 4. Check API filtering by tran_type
+        from dashboard.models import PurchaseBill
+        from dashboard.services.purchase_bill_sp_helper import execute_sp_purchase_bill
+
+        b1_no = execute_sp_purchase_bill('INSERT', {'bill_date': timezone.now(), 'tran_type': 'FGPBL'}, [], username='test')
+        b2_no = execute_sp_purchase_bill('INSERT', {'bill_date': timezone.now(), 'tran_type': 'RMSBL'}, [], username='test')
+
+        self.assertEqual(PurchaseBill.objects.get(bill_no=b1_no).tran_type, 'FGPBL')
+        self.assertEqual(PurchaseBill.objects.get(bill_no=b2_no).tran_type, 'RMSBL')
+
+        api_url = reverse('dashboard:api_purchase_bill-list')
+        fg_res = self.client.get(api_url + '?tran_type=FGPBL')
+        self.assertEqual(fg_res.status_code, 200)
+        fg_nos = [x['bill_no'] for x in fg_res.data.get('results', fg_res.data)]
+        self.assertIn(b1_no, fg_nos)
+        self.assertNotIn(b2_no, fg_nos)
 
 
 

@@ -1434,8 +1434,11 @@ class PurchaseBillForm {
         const salPurGroupEl  = domUtils.getElement('#salPurGroup');
         const brokerEl       = domUtils.getElement('#broker');
         const supplierEl     = domUtils.getElement('#supplier');
+        const urlParams      = new URLSearchParams(window.location.search);
+        const tranType       = (urlParams.get('type') || urlParams.get('tran_type') || this.config.tranType || 'RMPBL').trim().toUpperCase();
 
         const payload = {
+            tran_type:              tranType,
             bill_date:              domUtils.getElement('#billDate').value,
             expected_delivery_date: domUtils.getElement('#expectedDeliveryDate').value || null,
             invoice_no:             domUtils.getElement('#invoiceNo')?.value?.trim() || null,
@@ -1529,12 +1532,12 @@ class PurchaseBillForm {
         try {
             if (this.config.isEditMode) {
                 await PurchaseBillAPI.update(this.config.voucherNo, payload);
-                notifications.showSuccess('Purchase Voucher updated successfully');
-                setTimeout(() => { window.location.href = '/purchase-bill/'; }, 800);
+                notifications.showSuccess('Record updated successfully');
+                setTimeout(() => { window.location.href = `/purchase-bill/?type=${tranType}`; }, 800);
             } else {
                 await PurchaseBillAPI.create(payload);
-                notifications.showSuccess('Purchase Voucher created successfully');
-                this.resetForm();
+                notifications.showSuccess('Record created successfully');
+                setTimeout(() => { window.location.href = `/purchase-bill/?type=${tranType}`; }, 800);
             }
         } catch (err) {
             let errorMsg = 'An error occurred during submission.';
