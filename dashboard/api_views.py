@@ -579,6 +579,10 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             is_active = status_filter.lower() == 'true'
             queryset = queryset.filter(status=is_active)
 
+        po_type = self.request.query_params.get('po_type') or self.request.query_params.get('type')
+        if po_type:
+            queryset = queryset.filter(po_type=po_type.upper())
+
         ordering = self.request.query_params.get('ordering', None)
         if ordering:
             allowed_fields = {

@@ -110,6 +110,19 @@ class SalPurGroup(models.Model):
         verbose_name = _('Sales/Purchase Group')
         verbose_name_plural = _('Sales/Purchase Groups')
 
+    def save(self, *args, **kwargs):
+        from django.db import connection
+        if connection.vendor == 'sqlite' and not self.SalPurGroupID:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT COALESCE(MAX(SalPurGroupID), 0) + 1 FROM tblSalPurGroup")
+                    row = cursor.fetchone()
+                    if row:
+                        self.SalPurGroupID = row[0]
+            except Exception:
+                pass
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return str(self.SalPurGroupName)
 

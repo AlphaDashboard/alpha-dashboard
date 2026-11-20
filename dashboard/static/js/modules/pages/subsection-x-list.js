@@ -269,6 +269,12 @@ class PurchaseOrderList {
                 params.ordering = (this.sortOrder === 'desc') ? `-${this.sortField}` : this.sortField;
             }
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const poType = urlParams.get('type') || urlParams.get('po_type') || window.APP_CONFIG?.poType || 'RMPO';
+            if (poType) {
+                params.po_type = poType;
+            }
+
             params.page = this.currentPage;
 
             const response = await PurchaseOrderAPI.getAll(params);
@@ -460,9 +466,12 @@ class PurchaseOrderList {
             const editLocked   = EDIT_LOCKED.includes(poStatus) && !isApprover;
             const deleteLocked = DELETE_LOCKED.includes(poStatus);
 
+            const currentUrlParams = new URLSearchParams(window.location.search);
+            const activePoType = currentUrlParams.get('type') || currentUrlParams.get('po_type') || window.APP_CONFIG?.poType || 'RMPO';
+
             let actionItemsHtml = `
                     <li>
-                        <a class="dropdown-item" href="/subsection-x/${t.po_no}/edit/?mode=view">
+                        <a class="dropdown-item" href="/subsection-x/${t.po_no}/edit/?mode=view&type=${activePoType}">
                             <i class="bi bi-eye me-2 text-secondary"></i> View
                         </a>
                     </li>`;
@@ -472,7 +481,7 @@ class PurchaseOrderList {
                 if (!editLocked) {
                     actionItemsHtml += `
                     <li>
-                        <a class="dropdown-item" href="/subsection-x/${t.po_no}/edit/">
+                        <a class="dropdown-item" href="/subsection-x/${t.po_no}/edit/?type=${activePoType}">
                             <i class="bi bi-pencil-square me-2 text-primary"></i> Edit
                         </a>
                     </li>`;

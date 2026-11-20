@@ -21,6 +21,17 @@ class PurchaseOrder(models.Model):
         blank=True,
         verbose_name=_("Expected Delivery Date")
     )
+    PO_TYPE_CHOICES = [
+        ('RMPO', 'Raw Material PO'),
+        ('FPPO', 'Finished Goods PO'),
+        ('SMPO', 'Store Material PO'),
+    ]
+    po_type = models.CharField(
+        max_length=10,
+        choices=PO_TYPE_CHOICES,
+        default='RMPO',
+        verbose_name=_("PO Type")
+    )
     po_status = models.CharField(
         max_length=20,
         choices=[

@@ -389,7 +389,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = [
-            'po_no', 'po_date', 'expected_delivery_date', 'po_status',
+            'po_no', 'po_type', 'po_date', 'expected_delivery_date', 'po_status',
             'sal_pur_group', 'sal_pur_group_display',
             'broker', 'broker_display', 'zone_name', 'supplier', 'supplier_display',
             'supplier_contact', 'supplier_address', 'gst_number',
@@ -399,6 +399,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             'po_no':              {'required': False, 'allow_blank': True},
+            'po_type':            {'required': False, 'allow_blank': True},
             'total_basic_amount': {'required': False},
             'taxes':              {'required': False},
             'grand_total':        {'required': False},

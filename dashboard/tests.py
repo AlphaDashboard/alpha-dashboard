@@ -1110,7 +1110,9 @@ class PurchaseOrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         po_no = response.data['po_no']
-        self.assertTrue(po_no.startswith('PO-202606-'))
+        from django.utils import timezone
+        expected_prefix = f"PO-{timezone.now().strftime('%Y%m')}-"
+        self.assertTrue(po_no.startswith(expected_prefix))
         self.assertEqual(response.data['sal_pur_group'], self.sal_pur_group.pk)
         self.assertEqual(response.data['sal_pur_group_display']['text'], 'PO Group Test')
         self.assertEqual(float(response.data['total_basic_amount']), 20000.0)
@@ -1430,6 +1432,57 @@ class PurchaseOrderTests(APITestCase):
         }
         response = self.client.put(url, payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_dynamic_po_form_and_type_switching(self):
+        """
+        Verify manager requirement:
+        Single Purchase Order form switches labels and titles dynamically based on ?type=
+        (RMPO: Raw Materials, FPPO: Finished Goods, SMPO: Store Materials).
+        Also verifies po_type persistence in DB.
+        """
+        from dashboard.models.purchase_order import PurchaseOrder
+
+        # 1. Test GET /subsection-x/create/?type=FPPO
+        url_fg = reverse('dashboard:subsection_x_create') + '?type=FPPO'
+        response_fg = self.client.get(url_fg)
+        self.assertEqual(response_fg.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_fg.context['po_type'], 'FPPO')
+        self.assertEqual(response_fg.context['po_type_label'], 'Finished Goods')
+        self.assertEqual(response_fg.context['po_type_title'], 'Finished Goods Purchase Order')
+        self.assertContains(response_fg, 'Finished Goods')
+
+        # 2. Test GET /subsection-x/create/?type=SMPO
+        url_sm = reverse('dashboard:subsection_x_create') + '?type=SMPO'
+        response_sm = self.client.get(url_sm)
+        self.assertEqual(response_sm.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_sm.context['po_type'], 'SMPO')
+        self.assertEqual(response_sm.context['po_type_label'], 'Store Materials')
+        self.assertEqual(response_sm.context['po_type_title'], 'Store Material Purchase Order')
+        self.assertContains(response_sm, 'Store Materials')
+
+        # 3. Test API creation with po_type='FPPO'
+        api_url = reverse('dashboard:api_subsection_x-list')
+        payload = {
+            'po_type': 'FPPO',
+            'po_date': '2026-11-20T12:00:00Z',
+            'po_status': 'Draft',
+            'supplier': self.supplier.pk,
+            'items': [
+                {
+                    'item': self.material.id,
+                    'order_qty': 50.0,
+                    'uom': 'KG',
+                    'unit_rate': 150.0,
+                    'remarks': 'Finished Goods item'
+                }
+            ]
+        }
+        res = self.client.post(api_url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        created_po_no = res.data['po_no']
+        created_po = PurchaseOrder.objects.get(po_no=created_po_no)
+        self.assertEqual(created_po.po_type, 'FPPO')
 
 
 class MaterialCreateAPIViewTests(TestCase):

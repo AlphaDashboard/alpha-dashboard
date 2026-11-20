@@ -90,6 +90,7 @@ def execute_sp_purchase_order(operation, header_data, items_data, username):
     broker_id   = _fk_id(header_data.get('broker')   or header_data.get('broker_id'))
     sal_pur_group_id = _fk_id(header_data.get('sal_pur_group') or header_data.get('sal_pur_group_id'))
 
+    po_type              = header_data.get('po_type') or 'RMPO'
     po_status            = header_data.get('po_status', 'Draft')
     zone_name            = header_data.get('zone_name', '')
     supplier_contact     = header_data.get('supplier_contact') or ''
@@ -226,6 +227,7 @@ def execute_sp_purchase_order(operation, header_data, items_data, username):
 
         po = PurchaseOrder(
             po_no=po_no,
+            po_type=po_type,
             po_date=header_data.get('po_date'),
             expected_delivery_date=header_data.get('expected_delivery_date'),
             po_status=po_status,
@@ -273,6 +275,7 @@ def execute_sp_purchase_order(operation, header_data, items_data, username):
 
     elif operation == 'UPDATE':
         po = PurchaseOrder.objects.get(po_no=po_no)
+        po.po_type                = header_data.get('po_type', po.po_type)
         po.po_date                = header_data.get('po_date', po.po_date)
         po.expected_delivery_date = header_data.get('expected_delivery_date', po.expected_delivery_date)
         po.po_status              = po_status

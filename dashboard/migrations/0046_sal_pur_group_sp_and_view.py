@@ -115,7 +115,7 @@ def create_sp_and_view(apps, schema_editor):
                 END $$;
             """)
         elif db_vendor == 'sqlite':
-            # Create View for SQLite
+            # Create View and INSTEAD OF Triggers for SQLite
             cursor.execute("""
                 CREATE VIEW IF NOT EXISTS vw_sal_pur_group AS
                 SELECT 
@@ -124,6 +124,46 @@ def create_sp_and_view(apps, schema_editor):
                     IsGSTApplicableY1N0, IGST1_CGST0, UserCreated, DateCreated,
                     UserModified, DateModified, is_active
                 FROM tblSalPurGroup;
+            """)
+            cursor.execute("""
+                CREATE TRIGGER IF NOT EXISTS trg_vw_sal_pur_group_insert INSTEAD OF INSERT ON vw_sal_pur_group
+                BEGIN
+                    INSERT INTO tblSalPurGroup (
+                        SalPurGroupID, SalPurGroupName, GroupwiseAccounting, GroupwiseAccountID,
+                        TransactionTypeID, Interstate_Y_WithinState_N, GST_Applicable_Y_N,
+                        IsGSTApplicableY1N0, IGST1_CGST0, UserCreated, DateCreated,
+                        UserModified, DateModified, is_active
+                    ) VALUES (
+                        NEW.SalPurGroupID, NEW.SalPurGroupName, NEW.GroupwiseAccounting, NEW.GroupwiseAccountID,
+                        NEW.TransactionTypeID, NEW.Interstate_Y_WithinState_N, NEW.GST_Applicable_Y_N,
+                        NEW.IsGSTApplicableY1N0, NEW.IGST1_CGST0, NEW.UserCreated, NEW.DateCreated,
+                        NEW.UserModified, NEW.DateModified, NEW.is_active
+                    );
+                END;
+            """)
+            cursor.execute("""
+                CREATE TRIGGER IF NOT EXISTS trg_vw_sal_pur_group_update INSTEAD OF UPDATE ON vw_sal_pur_group
+                BEGIN
+                    UPDATE tblSalPurGroup SET
+                        SalPurGroupName = NEW.SalPurGroupName,
+                        GroupwiseAccounting = NEW.GroupwiseAccounting,
+                        GroupwiseAccountID = NEW.GroupwiseAccountID,
+                        TransactionTypeID = NEW.TransactionTypeID,
+                        Interstate_Y_WithinState_N = NEW.Interstate_Y_WithinState_N,
+                        GST_Applicable_Y_N = NEW.GST_Applicable_Y_N,
+                        IsGSTApplicableY1N0 = NEW.IsGSTApplicableY1N0,
+                        IGST1_CGST0 = NEW.IGST1_CGST0,
+                        UserModified = NEW.UserModified,
+                        DateModified = NEW.DateModified,
+                        is_active = NEW.is_active
+                    WHERE SalPurGroupID = OLD.SalPurGroupID;
+                END;
+            """)
+            cursor.execute("""
+                CREATE TRIGGER IF NOT EXISTS trg_vw_sal_pur_group_delete INSTEAD OF DELETE ON vw_sal_pur_group
+                BEGIN
+                    DELETE FROM tblSalPurGroup WHERE SalPurGroupID = OLD.SalPurGroupID;
+                END;
             """)
 
 

@@ -760,8 +760,11 @@ class PurchaseOrderForm {
         const salPurGroupEl  = domUtils.getElement('#salPurGroup');
         const brokerEl       = domUtils.getElement('#broker');
         const supplierEl     = domUtils.getElement('#supplier');
+        const urlParams      = new URLSearchParams(window.location.search);
+        const poType         = urlParams.get('type') || urlParams.get('po_type') || this.config.poType || 'RMPO';
 
         const payload = {
+            po_type:               poType,
             po_date:               domUtils.getElement('#poDate').value,
             expected_delivery_date: domUtils.getElement('#expectedDeliveryDate').value || null,
             po_status:             targetStatus,
@@ -832,7 +835,7 @@ class PurchaseOrderForm {
                 await PurchaseOrderAPI.create(payload);
                 notifications.showSuccess('Purchase Order created successfully');
             }
-            setTimeout(() => { window.location.href = '/subsection-x/'; }, 1000);
+            setTimeout(() => { window.location.href = `/subsection-x/?type=${poType}`; }, 1000);
         } catch (err) {
             const errorMsg = err.message ||
                 (err.response?.data && typeof err.response.data === 'object'

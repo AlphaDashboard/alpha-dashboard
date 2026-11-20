@@ -13,10 +13,15 @@
     <div class="list-header flex-shrink-0" style="margin-bottom: 4px;">
         <div class="d-flex justify-content-between align-items-start" style="margin-bottom: 4px;">
             <div style="margin-top: 4px;">
-                <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">Purchase Orders</h2>
-                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage raw material purchase order records.</p>
+                <div class="d-flex align-items-center gap-2">
+                    <h2 class="erp-title mb-0" style="font-size: 17px; font-weight: 700; color: #111827; letter-spacing: -0.2px;">{{ po_type_title|default:"Purchase Orders" }}</h2>
+                    <span id="categoryLabel" class="dynamic-badge" style="background-color: #1abc9c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px;">
+                        {{ po_type_badge|default:"Raw Materials" }}
+                    </span>
+                </div>
+                <p class="text-muted mb-0" style="font-size: 11px; margin-top: 2px;">Manage {{ po_type_label|default:"Raw Materials"|lower }} purchase order records.</p>
             </div>
-            <a href="{% url 'dashboard:subsection_x_create' %}" class="btn btn-primary shadow-sm" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; width: calc(14% - 4px); padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; letter-spacing: 0.1px; margin-top: 4px; margin-right: 7px;">
+            <a href="{% url 'dashboard:subsection_x_create' %}?type={{ po_type|default:'RMPO' }}" class="btn btn-primary shadow-sm" style="display: inline-flex; align-items: center; justify-content: center; height: 32px !important; width: calc(14% - 4px); padding: 4px 12px !important; line-height: 1.5 !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; box-sizing: border-box; letter-spacing: 0.1px; margin-top: 4px; margin-right: 7px;">
                 Create New
             </a>
         </div>
@@ -165,7 +170,8 @@
 
 <script>
     window.APP_CONFIG = {
-        userRole: "{{ request.session.role }}"
+        userRole: "{{ request.session.role }}",
+        poType:   "{{ po_type|default:'RMPO' }}"
     };
 </script>
 
